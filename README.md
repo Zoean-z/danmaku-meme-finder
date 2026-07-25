@@ -1,0 +1,130 @@
+# Danmaku Meme Finder
+
+一个本地优先的 MVP：Node.js 使用 `douyudm` v3.2.0 采集斗鱼房间 `6657` 的普通弹幕到 JSONL，Python 将其导入 SQLite，排除已有梗库后输出待人工判断的候选梗。它只用于快速验证“重复出现的新表达是否值得收录”，不会自动写入正式梗库。
+
+## 环境与安装
+
+- Python 3.11 或更高版本
+- Node.js 18 或更高版本
+- 可访问斗鱼弹幕服务器，以及同步时可访问已有梗库接口
+
+macOS/Linux：
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+npm install
+cp .env.example .env
+
+python -m danmaku_meme_finder.cli sync-existing
+node collector-js/collector.js
+python -m danmaku_meme_finder.cli import-jsonl
+python -m danmaku_meme_finder.cli build-candidates
+python -m danmaku_meme_finder.cli stats
+```
+
+Windows PowerShell：
+
+```powershell
+py -3.11 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e ".[dev]"
+npm install
+Copy-Item .env.example .env
+
+python -m danmaku_meme_finder.cli sync-existing
+node collector-js/collector.js
+python -m danmaku_meme_finder.cli import-jsonl
+python -m danmaku_meme_finder.cli build-candidates
+python -m danmaku_meme_finder.cli stats
+```
+
+## 配置
+
+复制 `.env.example` 为 `.env`。支持：
+
+- `USER_HASH_SALT`：可选。导入 SQLite 时会将 JSONL 的稳定用户 ID 保存为加盐 SHA-256 哈希；绝不保存昵称。
+- `EXISTING_API_URL`：已有梗库接口地址。
+- `EXISTING_PAGE_SIZE`：同步每页记录数，默认 `50`。
+
+环境变量的值优先于 `.env`。不要提交 `.env`。
+
+## 命令
+
+同步已有梗库（自动翻页，直到空页或最后一页）：
+
+```bash
+python -m danmaku_meme_finder.cli sync-existing
+```
+
+Node 采集器先从斗鱼移动页解析靓号对应的真实 `rid`，再使用 `douyudm` v3.2.0 的 `Client` 监听 `chatmsg`。例如配置房间 `6657` 会解析到真实房间 `6979222`；导出的记录仍使用 `roomId: 6657`。每行包含 `ts`、`roomId`、`uid`、`text`；不写昵称：
+
+```bash
+npm install
+node collector-js/collector.js
+```
+
+只做短时验证时，可设置自动停止时间（秒）：
+
+```powershell
+$env:COLLECTOR_MAX_SECONDS = '180'
+node collector-js/collector.js
+Remove-Item Env:COLLECTOR_MAX_SECONDS
+```
+
+若要在采集器因连接断开或异常退出后自动重启，运行：
+
+```bash
+node collector-js/run-collector.js
+```
+
+将尚未导入的完整 JSONL 行批量写入 SQLite。checkpoint 保存的是已提交的字节偏移，重复执行不会重复导入；正在写入但没有换行的末尾记录会留到下一次：
+
+```bash
+python -m danmaku_meme_finder.cli import-jsonl --input data/live.jsonl --checkpoint data/live.import.checkpoint.json
+```
+
+生成最近 24 小时候选：
+
+```bash
+python -m danmaku_meme_finder.cli build-candidates --window-hours 24 --min-count 3 --max-candidates 200
+```
+
+如果同一套话有加长版、重复版或轻微改写版，可额外输出一份近似文本去重后的候选。它只使用字符级比较，不会做语义聚类；原始候选文件不会被改写：
+
+```bash
+python -m danmaku_meme_finder.cli build-candidates --min-count 20 --similarity-threshold 0.88 --output data/candidates-deduplicated.json
+```
+
+查看本地数据量、最近 24 小时去重数、已有索引和候选数：
+
+```bash
+python -m danmaku_meme_finder.cli stats
+```
+
+## 数据文件
+
+- `data/live.jsonl`：Node 采集器的仅追加原始弹幕流，含稳定用户 ID；已忽略，不应提交。
+- `data/live.import.checkpoint.json`：JSONL 导入的已提交字节偏移；已忽略，不应提交。
+- `data/danmaku.db`：本地 SQLite 原始弹幕库，已被忽略，不应提交。
+- `data/existing_index.json`：从已有梗库同步出的规范化比对索引。
+- `data/candidates.json`：稳定排序的候选输出，适合提交到 GitHub 并由后续任务审阅。
+- `data/candidates-deduplicated.json`：可选的近似文本去重结果；代表项的 `similarVariants` 保留被合并的原文和计数。
+- `data/memes.json`：正式梗库初始文件；本项目不会改写其中的 `memes`。
+
+候选规则刻意简单：排除已有文本、空/纯标点/纯 Emoji、少于 2 个字符的文本；保留达到次数阈值的高频文本，以及长度至少 20 且仅出现一次的长文本。排序优先考虑次数、独立用户数、最近出现时间和适中长度。
+
+## 隐私与限制
+
+项目不保存昵称。`data/live.jsonl` 按采集需求临时保存稳定用户 ID，且已在 `.gitignore` 中排除；导入 SQLite 后仅保存配置盐参与计算的不可逆 SHA-256 摘要，没有 ID 时该字段为空。所有数据仅存于本机，代码不会上传原始弹幕。
+
+采集器依赖移动页里当前可见的 `rid` 字段和 `douyudm` 的斗鱼 WebSocket 协议实现；当前 v3.2.0 包含连接失败自动换端口重试。斗鱼继续改动页面数据、协议、访问策略或房间状态时仍可能失效；解析失败时会警告并回退为直接连接配置的房间号。`run-collector.js` 会在采集器异常退出后简单重启。项目不做语义聚类、向量检索、自动解释或自动入库。
+
+## 测试
+
+```bash
+pytest
+```
+
+测试全部使用模拟 HTTP 响应、本地 JSONL 和 SQLite，不依赖真实斗鱼连接。可直接按 `douyudm` 官方 CLI 验证连接和录制：`npx douyudm -i 6657 --record probe.jsonl`。

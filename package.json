@@ -1,0 +1,13 @@
+{
+  "name": "danmaku-meme-finder-collector",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Local Node collector for the danmaku meme finder.",
+  "dependencies": {
+    "douyudm": "3.2.0"
+  },
+  "scripts": {
+    "collect": "node collector-js/collector.js",
+    "collect:supervised": "node collector-js/run-collector.js"
+  }
+}
