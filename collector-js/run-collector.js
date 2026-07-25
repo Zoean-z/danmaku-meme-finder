@@ -16,6 +16,7 @@ function launch() {
   })
   child.once('exit', (code, signal) => {
     if (stopping) process.exit(code || 0)
+    if (code === 0 && process.env.COLLECTOR_MAX_SECONDS) process.exit(0)
     console.error(`[supervisor] collector exited code=${code} signal=${signal}; restarting in ${restartDelayMs}ms`)
     setTimeout(launch, restartDelayMs)
   })

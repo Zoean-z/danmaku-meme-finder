@@ -1,0 +1,108 @@
+"""Orchestrate Node collection with local SQLite and candidate processing."""
+
+from __future__ import annotations
+
+import asyncio
+import logging
+import os
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+from .aggregate import build_candidates
+from .database import DanmakuDatabase
+from .exporter import write_json_atomic
+from .import_jsonl import import_jsonl
+
+LOGGER = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class CollectionSettings:
+    room_id: int
+    database_path: Path
+    input_path: Path
+    checkpoint_path: Path
+    existing_index_path: Path
+    output_path: Path
+    flush_interval: float = 5.0
+    batch_size: int = 100
+    window_hours: int = 24
+    min_count: int = 3
+    max_candidates: int = 200
+    similarity_threshold: float | None = 0.88
+    duration_seconds: int | None = None
+
+
+def import_pending(settings: CollectionSettings, salt: str) -> dict[str, int]:
+    """Commit complete newly appended JSONL lines to SQLite."""
+    with DanmakuDatabase(settings.database_path) as database:
+        return import_jsonl(
+            settings.input_path,
+            settings.checkpoint_path,
+            database,
+            salt,
+            settings.batch_size,
+        )
+
+
+def build_current_candidates(settings: CollectionSettings) -> dict[str, Any]:
+    """Build the review output after the final SQLite flush."""
+    with DanmakuDatabase(settings.database_path) as database:
+        payload = build_candidates(
+            database,
+            settings.room_id,
+            settings.window_hours,
+            settings.min_count,
+            settings.max_candidates,
+            settings.existing_index_path,
+            settings.similarity_threshold,
+        )
+    write_json_atomic(settings.output_path, payload)
+    return payload
+
+
+async def run_collection(settings: CollectionSettings, salt: str, project_root: Path) -> dict[str, Any]:
+    """Run Node collection until interrupted, then flush and write candidates."""
+    if settings.flush_interval <= 0:
+        raise ValueError("flush interval must be positive")
+
+    environment = os.environ.copy()
+    environment["ROOM_ID"] = str(settings.room_id)
+    environment["LIVE_JSONL_PATH"] = str(settings.input_path.resolve())
+    if settings.duration_seconds is not None:
+        environment["COLLECTOR_MAX_SECONDS"] = str(settings.duration_seconds)
+
+    supervisor = project_root / "collector-js" / "run-collector.js"
+    process = await asyncio.create_subprocess_exec(
+        "node", str(supervisor), cwd=str(project_root), env=environment
+    )
+    LOGGER.info("Started Node collector pid=%s for room %s", process.pid, settings.room_id)
+    final_import: dict[str, int] = {"imported": 0, "skipped": 0, "offset": 0}
+    try:
+        while process.returncode is None:
+            await asyncio.sleep(settings.flush_interval)
+            result = import_pending(settings, salt)
+            if result["imported"] or result["skipped"]:
+                LOGGER.info(
+                    "Imported %s messages (skipped %s); checkpoint=%s",
+                    result["imported"], result["skipped"], result["offset"],
+                )
+        await process.wait()
+        if process.returncode:
+            LOGGER.warning("Node collector supervisor exited with code %s", process.returncode)
+    finally:
+        if process.returncode is None:
+            process.terminate()
+            try:
+                await asyncio.wait_for(process.wait(), timeout=5)
+            except TimeoutError:
+                process.kill()
+                await process.wait()
+        final_import = import_pending(settings, salt)
+        candidates = build_current_candidates(settings)
+        LOGGER.info(
+            "Final import=%s; wrote %s candidates to %s",
+            final_import["imported"], len(candidates["candidates"]), settings.output_path,
+        )
+    return {"import": final_import, "candidates": candidates}

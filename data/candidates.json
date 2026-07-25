@@ -1,11 +1,15 @@
 {
   "roomId": 6657,
-  "windowStart": "2026-07-23T22:21:09.635795+08:00",
-  "windowEnd": "2026-07-24T22:21:09.635795+08:00",
-  "generatedAt": "2026-07-24T22:21:09.723130+08:00",
-  "totalRawMessages": 3694,
+  "windowStart": "2026-07-24T12:22:45.876600+08:00",
+  "windowEnd": "2026-07-25T12:22:45.876600+08:00",
+  "generatedAt": "2026-07-25T12:22:45.975290+08:00",
+  "totalRawMessages": 3695,
   "totalUniqueMessages": 1029,
   "existingFilteredCount": 60,
+  "similarityDeduplication": {
+    "threshold": 0.88,
+    "mergedCandidates": 76
+  },
   "candidates": [
     {
       "text": "赢不了图二为什么要赢图一？",
@@ -14,7 +18,51 @@
       "uniqueUsers": 80,
       "firstSeenAt": "2026-07-24T21:50:54.511000+08:00",
       "lastSeenAt": "2026-07-24T21:57:52.312000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "赢不了图二为什么要赢图一😅",
+          "normalizedText": "赢不了图二为什么要赢图一😅",
+          "count": 9,
+          "uniqueUsers": 4
+        },
+        {
+          "text": " @loureed11：赢不了图二为什么要赢图一？",
+          "normalizedText": "@loureed11:赢不了图二为什么要赢图一?",
+          "count": 3,
+          "uniqueUsers": 3
+        },
+        {
+          "text": "赢不了图二为什么要赢图一。。。",
+          "normalizedText": "赢不了图二为什么要赢图一...",
+          "count": 3,
+          "uniqueUsers": 3
+        },
+        {
+          "text": "赢不了图二为什么要赢图一😅赢不了图二为什么要赢图一😅",
+          "normalizedText": "赢不了图二为什么要赢图一😅赢不了图二为什么要赢图一😅",
+          "count": 3,
+          "uniqueUsers": 2
+        },
+        {
+          "text": "赢不了图二为什么要赢图一😅赢不了图二为什么要赢图一😅赢不",
+          "normalizedText": "赢不了图二为什么要赢图一😅赢不了图二为什么要赢图一😅赢不",
+          "count": 1,
+          "uniqueUsers": 1
+        },
+        {
+          "text": "唯爱apex：赢不了图二为什么要赢图一·",
+          "normalizedText": "唯爱apex:赢不了图二为什么要赢图一·",
+          "count": 1,
+          "uniqueUsers": 1
+        },
+        {
+          "text": "没有赏金，那不是GG了，赢不了图二为什么要赢图一",
+          "normalizedText": "没有赏金,那不是gg了,赢不了图二为什么要赢图一",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "让一让！丞相的草船来了🛶🛶🛶🛶🛶🛶🛶🛶🛶🛶🛶🛶",
@@ -41,7 +89,21 @@
       "uniqueUsers": 64,
       "firstSeenAt": "2026-07-24T21:44:38.629000+08:00",
       "lastSeenAt": "2026-07-24T21:47:02.960000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "@老汤：爸给你丢脸了，爸再也不发这种视频了，你原谅爸好吗喵~",
+          "normalizedText": "@老汤:爸给你丢脸了,爸再也不发这种视频了,你原谅爸好吗喵~",
+          "count": 5,
+          "uniqueUsers": 5
+        },
+        {
+          "text": "@老汤：爸给你丢脸了，爸再也不发这种视频了，你原谅爸好吗喵~Oᴗoಣ",
+          "normalizedText": "@老汤:爸给你丢脸了,爸再也不发这种视频了,你原谅爸好吗喵~oᴗoಣ",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "啊😮这不是王一博是刘一博居然，我白扣了半天。。",
@@ -50,7 +112,15 @@
       "uniqueUsers": 61,
       "firstSeenAt": "2026-07-24T21:48:53.433000+08:00",
       "lastSeenAt": "2026-07-24T21:51:18.147000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "啊😮这不是王一博是刘一博居然，我白扣了半天。。ですわ",
+          "normalizedText": "啊😮这不是王一博是刘一博居然,我白扣了半天..ですわ",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "成吉思汗：我活着的时候，从来没有白皮敢这么对蒙古😅",
@@ -59,7 +129,21 @@
       "uniqueUsers": 53,
       "firstSeenAt": "2026-07-24T21:52:52.976000+08:00",
       "lastSeenAt": "2026-07-24T21:54:27.276000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "成吉思汗：我活着的时候，从来没有白皮敢这么对蒙古😅ですわ",
+          "normalizedText": "成吉思汗:我活着的时候,从来没有白皮敢这么对蒙古😅ですわ",
+          "count": 4,
+          "uniqueUsers": 4
+        },
+        {
+          "text": "成吉思汗：我活着的时候，从来没有白皮敢这么对蒙古😅\n保卫鱼娘查看活动〉Oᴗoಣ",
+          "normalizedText": "成吉思汗:我活着的时候,从来没有白皮敢这么对蒙古😅 保卫鱼娘查看活动〉oᴗoಣ",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "1w8的贵宾你真有动力解说吗，大大方方登山吧",
@@ -68,7 +152,21 @@
       "uniqueUsers": 50,
       "firstSeenAt": "2026-07-24T21:49:51.019000+08:00",
       "lastSeenAt": "2026-07-24T21:53:23.426000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": " @独爱21级：1w8的贵宾你真有动力解说吗，大大方方登山吧",
+          "normalizedText": "@独爱21级:1w8的贵宾你真有动力解说吗,大大方方登山吧",
+          "count": 4,
+          "uniqueUsers": 3
+        },
+        {
+          "text": "1w8的贵宾你真有动力解说吗，大大方方登山吧ですわ",
+          "normalizedText": "1w8的贵宾你真有动力解说吗,大大方方登山吧ですわ",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": " @Twistzz：不是🙅‍♀️输比赛和我赛点三甜甜圈有什么关系啊😩，你们不是懂cs吗😭",
@@ -86,7 +184,21 @@
       "uniqueUsers": 23,
       "firstSeenAt": "2026-07-24T21:56:57.245000+08:00",
       "lastSeenAt": "2026-07-24T21:58:05.200000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "求你了😫弗一把😫求你了😫弗一把😫求你了😫弗一把😫.",
+          "normalizedText": "求你了😫弗一把😫求你了😫弗一把😫求你了😫弗一把😫.",
+          "count": 5,
+          "uniqueUsers": 1
+        },
+        {
+          "text": " @時魔法07163：求你了😫弗一把😫求你了😫弗一把😫求你了😫弗一把😫",
+          "normalizedText": "@時魔法07163:求你了😫弗一把😫求你了😫弗一把😫求你了😫弗一把😫",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "弹幕随便串，玩出这个月观时不够，不敢登山的😁",
@@ -95,7 +207,15 @@
       "uniqueUsers": 32,
       "firstSeenAt": "2026-07-24T21:54:33.759000+08:00",
       "lastSeenAt": "2026-07-24T21:57:49.109000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "弹幕随便串，玩出这个月观时不够，不敢登山的😁ですわ",
+          "normalizedText": "弹幕随便串,玩出这个月观时不够,不敢登山的😁ですわ",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "    嘿，伙计们👋我是设备🥰只想向机器🥳我的儿子😘喊话，好久没见他了🥹",
@@ -104,7 +224,21 @@
       "uniqueUsers": 43,
       "firstSeenAt": "2026-07-24T21:46:43.011000+08:00",
       "lastSeenAt": "2026-07-24T21:55:01.500000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "嘿，伙计们👋我是设备🥰只想向机器🥳我的儿子😘喊话，好久没见他了🥹喵~",
+          "normalizedText": "嘿,伙计们👋我是设备🥰只想向机器🥳我的儿子😘喊话,好久没见他了🥹喵~",
+          "count": 5,
+          "uniqueUsers": 5
+        },
+        {
+          "text": "嘿，伙计们👋我是设备🥰只想向机器🥳我的儿子😘喊话，好久没见他了",
+          "normalizedText": "嘿,伙计们👋我是设备🥰只想向机器🥳我的儿子😘喊话,好久没见他了",
+          "count": 3,
+          "uniqueUsers": 3
+        }
+      ]
     },
     {
       "text": "宫监手！准备放监！🏹🏹🏹🏹宫监手！准备放监！🏹🏹🏹🏹宫监手！准备放监！🏹🏹🏹�",
@@ -113,7 +247,45 @@
       "uniqueUsers": 14,
       "firstSeenAt": "2026-07-24T21:44:58.384000+08:00",
       "lastSeenAt": "2026-07-24T21:57:11.439000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "宫监手！准备放监！🏹🏹🏹🏹宫监手！准备放监！🏹🏹🏹🏹宫监手！准备放监！",
+          "normalizedText": "宫监手!准备放监!🏹🏹🏹🏹宫监手!准备放监!🏹🏹🏹🏹宫监手!准备放监!",
+          "count": 5,
+          "uniqueUsers": 3
+        },
+        {
+          "text": "宫监手！准备放监！🏹🏹🏹🏹宫监手！准备放监！🏹🏹",
+          "normalizedText": "宫监手!准备放监!🏹🏹🏹🏹宫监手!准备放监!🏹🏹",
+          "count": 1,
+          "uniqueUsers": 1
+        },
+        {
+          "text": "宫监手！准备放监！🏹🏹🏹🏹宫监手！准备放监！🏹🏹🏹",
+          "normalizedText": "宫监手!准备放监!🏹🏹🏹🏹宫监手!准备放监!🏹🏹🏹",
+          "count": 1,
+          "uniqueUsers": 1
+        },
+        {
+          "text": "宫监手！准备放监！🏹🏹🏹🏹宫监手！准备放监！🏹🏹🏹🏹宫监手！准备放监！🏹",
+          "normalizedText": "宫监手!准备放监!🏹🏹🏹🏹宫监手!准备放监!🏹🏹🏹🏹宫监手!准备放监!🏹",
+          "count": 1,
+          "uniqueUsers": 1
+        },
+        {
+          "text": "宫监手！准备放监！🏹🏹🏹🏹宫监手！准备放监！🏹🏹🏹🏹宫监",
+          "normalizedText": "宫监手!准备放监!🏹🏹🏹🏹宫监手!准备放监!🏹🏹🏹🏹宫监",
+          "count": 1,
+          "uniqueUsers": 1
+        },
+        {
+          "text": "宫监手！准备放监！🏹🏹🏹🏹宫监手！准备放监！🏹🏹🏹🏹",
+          "normalizedText": "宫监手!准备放监!🏹🏹🏹🏹宫监手!准备放监!🏹🏹🏹🏹",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢",
@@ -122,7 +294,27 @@
       "uniqueUsers": 19,
       "firstSeenAt": "2026-07-24T21:52:05.499000+08:00",
       "lastSeenAt": "2026-07-24T21:57:37.686000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": " U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢",
+          "normalizedText": "u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢",
+          "count": 5,
+          "uniqueUsers": 1
+        },
+        {
+          "text": " U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇",
+          "normalizedText": "u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇",
+          "count": 1,
+          "uniqueUsers": 1
+        },
+        {
+          "text": "📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦",
+          "normalizedText": "📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "爆了",
@@ -140,7 +332,21 @@
       "uniqueUsers": 34,
       "firstSeenAt": "2026-07-24T21:47:07.845000+08:00",
       "lastSeenAt": "2026-07-24T21:48:10.188000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "@为了发弹幕买了个号：我说怎么有条弹幕不好笑还一直刷，原来是一个人刷的",
+          "normalizedText": "@为了发弹幕买了个号:我说怎么有条弹幕不好笑还一直刷,原来是一个人刷的",
+          "count": 1,
+          "uniqueUsers": 1
+        },
+        {
+          "text": "我说怎么有条弹幕不好笑还一直刷，原来是一个人刷的喵~",
+          "normalizedText": "我说怎么有条弹幕不好笑还一直刷,原来是一个人刷的喵~",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": " @Cadian：玩 死了还算句人话😄",
@@ -149,7 +355,21 @@
       "uniqueUsers": 33,
       "firstSeenAt": "2026-07-24T21:51:04.860000+08:00",
       "lastSeenAt": "2026-07-24T21:52:54.898000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "@Cadian：玩 死了还算句人话😄喵~",
+          "normalizedText": "@cadian:玩 死了还算句人话😄喵~",
+          "count": 6,
+          "uniqueUsers": 6
+        },
+        {
+          "text": "@Cadian：玩 死了还算句人话😄喵~ @Cadian：玩 死了还算句人话😄",
+          "normalizedText": "@cadian:玩 死了还算句人话😄喵~ @cadian:玩 死了还算句人话😄",
+          "count": 3,
+          "uniqueUsers": 3
+        }
+      ]
     },
     {
       "text": "玩机器原话：就欺负你没钱",
@@ -167,7 +387,15 @@
       "uniqueUsers": 18,
       "firstSeenAt": "2026-07-24T21:50:20.876000+08:00",
       "lastSeenAt": "2026-07-24T21:51:19.725000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "刚来，这个赛事没有猎鹰吗😧ですわ",
+          "normalizedText": "刚来,这个赛事没有猎鹰吗😧ですわ",
+          "count": 3,
+          "uniqueUsers": 3
+        }
+      ]
     },
     {
       "text": "popipa😋 pipopa😘 popipapapipopa🤗",
@@ -194,7 +422,15 @@
       "uniqueUsers": 26,
       "firstSeenAt": "2026-07-24T21:53:34.666000+08:00",
       "lastSeenAt": "2026-07-24T21:54:34.683000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "“喜欢玩宝宝的升旗”，于是地球变成了一个海胆🥰",
+          "normalizedText": "\"喜欢玩宝宝的升旗\",于是地球变成了一个海胆🥰",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "去无人岛旅行😩🧳～我不会怪你滴😩 ～",
@@ -212,7 +448,21 @@
       "uniqueUsers": 26,
       "firstSeenAt": "2026-07-24T21:50:52.422000+08:00",
       "lastSeenAt": "2026-07-24T21:52:36.847000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "有人复制一下我的弹幕吗，我也想躲在被子里偷笑 。 没问题啊兄弟",
+          "normalizedText": "有人复制一下我的弹幕吗,我也想躲在被子里偷笑. 没问题啊兄弟",
+          "count": 4,
+          "uniqueUsers": 4
+        },
+        {
+          "text": "有人复制一下我的弹幕吗，我也想躲在被子里偷笑Oᴗoಣ",
+          "normalizedText": "有人复制一下我的弹幕吗,我也想躲在被子里偷笑oᴗoಣ",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "    把腿放下去，你个4B炸雷走长廊得东西",
@@ -221,7 +471,15 @@
       "uniqueUsers": 24,
       "firstSeenAt": "2026-07-24T21:43:48.326000+08:00",
       "lastSeenAt": "2026-07-24T21:49:08.234000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "把腿放下去，你个4B炸雷走长廊得东西 把腿放下去，你个4B炸雷走长廊得东西 把腿放下去，你个4B炸雷",
+          "normalizedText": "把腿放下去,你个4b炸雷走长廊得东西 把腿放下去,你个4b炸雷走长廊得东西 把腿放下去,你个4b炸雷",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": " @Device：儿，为什么不理爸了？爸做错了吗？爸只是想多跟你交流而已",
@@ -230,7 +488,21 @@
       "uniqueUsers": 19,
       "firstSeenAt": "2026-07-24T21:46:06.463000+08:00",
       "lastSeenAt": "2026-07-24T21:47:23.639000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": " @Device：JL，为什么不理爸了？爸做错了吗？爸只是想多跟你交流而已",
+          "normalizedText": "@device:jl,为什么不理爸了?爸做错了吗?爸只是想多跟你交流而已",
+          "count": 14,
+          "uniqueUsers": 8
+        },
+        {
+          "text": "@Device：JL，为什么不理爸了？爸做错了吗？爸只是想多跟你交流而已v",
+          "normalizedText": "@device:jl,为什么不理爸了?爸做错了吗?爸只是想多跟你交流而已v",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "没人串了？我来给大家做串！——🦐-🦐-🦐-🦐-🦐-🦐 串好啦",
@@ -248,7 +520,27 @@
       "uniqueUsers": 21,
       "firstSeenAt": "2026-07-24T21:48:31.507000+08:00",
       "lastSeenAt": "2026-07-24T21:50:52.192000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "@沈星回@秦彻@黎深@泽言:刘亦博,我怀孕了Oᴗoಣ",
+          "normalizedText": "@沈星回@秦彻@黎深@泽言:刘亦博,我怀孕了oᴗoಣ",
+          "count": 5,
+          "uniqueUsers": 4
+        },
+        {
+          "text": "@沈星回@秦彻@黎深@泽言:刘亦博,我怀孕了Oᴗoಣ：",
+          "normalizedText": "@沈星回@秦彻@黎深@泽言:刘亦博,我怀孕了oᴗoಣ:",
+          "count": 1,
+          "uniqueUsers": 1
+        },
+        {
+          "text": "@沈星回@秦彻@黎深@泽言:刘亦博,我怀孕了喵~",
+          "normalizedText": "@沈星回@秦彻@黎深@泽言:刘亦博,我怀孕了喵~",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "姐妹们别扣了，经过我这几天的观察，这猪不是马嘉祺，就是长的像而已",
@@ -257,7 +549,15 @@
       "uniqueUsers": 18,
       "firstSeenAt": "2026-07-24T21:46:41.973000+08:00",
       "lastSeenAt": "2026-07-24T21:48:26.727000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "姐妹们别扣了，经过我这几天的观察，这猪不是马嘉祺，就是长的像而已喵~",
+          "normalizedText": "姐妹们别扣了,经过我这几天的观察,这猪不是马嘉祺,就是长的像而已喵~",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "懂你意思",
@@ -293,7 +593,15 @@
       "uniqueUsers": 18,
       "firstSeenAt": "2026-07-24T21:53:56.647000+08:00",
       "lastSeenAt": "2026-07-24T21:55:05.182000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "刘一博家里进猪了🐖，刘一博你在哪😭😭😭喵~",
+          "normalizedText": "刘一博家里进猪了🐖,刘一博你在哪😭😭😭喵~",
+          "count": 8,
+          "uniqueUsers": 8
+        }
+      ]
     },
     {
       "text": "开宫的手腕🏹🤝🔪宫斗术🏹🏹🏹暗黑宫监学😈🏹😨宫监的秘密🤫㊙️",
@@ -302,7 +610,15 @@
       "uniqueUsers": 8,
       "firstSeenAt": "2026-07-24T21:44:08.116000+08:00",
       "lastSeenAt": "2026-07-24T21:44:56.942000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "开宫的手腕🏹🤝🔪宫斗术🏹🏹🏹暗黑宫监学😈🏹😨宫监的秘密🤫㊙️开宫的手腕🏹🤝�",
+          "normalizedText": "开宫的手腕🏹🤝🔪宫斗术🏹🏹🏹暗黑宫监学😈🏹😨宫监的秘密🤫秘️开宫的手腕🏹🤝�",
+          "count": 3,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "马丁内利＞马丁内斯，懂的＋1",
@@ -311,7 +627,15 @@
       "uniqueUsers": 3,
       "firstSeenAt": "2026-07-24T21:56:25.684000+08:00",
       "lastSeenAt": "2026-07-24T21:57:10.467000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "马丁内利＞马丁内斯，懂的＋1喵~",
+          "normalizedText": "马丁内利>马丁内斯,懂的+1喵~",
+          "count": 4,
+          "uniqueUsers": 4
+        }
+      ]
     },
     {
       "text": "现在回头看，原来尼尼孩孩彻底决裂在这时就有迹象了，真是唏嘘啊😁",
@@ -320,16 +644,27 @@
       "uniqueUsers": 2,
       "firstSeenAt": "2026-07-24T21:56:42.645000+08:00",
       "lastSeenAt": "2026-07-24T21:57:47.881000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "现在回头看，原来尼尼孩孩彻底决裂在这时就有迹象了，真是唏嘘啊",
-      "normalizedText": "现在回头看,原来尼尼孩孩彻底决裂在这时就有迹象了,真是唏嘘啊",
-      "count": 20,
-      "uniqueUsers": 7,
-      "firstSeenAt": "2026-07-24T21:55:27+08:00",
-      "lastSeenAt": "2026-07-24T21:56:26.002000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "现在回头看，原来尼尼孩孩彻底决裂在这时就有迹象了，真是唏嘘啊",
+          "normalizedText": "现在回头看,原来尼尼孩孩彻底决裂在这时就有迹象了,真是唏嘘啊",
+          "count": 20,
+          "uniqueUsers": 7
+        },
+        {
+          "text": "现在回头看，原来尼尼孩孩彻底决裂在这时就有迹象了，真是唏嘘啊😄",
+          "normalizedText": "现在回头看,原来尼尼孩孩彻底决裂在这时就有迹象了,真是唏嘘啊😄",
+          "count": 4,
+          "uniqueUsers": 2
+        },
+        {
+          "text": "现在回头看，原来尼尼孩孩彻底决裂在这时就有迹象了，真是唏嘘啊喵~",
+          "normalizedText": "现在回头看,原来尼尼孩孩彻底决裂在这时就有迹象了,真是唏嘘啊喵~",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "刘先生您好 您订购的戊酸雌二醇片（私密发货放心购）已发出 请注意查收【回复T退订】",
@@ -347,7 +682,21 @@
       "uniqueUsers": 9,
       "firstSeenAt": "2026-07-24T21:49:25.218000+08:00",
       "lastSeenAt": "2026-07-24T21:57:38.807000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "@沈星回： @唯爱草山羊：别tm黏了",
+          "normalizedText": "@沈星回: @唯爱草山羊:别tm黏了",
+          "count": 7,
+          "uniqueUsers": 7
+        },
+        {
+          "text": "@唯爱草山羊：别tm黏了",
+          "normalizedText": "@唯爱草山羊:别tm黏了",
+          "count": 3,
+          "uniqueUsers": 3
+        }
+      ]
     },
     {
       "text": "玩机器，21年8月5号4B扔雷你为什么要走长廊漏脚步？",
@@ -356,7 +705,15 @@
       "uniqueUsers": 16,
       "firstSeenAt": "2026-07-24T21:43:09.079000+08:00",
       "lastSeenAt": "2026-07-24T21:43:46.612000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "玩机器，21年8月5号4B扔雷你为什么要走长廊漏脚步？Oᴗoಣ",
+          "normalizedText": "玩机器,21年8月5号4b扔雷你为什么要走长廊漏脚步?oᴗoಣ",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "宝蓝上面的那个咋那么丑",
@@ -383,7 +740,15 @@
       "uniqueUsers": 12,
       "firstSeenAt": "2026-07-24T21:43:08.463000+08:00",
       "lastSeenAt": "2026-07-24T21:46:56.433000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "@Twistzz：我在指挥Faze比赛，你们老提甜甜圈干什么？ @艾斯卡诺：我是后背😎😎😎",
+          "normalizedText": "@twistzz:我在指挥faze比赛,你们老提甜甜圈干什么? @艾斯卡诺:我是后背😎😎😎",
+          "count": 3,
+          "uniqueUsers": 3
+        }
+      ]
     },
     {
       "text": "niko拿major冠军没有导致6657弹幕王朝的崩塌",
@@ -410,7 +775,15 @@
       "uniqueUsers": 6,
       "firstSeenAt": "2026-07-24T21:44:59.719000+08:00",
       "lastSeenAt": "2026-07-24T21:45:24.211000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "宫箭手🏹准备放箭🏹🏹🏹宫箭手🏹准备放箭🏹🏹🏹宫箭手🏹准备放箭🏹🏹🏹宫箭手🏹",
+          "normalizedText": "宫箭手🏹准备放箭🏹🏹🏹宫箭手🏹准备放箭🏹🏹🏹宫箭手🏹准备放箭🏹🏹🏹宫箭手🏹",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "成吉思汗是我们农的人物。。",
@@ -446,16 +819,15 @@
       "uniqueUsers": 14,
       "firstSeenAt": "2026-07-24T21:45:47.079000+08:00",
       "lastSeenAt": "2026-07-24T21:45:58.405000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": " @Device：JL，为什么不理爸了？爸做错了吗？爸只是想多跟你交流而已",
-      "normalizedText": "@device:jl,为什么不理爸了?爸做错了吗?爸只是想多跟你交流而已",
-      "count": 14,
-      "uniqueUsers": 8,
-      "firstSeenAt": "2026-07-24T21:46:41.713000+08:00",
-      "lastSeenAt": "2026-07-24T21:48:22.200000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "bin bin",
+          "normalizedText": "bin bin",
+          "count": 10,
+          "uniqueUsers": 10
+        }
+      ]
     },
     {
       "text": "弗一把",
@@ -473,7 +845,15 @@
       "uniqueUsers": 12,
       "firstSeenAt": "2026-07-24T21:52:46.345000+08:00",
       "lastSeenAt": "2026-07-24T21:53:30.554000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "📢U咩哇帕瓦📢📢U咩哇帕瓦📢📢U咩哇帕瓦📢📢U咩哇帕瓦📢📢U咩哇帕瓦📢ですわ",
+          "normalizedText": "📢u咩哇帕瓦📢📢u咩哇帕瓦📢📢u咩哇帕瓦📢📢u咩哇帕瓦📢📢u咩哇帕瓦📢ですわ",
+          "count": 3,
+          "uniqueUsers": 3
+        }
+      ]
     },
     {
       "text": " @三国冰河时代：感觉这游戏不如赛马有意思啊，玩机器过来田忌吧。",
@@ -500,7 +880,15 @@
       "uniqueUsers": 11,
       "firstSeenAt": "2026-07-24T21:55:31.940000+08:00",
       "lastSeenAt": "2026-07-24T21:55:45.911000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "监灭",
+          "normalizedText": "监灭",
+          "count": 9,
+          "uniqueUsers": 9
+        }
+      ]
     },
     {
       "text": "所以Bbox的发明者到底是谁？",
@@ -518,7 +906,21 @@
       "uniqueUsers": 11,
       "firstSeenAt": "2026-07-24T21:46:41.667000+08:00",
       "lastSeenAt": "2026-07-24T21:47:26.951000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "童站弹幕：蹲站弹幕：童站弹幕：这个彬彬就是逊啦",
+          "normalizedText": "童站弹幕:蹲站弹幕:童站弹幕:这个彬彬就是逊啦",
+          "count": 7,
+          "uniqueUsers": 4
+        },
+        {
+          "text": "这个彬彬就是逊啦",
+          "normalizedText": "这个彬彬就是逊啦",
+          "count": 3,
+          "uniqueUsers": 3
+        }
+      ]
     },
     {
       "text": "@唯爱载物:赢不了图二你赢图一干什么😡",
@@ -527,7 +929,15 @@
       "uniqueUsers": 11,
       "firstSeenAt": "2026-07-24T21:46:29.014000+08:00",
       "lastSeenAt": "2026-07-24T21:47:17.763000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "@唯爱载物:赢不了图二你赢图一干什么😡Oᴗoಣ",
+          "normalizedText": "@唯爱载物:赢不了图二你赢图一干什么😡oᴗoಣ",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "怀恋最适合当鸟笼的五双袜子:远坂凛 战场原 丰川祥子 久远寺有珠 霞之诗秋羽",
@@ -554,7 +964,15 @@
       "uniqueUsers": 7,
       "firstSeenAt": "2026-07-24T21:43:52.592000+08:00",
       "lastSeenAt": "2026-07-24T21:45:42.663000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "@device：机器，老爸给你丢人了，老爸下次还发这种视频了😄",
+          "normalizedText": "@device:机器,老爸给你丢人了,老爸下次还发这种视频了😄",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "没有刘一博谁认识你王一博",
@@ -563,15 +981,6 @@
       "uniqueUsers": 10,
       "firstSeenAt": "2026-07-24T21:50:22.737000+08:00",
       "lastSeenAt": "2026-07-24T21:51:07.619000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "bin bin",
-      "normalizedText": "bin bin",
-      "count": 10,
-      "uniqueUsers": 10,
-      "firstSeenAt": "2026-07-24T21:45:46.332000+08:00",
-      "lastSeenAt": "2026-07-24T21:45:55.067000+08:00",
       "source": "high_frequency"
     },
     {
@@ -590,16 +999,15 @@
       "uniqueUsers": 9,
       "firstSeenAt": "2026-07-24T21:56:37.530000+08:00",
       "lastSeenAt": "2026-07-24T21:57:11.132000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "监灭",
-      "normalizedText": "监灭",
-      "count": 9,
-      "uniqueUsers": 9,
-      "firstSeenAt": "2026-07-24T21:55:31.313000+08:00",
-      "lastSeenAt": "2026-07-24T21:55:55.628000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "@唯爱载物：你拿不下图二为什么要赢图一Oᴗoಣ",
+          "normalizedText": "@唯爱载物:你拿不下图二为什么要赢图一oᴗoಣ",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "玩大哥我有点困了,你能突然大吼一嗓子让我清醒一下吗",
@@ -656,15 +1064,6 @@
       "source": "high_frequency"
     },
     {
-      "text": "赢不了图二为什么要赢图一😅",
-      "normalizedText": "赢不了图二为什么要赢图一😅",
-      "count": 9,
-      "uniqueUsers": 4,
-      "firstSeenAt": "2026-07-24T21:54:29.911000+08:00",
-      "lastSeenAt": "2026-07-24T21:56:46.148000+08:00",
-      "source": "high_frequency"
-    },
-    {
       "text": "小妖❤娈华",
       "normalizedText": "小妖❤娈华",
       "count": 9,
@@ -680,16 +1079,15 @@
       "uniqueUsers": 4,
       "firstSeenAt": "2026-07-24T21:47:59.845000+08:00",
       "lastSeenAt": "2026-07-24T21:55:08.753000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "刘一博家里进猪了🐖，刘一博你在哪😭😭😭喵~",
-      "normalizedText": "刘一博家里进猪了🐖,刘一博你在哪😭😭😭喵~",
-      "count": 8,
-      "uniqueUsers": 8,
-      "firstSeenAt": "2026-07-24T21:54:07.407000+08:00",
-      "lastSeenAt": "2026-07-24T21:54:49.897000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "能快点结束吗…说白了cs的比赛除了液体其他队有观赏性吗😅",
+          "normalizedText": "能快点结束吗...说白了cs的比赛除了液体其他队有观赏性吗😅",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "羞死了",
@@ -716,7 +1114,15 @@
       "uniqueUsers": 7,
       "firstSeenAt": "2026-07-24T21:47:04.719000+08:00",
       "lastSeenAt": "2026-07-24T21:53:23.219000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "CXY?",
+          "normalizedText": "cxy?",
+          "count": 4,
+          "uniqueUsers": 3
+        }
+      ]
     },
     {
       "text": "机器，我先睡了，一会小蜜蜂比赛开了你叫我一声，我怕我睡着的时候家被划到印度了",
@@ -755,30 +1161,12 @@
       "source": "high_frequency"
     },
     {
-      "text": "@沈星回： @唯爱草山羊：别tm黏了",
-      "normalizedText": "@沈星回: @唯爱草山羊:别tm黏了",
-      "count": 7,
-      "uniqueUsers": 7,
-      "firstSeenAt": "2026-07-24T21:49:06.183000+08:00",
-      "lastSeenAt": "2026-07-24T21:49:25.215000+08:00",
-      "source": "high_frequency"
-    },
-    {
       "text": "@唯爱教父：@唯爱载物：别他吗粘了",
       "normalizedText": "@唯爱教父:@唯爱载物:别他吗粘了",
       "count": 7,
       "uniqueUsers": 4,
       "firstSeenAt": "2026-07-24T21:57:14.336000+08:00",
       "lastSeenAt": "2026-07-24T21:57:50.770000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "童站弹幕：蹲站弹幕：童站弹幕：这个彬彬就是逊啦",
-      "normalizedText": "童站弹幕:蹲站弹幕:童站弹幕:这个彬彬就是逊啦",
-      "count": 7,
-      "uniqueUsers": 4,
-      "firstSeenAt": "2026-07-24T21:48:18.275000+08:00",
-      "lastSeenAt": "2026-07-24T21:48:33.768000+08:00",
       "source": "high_frequency"
     },
     {
@@ -797,7 +1185,15 @@
       "uniqueUsers": 2,
       "firstSeenAt": "2026-07-24T21:55:33.739000+08:00",
       "lastSeenAt": "2026-07-24T21:55:54.319000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "感觉布里兹有锻炼痕迹啊😱ですわ",
+          "normalizedText": "感觉布里兹有锻炼痕迹啊😱ですわ",
+          "count": 3,
+          "uniqueUsers": 3
+        }
+      ]
     },
     {
       "text": "很多很多年以后，玩机器仍会想起父亲带着大东战胜猎鹰的那个晚上",
@@ -827,15 +1223,6 @@
       "source": "high_frequency"
     },
     {
-      "text": "@Cadian：玩 死了还算句人话😄喵~",
-      "normalizedText": "@cadian:玩 死了还算句人话😄喵~",
-      "count": 6,
-      "uniqueUsers": 6,
-      "firstSeenAt": "2026-07-24T21:52:28.934000+08:00",
-      "lastSeenAt": "2026-07-24T21:52:49.824000+08:00",
-      "source": "high_frequency"
-    },
-    {
       "text": "我TM真想把iPad卖了给你刷🚀 但那海底捞的B服务员死活拦着我说那是点菜用的",
       "normalizedText": "我tm真想把ipad卖了给你刷🚀 但那海底捞的b服务员死活拦着我说那是点菜用的",
       "count": 6,
@@ -860,7 +1247,15 @@
       "uniqueUsers": 5,
       "firstSeenAt": "2026-07-24T21:52:42.942000+08:00",
       "lastSeenAt": "2026-07-24T21:53:13.928000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "刘一博＞秦彻＞宝蓝＞黄哥＞Kz＞鸣潮＞doinb＞fpx",
+          "normalizedText": "刘一博>秦彻>宝蓝>黄哥>kz>鸣潮>doinb>fpx",
+          "count": 4,
+          "uniqueUsers": 4
+        }
+      ]
     },
     {
       "text": "大专生别自抬身价嗷",
@@ -878,16 +1273,21 @@
       "uniqueUsers": 4,
       "firstSeenAt": "2026-07-24T21:57:29.695000+08:00",
       "lastSeenAt": "2026-07-24T21:57:48.804000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "赢不了图一为什么要赢图二？？？",
-      "normalizedText": "赢不了图一为什么要赢图二???",
-      "count": 6,
-      "uniqueUsers": 4,
-      "firstSeenAt": "2026-07-24T21:57:04.668000+08:00",
-      "lastSeenAt": "2026-07-24T21:57:38.266000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "赢不了图一为什么要赢图二？？？",
+          "normalizedText": "赢不了图一为什么要赢图二???",
+          "count": 6,
+          "uniqueUsers": 4
+        },
+        {
+          "text": "heroic，你赢不了图一为什么要赢图二",
+          "normalizedText": "heroic,你赢不了图一为什么要赢图二",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "农农已经和成吉思汗切割了🤭",
@@ -914,7 +1314,15 @@
       "uniqueUsers": 2,
       "firstSeenAt": "2026-07-24T21:45:17.804000+08:00",
       "lastSeenAt": "2026-07-24T21:46:49.109000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "v万监齐发🏹万监齐发🏹万监齐发🏹万监齐发🏹万监齐发🏹万监齐发🏹万监齐发🏹万监齐发🏹",
+          "normalizedText": "v万监齐发🏹万监齐发🏹万监齐发🏹万监齐发🏹万监齐发🏹万监齐发🏹万监齐发🏹万监齐发🏹",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "@艾斯卡诺：我是后背😎😎😎",
@@ -944,30 +1352,12 @@
       "source": "high_frequency"
     },
     {
-      "text": "嘿，伙计们👋我是设备🥰只想向机器🥳我的儿子😘喊话，好久没见他了🥹喵~",
-      "normalizedText": "嘿,伙计们👋我是设备🥰只想向机器🥳我的儿子😘喊话,好久没见他了🥹喵~",
-      "count": 5,
-      "uniqueUsers": 5,
-      "firstSeenAt": "2026-07-24T21:48:53.434000+08:00",
-      "lastSeenAt": "2026-07-24T21:49:12.864000+08:00",
-      "source": "high_frequency"
-    },
-    {
       "text": "#丰川祥子黑底外丝",
       "normalizedText": "#丰川祥子黑底外丝",
       "count": 5,
       "uniqueUsers": 5,
       "firstSeenAt": "2026-07-24T21:45:51.353000+08:00",
       "lastSeenAt": "2026-07-24T21:46:26.628000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "@老汤：爸给你丢脸了，爸再也不发这种视频了，你原谅爸好吗喵~",
-      "normalizedText": "@老汤:爸给你丢脸了,爸再也不发这种视频了,你原谅爸好吗喵~",
-      "count": 5,
-      "uniqueUsers": 5,
-      "firstSeenAt": "2026-07-24T21:45:16.478000+08:00",
-      "lastSeenAt": "2026-07-24T21:45:42.628000+08:00",
       "source": "high_frequency"
     },
     {
@@ -986,15 +1376,6 @@
       "uniqueUsers": 4,
       "firstSeenAt": "2026-07-24T21:55:51.960000+08:00",
       "lastSeenAt": "2026-07-24T21:56:22.229000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "@沈星回@秦彻@黎深@泽言:刘亦博,我怀孕了Oᴗoಣ",
-      "normalizedText": "@沈星回@秦彻@黎深@泽言:刘亦博,我怀孕了oᴗoಣ",
-      "count": 5,
-      "uniqueUsers": 4,
-      "firstSeenAt": "2026-07-24T21:48:57.882000+08:00",
-      "lastSeenAt": "2026-07-24T21:49:08.820000+08:00",
       "source": "high_frequency"
     },
     {
@@ -1043,15 +1424,6 @@
       "source": "high_frequency"
     },
     {
-      "text": "宫监手！准备放监！🏹🏹🏹🏹宫监手！准备放监！🏹🏹🏹🏹宫监手！准备放监！",
-      "normalizedText": "宫监手!准备放监!🏹🏹🏹🏹宫监手!准备放监!🏹🏹🏹🏹宫监手!准备放监!",
-      "count": 5,
-      "uniqueUsers": 3,
-      "firstSeenAt": "2026-07-24T21:43:46.766000+08:00",
-      "lastSeenAt": "2026-07-24T21:44:08.118000+08:00",
-      "source": "high_frequency"
-    },
-    {
       "text": "@成吉思汗：草，拿下，说我们蒙古只会放羊的呢😁",
       "normalizedText": "@成吉思汗:草,拿下,说我们蒙古只会放羊的呢😁",
       "count": 5,
@@ -1067,15 +1439,6 @@
       "uniqueUsers": 1,
       "firstSeenAt": "2026-07-24T21:57:35.196000+08:00",
       "lastSeenAt": "2026-07-24T21:58:02.274000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "求你了😫弗一把😫求你了😫弗一把😫求你了😫弗一把😫.",
-      "normalizedText": "求你了😫弗一把😫求你了😫弗一把😫求你了😫弗一把😫.",
-      "count": 5,
-      "uniqueUsers": 1,
-      "firstSeenAt": "2026-07-24T21:57:23.077000+08:00",
-      "lastSeenAt": "2026-07-24T21:57:56.080000+08:00",
       "source": "high_frequency"
     },
     {
@@ -1097,24 +1460,6 @@
       "source": "high_frequency"
     },
     {
-      "text": " U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢U咩哇抛瓦📢",
-      "normalizedText": "u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢u咩哇抛瓦📢",
-      "count": 5,
-      "uniqueUsers": 1,
-      "firstSeenAt": "2026-07-24T21:53:25.946000+08:00",
-      "lastSeenAt": "2026-07-24T21:56:22.754000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "马丁内利＞马丁内斯，懂的＋1喵~",
-      "normalizedText": "马丁内利>马丁内斯,懂的+1喵~",
-      "count": 4,
-      "uniqueUsers": 4,
-      "firstSeenAt": "2026-07-24T21:56:35.142000+08:00",
-      "lastSeenAt": "2026-07-24T21:56:44.509000+08:00",
-      "source": "high_frequency"
-    },
-    {
       "text": "能不能把造谣猎鹰输100t的封一下啊",
       "normalizedText": "能不能把造谣猎鹰输100t的封一下啊",
       "count": 4,
@@ -1133,39 +1478,12 @@
       "source": "high_frequency"
     },
     {
-      "text": "成吉思汗：我活着的时候，从来没有白皮敢这么对蒙古😅ですわ",
-      "normalizedText": "成吉思汗:我活着的时候,从来没有白皮敢这么对蒙古😅ですわ",
-      "count": 4,
-      "uniqueUsers": 4,
-      "firstSeenAt": "2026-07-24T21:53:25.585000+08:00",
-      "lastSeenAt": "2026-07-24T21:53:51.712000+08:00",
-      "source": "high_frequency"
-    },
-    {
       "text": "再搁这u咩哇我找薇欧拉弄你",
       "normalizedText": "再搁这u咩哇我找薇欧拉弄你",
       "count": 4,
       "uniqueUsers": 4,
       "firstSeenAt": "2026-07-24T21:53:01.854000+08:00",
       "lastSeenAt": "2026-07-24T21:53:22.077000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "刘一博＞秦彻＞宝蓝＞黄哥＞Kz＞鸣潮＞doinb＞fpx",
-      "normalizedText": "刘一博>秦彻>宝蓝>黄哥>kz>鸣潮>doinb>fpx",
-      "count": 4,
-      "uniqueUsers": 4,
-      "firstSeenAt": "2026-07-24T21:52:22.057000+08:00",
-      "lastSeenAt": "2026-07-24T21:52:46.968000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "有人复制一下我的弹幕吗，我也想躲在被子里偷笑 。 没问题啊兄弟",
-      "normalizedText": "有人复制一下我的弹幕吗,我也想躲在被子里偷笑. 没问题啊兄弟",
-      "count": 4,
-      "uniqueUsers": 4,
-      "firstSeenAt": "2026-07-24T21:52:00.546000+08:00",
-      "lastSeenAt": "2026-07-24T21:52:19.154000+08:00",
       "source": "high_frequency"
     },
     {
@@ -1250,33 +1568,6 @@
       "source": "high_frequency"
     },
     {
-      "text": " @独爱21级：1w8的贵宾你真有动力解说吗，大大方方登山吧",
-      "normalizedText": "@独爱21级:1w8的贵宾你真有动力解说吗,大大方方登山吧",
-      "count": 4,
-      "uniqueUsers": 3,
-      "firstSeenAt": "2026-07-24T21:51:03.069000+08:00",
-      "lastSeenAt": "2026-07-24T21:51:44.782000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "CXY?",
-      "normalizedText": "cxy?",
-      "count": 4,
-      "uniqueUsers": 3,
-      "firstSeenAt": "2026-07-24T21:46:56.436000+08:00",
-      "lastSeenAt": "2026-07-24T21:47:33.689000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "现在回头看，原来尼尼孩孩彻底决裂在这时就有迹象了，真是唏嘘啊😄",
-      "normalizedText": "现在回头看,原来尼尼孩孩彻底决裂在这时就有迹象了,真是唏嘘啊😄",
-      "count": 4,
-      "uniqueUsers": 2,
-      "firstSeenAt": "2026-07-24T21:56:27.161000+08:00",
-      "lastSeenAt": "2026-07-24T21:56:39.315000+08:00",
-      "source": "high_frequency"
-    },
-    {
       "text": "有没有百合番推荐啊",
       "normalizedText": "有没有百合番推荐啊",
       "count": 4,
@@ -1295,24 +1586,6 @@
       "source": "high_frequency"
     },
     {
-      "text": " @loureed11：赢不了图二为什么要赢图一？",
-      "normalizedText": "@loureed11:赢不了图二为什么要赢图一?",
-      "count": 3,
-      "uniqueUsers": 3,
-      "firstSeenAt": "2026-07-24T21:56:57.246000+08:00",
-      "lastSeenAt": "2026-07-24T21:57:11.130000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "感觉布里兹有锻炼痕迹啊😱ですわ",
-      "normalizedText": "感觉布里兹有锻炼痕迹啊😱ですわ",
-      "count": 3,
-      "uniqueUsers": 3,
-      "firstSeenAt": "2026-07-24T21:56:04.205000+08:00",
-      "lastSeenAt": "2026-07-24T21:56:25.466000+08:00",
-      "source": "high_frequency"
-    },
-    {
       "text": "🧛‍♀️爱尔奎特测试：本弹幕为爱尔奎特专属🧛‍♀️，非爱尔奎特不要➕1",
       "normalizedText": "🧛‍♀️爱尔奎特测试:本弹幕为爱尔奎特专属🧛‍♀️,非爱尔奎特不要➕1",
       "count": 3,
@@ -1328,15 +1601,6 @@
       "uniqueUsers": 3,
       "firstSeenAt": "2026-07-24T21:56:08.904000+08:00",
       "lastSeenAt": "2026-07-24T21:56:19.348000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "赢不了图二为什么要赢图一。。。",
-      "normalizedText": "赢不了图二为什么要赢图一...",
-      "count": 3,
-      "uniqueUsers": 3,
-      "firstSeenAt": "2026-07-24T21:54:10.464000+08:00",
-      "lastSeenAt": "2026-07-24T21:55:56.667000+08:00",
       "source": "high_frequency"
     },
     {
@@ -1376,30 +1640,12 @@
       "source": "high_frequency"
     },
     {
-      "text": "📢U咩哇帕瓦📢📢U咩哇帕瓦📢📢U咩哇帕瓦📢📢U咩哇帕瓦📢📢U咩哇帕瓦📢ですわ",
-      "normalizedText": "📢u咩哇帕瓦📢📢u咩哇帕瓦📢📢u咩哇帕瓦📢📢u咩哇帕瓦📢📢u咩哇帕瓦📢ですわ",
-      "count": 3,
-      "uniqueUsers": 3,
-      "firstSeenAt": "2026-07-24T21:53:16.880000+08:00",
-      "lastSeenAt": "2026-07-24T21:53:23.217000+08:00",
-      "source": "high_frequency"
-    },
-    {
       "text": "王谷越怎么这么小众的成语都会，难不成他也爱听《生僻字》",
       "normalizedText": "王谷越怎么这么小众的成语都会,难不成他也爱听<生僻字>",
       "count": 3,
       "uniqueUsers": 3,
       "firstSeenAt": "2026-07-24T21:53:01.462000+08:00",
       "lastSeenAt": "2026-07-24T21:53:20.686000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "@Cadian：玩 死了还算句人话😄喵~ @Cadian：玩 死了还算句人话😄",
-      "normalizedText": "@cadian:玩 死了还算句人话😄喵~ @cadian:玩 死了还算句人话😄",
-      "count": 3,
-      "uniqueUsers": 3,
-      "firstSeenAt": "2026-07-24T21:52:40.641000+08:00",
-      "lastSeenAt": "2026-07-24T21:52:57.298000+08:00",
       "source": "high_frequency"
     },
     {
@@ -1421,15 +1667,6 @@
       "source": "high_frequency"
     },
     {
-      "text": "刚来，这个赛事没有猎鹰吗😧ですわ",
-      "normalizedText": "刚来,这个赛事没有猎鹰吗😧ですわ",
-      "count": 3,
-      "uniqueUsers": 3,
-      "firstSeenAt": "2026-07-24T21:50:49.621000+08:00",
-      "lastSeenAt": "2026-07-24T21:51:06.614000+08:00",
-      "source": "high_frequency"
-    },
-    {
       "text": "玩大哥你前面有个光头你都没看到吗",
       "normalizedText": "玩大哥你前面有个光头你都没看到吗",
       "count": 3,
@@ -1445,24 +1682,6 @@
       "uniqueUsers": 3,
       "firstSeenAt": "2026-07-24T21:45:42.669000+08:00",
       "lastSeenAt": "2026-07-24T21:50:52.196000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "@唯爱草山羊：别tm黏了",
-      "normalizedText": "@唯爱草山羊:别tm黏了",
-      "count": 3,
-      "uniqueUsers": 3,
-      "firstSeenAt": "2026-07-24T21:48:54.092000+08:00",
-      "lastSeenAt": "2026-07-24T21:50:19.342000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "嘿，伙计们👋我是设备🥰只想向机器🥳我的儿子😘喊话，好久没见他了",
-      "normalizedText": "嘿,伙计们👋我是设备🥰只想向机器🥳我的儿子😘喊话,好久没见他了",
-      "count": 3,
-      "uniqueUsers": 3,
-      "firstSeenAt": "2026-07-24T21:49:25.501000+08:00",
-      "lastSeenAt": "2026-07-24T21:49:59.644000+08:00",
       "source": "high_frequency"
     },
     {
@@ -1490,7 +1709,15 @@
       "uniqueUsers": 3,
       "firstSeenAt": "2026-07-24T21:47:31.680000+08:00",
       "lastSeenAt": "2026-07-24T21:47:46.188000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "@动物朋友哈基米：好多童站弹幕啊233333ですわ",
+          "normalizedText": "@动物朋友哈基米:好多童站弹幕啊233333ですわ",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "载物的那个top1有一说一含金量还不如小孩的top4，小孩是真尽力",
@@ -1547,22 +1774,21 @@
       "source": "high_frequency"
     },
     {
-      "text": "这个彬彬就是逊啦",
-      "normalizedText": "这个彬彬就是逊啦",
-      "count": 3,
-      "uniqueUsers": 3,
-      "firstSeenAt": "2026-07-24T21:46:17.011000+08:00",
-      "lastSeenAt": "2026-07-24T21:46:29.013000+08:00",
-      "source": "high_frequency"
-    },
-    {
       "text": "能被载物的大裂谷和重仍的尬子夹一下这辈子都值了",
       "normalizedText": "能被载物的大裂谷和重仍的尬子夹一下这辈子都值了",
       "count": 3,
       "uniqueUsers": 3,
       "firstSeenAt": "2026-07-24T21:45:59.537000+08:00",
       "lastSeenAt": "2026-07-24T21:46:12.323000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "@伢牙luo：能被载物的大裂谷和重仍的尬子夹一下这辈子都值了",
+          "normalizedText": "@伢牙luo:能被载物的大裂谷和重仍的尬子夹一下这辈子都值了",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "好难看的比赛…我宁愿看千早爱音跟丰川祥子亲嘴…",
@@ -1589,15 +1815,6 @@
       "uniqueUsers": 3,
       "firstSeenAt": "2026-07-24T21:45:08.192000+08:00",
       "lastSeenAt": "2026-07-24T21:45:26.479000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "@Twistzz：我在指挥Faze比赛，你们老提甜甜圈干什么？ @艾斯卡诺：我是后背😎😎😎",
-      "normalizedText": "@twistzz:我在指挥faze比赛,你们老提甜甜圈干什么? @艾斯卡诺:我是后背😎😎😎",
-      "count": 3,
-      "uniqueUsers": 3,
-      "firstSeenAt": "2026-07-24T21:44:04.296000+08:00",
-      "lastSeenAt": "2026-07-24T21:44:14.972000+08:00",
       "source": "high_frequency"
     },
     {
@@ -1643,15 +1860,6 @@
       "uniqueUsers": 2,
       "firstSeenAt": "2026-07-24T21:56:52.358000+08:00",
       "lastSeenAt": "2026-07-24T21:57:15.658000+08:00",
-      "source": "high_frequency"
-    },
-    {
-      "text": "赢不了图二为什么要赢图一😅赢不了图二为什么要赢图一😅",
-      "normalizedText": "赢不了图二为什么要赢图一😅赢不了图二为什么要赢图一😅",
-      "count": 3,
-      "uniqueUsers": 2,
-      "firstSeenAt": "2026-07-24T21:56:53.237000+08:00",
-      "lastSeenAt": "2026-07-24T21:56:59.985000+08:00",
       "source": "high_frequency"
     },
     {
@@ -1751,7 +1959,15 @@
       "uniqueUsers": 1,
       "firstSeenAt": "2026-07-24T21:47:02.333000+08:00",
       "lastSeenAt": "2026-07-24T21:47:08.807000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "不是跟总监有什么关系啊😅我有点不舒服了😫先下播了😭",
+          "normalizedText": "不是跟总监有什么关系啊😅我有点不舒服了😫先下播了😭",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
     },
     {
       "text": "这什么三线比赛 猎鹰呢？",
@@ -1781,22 +1997,21 @@
       "source": "high_frequency"
     },
     {
-      "text": "开宫的手腕🏹🤝🔪宫斗术🏹🏹🏹暗黑宫监学😈🏹😨宫监的秘密🤫㊙️开宫的手腕🏹🤝�",
-      "normalizedText": "开宫的手腕🏹🤝🔪宫斗术🏹🏹🏹暗黑宫监学😈🏹😨宫监的秘密🤫秘️开宫的手腕🏹🤝�",
-      "count": 3,
-      "uniqueUsers": 1,
-      "firstSeenAt": "2026-07-24T21:44:20.438000+08:00",
-      "lastSeenAt": "2026-07-24T21:44:41.532000+08:00",
-      "source": "high_frequency"
-    },
-    {
       "text": "你这个流太慢了😅我都看见寒王在新加坡major夺冠了",
       "normalizedText": "你这个流太慢了😅我都看见寒王在新加坡major夺冠了",
       "count": 3,
       "uniqueUsers": 0,
       "firstSeenAt": "2026-07-24T17:25:40.988000+08:00",
       "lastSeenAt": "2026-07-24T17:25:51.930000+08:00",
-      "source": "high_frequency"
+      "source": "high_frequency",
+      "similarVariants": [
+        {
+          "text": "@GaXE1：你这个流太慢了😅我都看见寒王在新加坡major夺冠了",
+          "normalizedText": "@gaxe1:你这个流太慢了😅我都看见寒王在新加坡major夺冠了",
+          "count": 1,
+          "uniqueUsers": 0
+        }
+      ]
     },
     {
       "text": "🇫 🇺 🇨 🇰 🇾 🇴 🇺𝙎𝘽ᵐᵃᶜʰⁱⁿᵉ",
@@ -1805,6 +2020,329 @@
       "uniqueUsers": 1,
       "firstSeenAt": "2026-07-24T21:57:53.667000+08:00",
       "lastSeenAt": "2026-07-24T21:57:53.667000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "爱尔奎特❤阿尔托莉雅❤两仪式❤苍崎青子❤玩机器🤮🤮🤮",
+      "normalizedText": "爱尔奎特❤阿尔托莉雅❤两仪式❤苍崎青子❤玩机器🤮🤮🤮",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:57:51.773000+08:00",
+      "lastSeenAt": "2026-07-24T21:57:51.773000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "这4k把把倒一，就上一年拿了个ewc没被踢",
+      "normalizedText": "这4k把把倒一,就上一年拿了个ewc没被踢",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:57:46.105000+08:00",
+      "lastSeenAt": "2026-07-24T21:57:46.105000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "好好看的比赛，我宁愿不看千早爱音和长崎素世亲嘴",
+      "normalizedText": "好好看的比赛,我宁愿不看千早爱音和长崎素世亲嘴",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:57:43.087000+08:00",
+      "lastSeenAt": "2026-07-24T21:57:43.087000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "pain is my superpower",
+      "normalizedText": "pain is my superpower",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:57:30.996000+08:00",
+      "lastSeenAt": "2026-07-24T21:57:30.996000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "刘亦博，你再不看尼古喵喵你的男性功能将永远失效",
+      "normalizedText": "刘亦博,你再不看尼古喵喵你的男性功能将永远失效",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:57:19.867000+08:00",
+      "lastSeenAt": "2026-07-24T21:57:19.867000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "看见烂梗不➕1的真是神人😓看见烂梗不➕1的真是神人😓看见烂梗不➕1的真是神人",
+      "normalizedText": "看见烂梗不➕1的真是神人😓看见烂梗不➕1的真是神人😓看见烂梗不➕1的真是神人",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:56:58.682000+08:00",
+      "lastSeenAt": "2026-07-24T21:56:58.682000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "-🦐—🦐——🦐——🦐——— 卖烤虾咯，不软不要钱；",
+      "normalizedText": "-🦐—🦐——🦐——🦐——— 卖烤虾咯,不软不要钱;",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:56:55.085000+08:00",
+      "lastSeenAt": "2026-07-24T21:56:55.085000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "上个月在登山比赛里输了，所以这个月就不登山咯！我理解了！",
+      "normalizedText": "上个月在登山比赛里输了,所以这个月就不登山咯!我理解了!",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:56:47.533000+08:00",
+      "lastSeenAt": "2026-07-24T21:56:47.533000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "这darkmeister怎么这么像刘嘉俊啊😅",
+      "normalizedText": "这darkmeister怎么这么像刘嘉俊啊😅",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:56:41.567000+08:00",
+      "lastSeenAt": "2026-07-24T21:56:41.567000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "有没有那种说华流是最吊的，然后十张专辑封面全是欧洲古典，mv在欧洲走来走去的流行乐歌手推荐",
+      "normalizedText": "有没有那种说华流是最吊的,然后十张专辑封面全是欧洲古典,mv在欧洲走来走去的流行乐歌手推荐",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:56:29.272000+08:00",
+      "lastSeenAt": "2026-07-24T21:56:29.272000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "周瑜：能别放箭了吗，我好不容易骗诸葛亮签的军令状ですわ",
+      "normalizedText": "周瑜:能别放箭了吗,我好不容易骗诸葛亮签的军令状ですわ",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:55:50.321000+08:00",
+      "lastSeenAt": "2026-07-24T21:55:50.321000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "阿伟：0。尼尼：1。我：2。你们俩把我的命都输光了",
+      "normalizedText": "阿伟:0.尼尼:1.我:2.你们俩把我的命都输光了",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:55:42.645000+08:00",
+      "lastSeenAt": "2026-07-24T21:55:42.645000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "型月四公主来了！爱尔奎特🧛‍阿尔托莉雅🗡两仪式👘苍崎青子🧙‍♀️喵~",
+      "normalizedText": "型月四公主来了!爱尔奎特🧛‍阿尔托莉雅🗡两仪式👘苍崎青子🧙‍♀️喵~",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:55:31.584000+08:00",
+      "lastSeenAt": "2026-07-24T21:55:31.584000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "@唯爱载物：蒙古人是想让小🐝把你们划给毛子了？",
+      "normalizedText": "@唯爱载物:蒙古人是想让小🐝把你们划给毛子了?",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:55:14.550000+08:00",
+      "lastSeenAt": "2026-07-24T21:55:14.550000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "怀念最好的三个人 仲町凯瑞甘 峰月寒 薇欧监",
+      "normalizedText": "怀念最好的三个人 仲町凯瑞甘 峰月寒 薇欧监",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:55:13.620000+08:00",
+      "lastSeenAt": "2026-07-24T21:55:13.620000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "我来串！---🦐-🦐-🦐---🦐-🦐---🦐-🦐---🦐-🦐---🦐-🦐---",
+      "normalizedText": "我来串!---🦐-🦐-🦐---🦐-🦐---🦐-🦐---🦐-🦐---🦐-🦐---",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:55:07.538000+08:00",
+      "lastSeenAt": "2026-07-24T21:55:07.538000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "蠻羨慕實況主這種心態，長這這麼醜每天還樂呵呵的，喔林北要長你這樣林北就找塊豆腐撞了",
+      "normalizedText": "蠻羨慕實況主這種心態,長這這麼醜每天還樂呵呵的,喔林北要長你這樣林北就找塊豆腐撞了",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:55:01.203000+08:00",
+      "lastSeenAt": "2026-07-24T21:55:01.203000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "复制这些龙虾，在直播间养这些龙虾，每日收益0元，只为夹主播高玩🦞🦞🦞🦞🦞",
+      "normalizedText": "复制这些龙虾,在直播间养这些龙虾,每日收益0元,只为夹主播高玩🦞🦞🦞🦞🦞",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:55:00.894000+08:00",
+      "lastSeenAt": "2026-07-24T21:55:00.894000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "喜欢玩宝宝的升旗，于是地球变成了一个海胆🥰喜欢玩宝宝的升旗，于是地",
+      "normalizedText": "喜欢玩宝宝的升旗,于是地球变成了一个海胆🥰喜欢玩宝宝的升旗,于是地",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:54:48.433000+08:00",
+      "lastSeenAt": "2026-07-24T21:54:48.433000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "“喜欢玩宝宝的举手”，niko就是因为这个波士顿赛点没对过三箱",
+      "normalizedText": "\"喜欢玩宝宝的举手\",niko就是因为这个波士顿赛点没对过三箱",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:54:38.180000+08:00",
+      "lastSeenAt": "2026-07-24T21:54:38.180000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "别ban成吉思汗😁😁…卧槽你的，成吉思汗呢？😨😨😨",
+      "normalizedText": "别ban成吉思汗😁😁...卧槽你的,成吉思汗呢?😨😨😨",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:54:34.868000+08:00",
+      "lastSeenAt": "2026-07-24T21:54:34.868000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "机器宝蓝怎么是雷蛇的耳机？你用的啥耳机啊",
+      "normalizedText": "机器宝蓝怎么是雷蛇的耳机?你用的啥耳机啊",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:54:31.559000+08:00",
+      "lastSeenAt": "2026-07-24T21:54:31.559000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "@老友游戏吧：【马丁内斯】——《我是一个男人》（男人，我的世界只有自己）",
+      "normalizedText": "@老友游戏吧:[马丁内斯]——<我是一个男人>(男人,我的世界只有自己)",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:54:28.166000+08:00",
+      "lastSeenAt": "2026-07-24T21:54:28.166000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "22个原始人草皮上抢球＞10个🦍拍皮球＞22个少爷开赛车＞10个韩国人玩电脑＞10个白皮玩枪。",
+      "normalizedText": "22个原始人草皮上抢球>10个🦍拍皮球>22个少爷开赛车>10个韩国人玩电脑>10个白皮玩枪.",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:54:19.838000+08:00",
+      "lastSeenAt": "2026-07-24T21:54:19.838000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "成吉思汗背大锅，他要是不死亚洲CS就是世界第一",
+      "normalizedText": "成吉思汗背大锅,他要是不死亚洲cs就是世界第一",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:54:17.696000+08:00",
+      "lastSeenAt": "2026-07-24T21:54:17.696000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "woc这蒙古的darkmeister好像bin哥啊",
+      "normalizedText": "woc这蒙古的darkmeister好像bin哥啊",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:54:09.935000+08:00",
+      "lastSeenAt": "2026-07-24T21:54:09.935000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "森祖：我还在的时候，也没有白皮敢这么对蒙古",
+      "normalizedText": "森祖:我还在的时候,也没有白皮敢这么对蒙古",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:54:02.356000+08:00",
+      "lastSeenAt": "2026-07-24T21:54:02.356000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "若叶睦真tm可爱😍，老子亲烂你的脸😚我真tm喜欢🥰，老子亲烂你的脸🤤嘬嘬啵啊😘",
+      "normalizedText": "若叶睦真tm可爱😍,老子亲烂你的脸😚我真tm喜欢🥰,老子亲烂你的脸🤤嘬嘬啵啊😘",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:53:45.676000+08:00",
+      "lastSeenAt": "2026-07-24T21:53:45.676000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "玩机器你出生啊，像1996年1月11日那样！ですわ",
+      "normalizedText": "玩机器你出生啊,像1996年1月11日那样!ですわ",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:53:23.815000+08:00",
+      "lastSeenAt": "2026-07-24T21:53:23.815000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "有人质疑巴黎major的含金量，这么说吧，科隆major冠军猎鹰来了绝对拿不了喵~",
+      "normalizedText": "有人质疑巴黎major的含金量,这么说吧,科隆major冠军猎鹰来了绝对拿不了喵~",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:53:20.804000+08:00",
+      "lastSeenAt": "2026-07-24T21:53:20.804000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "宝宝挂直播间睡觉了，你搞耍可以，但是不要突然大吼大叫，惊了老子睡觉就亲你，听到没有",
+      "normalizedText": "宝宝挂直播间睡觉了,你搞耍可以,但是不要突然大吼大叫,惊了老子睡觉就亲你,听到没有",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:52:58.260000+08:00",
+      "lastSeenAt": "2026-07-24T21:52:58.260000+08:00",
+      "source": "long_text",
+      "similarVariants": [
+        {
+          "text": "老子挂直播间睡觉了，你搞耍可以，但是不要突然大吼大叫，惊了老子睡觉就喷你，听到没有喵~",
+          "normalizedText": "老子挂直播间睡觉了,你搞耍可以,但是不要突然大吼大叫,惊了老子睡觉就喷你,听到没有喵~",
+          "count": 1,
+          "uniqueUsers": 1
+        }
+      ]
+    },
+    {
+      "text": "加拿大咖啡品牌（由加拿大知名cs解说玩机器担保）",
+      "normalizedText": "加拿大咖啡品牌(由加拿大知名cs解说玩机器担保)",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:52:56.951000+08:00",
+      "lastSeenAt": "2026-07-24T21:52:56.951000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "【HLTV】曾经百战喧天地，一夜孤行惑古今。Mongolz官宣科比加盟！",
+      "normalizedText": "[hltv]曾经百战喧天地,一夜孤行惑古今.mongolz官宣科比加盟!",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:52:44.700000+08:00",
+      "lastSeenAt": "2026-07-24T21:52:44.700000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "😡TMD永远没有人丢闪！😤我都不知道在干什么！ 没有窗口闪😡没有板子闪😔没有B口闪😡",
+      "normalizedText": "😡tmd永远没有人丢闪!😤我都不知道在干什么! 没有窗口闪😡没有板子闪😔没有b口闪😡",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:52:34.230000+08:00",
+      "lastSeenAt": "2026-07-24T21:52:34.230000+08:00",
+      "source": "long_text"
+    },
+    {
+      "text": "有人复制一下我的弹幕吗，我这个带锁男娘也想躲在被子里偷笑。。。。",
+      "normalizedText": "有人复制一下我的弹幕吗,我这个带锁男娘也想躲在被子里偷笑...",
+      "count": 1,
+      "uniqueUsers": 1,
+      "firstSeenAt": "2026-07-24T21:52:26.711000+08:00",
+      "lastSeenAt": "2026-07-24T21:52:26.711000+08:00",
       "source": "long_text"
     }
   ]

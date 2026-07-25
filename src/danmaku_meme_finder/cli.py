@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import logging
 from pathlib import Path
 
 from .aggregate import build_candidates
+from .catalog import build_catalog
+from .collection_runner import CollectionSettings, run_collection
 from .config import existing_api_url, existing_page_size, load_dotenv, user_hash_salt
 from .database import DanmakuDatabase
 from .existing_api import fetch_existing_index
@@ -17,6 +20,7 @@ LOGGER = logging.getLogger(__name__)
 DEFAULT_DATABASE = Path("data/danmaku.db")
 DEFAULT_EXISTING_INDEX = Path("data/existing_index.json")
 DEFAULT_CANDIDATES = Path("data/candidates.json")
+DEFAULT_CATALOG = Path("data/catalog.json")
 DEFAULT_LIVE_JSONL = Path("data/live.jsonl")
 DEFAULT_IMPORT_CHECKPOINT = Path("data/live.import.checkpoint.json")
 
@@ -60,6 +64,28 @@ def create_parser() -> argparse.ArgumentParser:
         help="Optionally merge obvious lexical variants (0.5 to 1.0; try 0.88)",
     )
 
+    catalog = subparsers.add_parser("build-catalog", help="Merge legacy and local memes for static GitHub reads")
+    add_common_room(catalog)
+    catalog.add_argument("--existing-index", type=path_argument, default=DEFAULT_EXISTING_INDEX)
+    catalog.add_argument("--memes", type=path_argument, default=Path("data/memes.json"))
+    catalog.add_argument("--output", type=path_argument, default=DEFAULT_CATALOG)
+
+    collect = subparsers.add_parser("collect", help="Run Node collection with periodic SQLite import")
+    add_common_room(collect)
+    collect.add_argument("--database", type=path_argument, default=DEFAULT_DATABASE)
+    collect.add_argument("--input", type=path_argument, default=DEFAULT_LIVE_JSONL)
+    collect.add_argument("--checkpoint", type=path_argument, default=DEFAULT_IMPORT_CHECKPOINT)
+    collect.add_argument("--existing-index", type=path_argument, default=DEFAULT_EXISTING_INDEX)
+    collect.add_argument("--output", type=path_argument, default=DEFAULT_CANDIDATES)
+    collect.add_argument("--flush-interval", type=float, default=5.0)
+    collect.add_argument("--batch-size", type=int, default=100)
+    collect.add_argument("--window-hours", type=int, default=24)
+    collect.add_argument("--min-count", type=int, default=3)
+    collect.add_argument("--max-candidates", type=int, default=200)
+    collect.add_argument("--similarity-threshold", type=float, default=0.88)
+    collect.add_argument("--duration", type=int, default=None, help="Optional automatic stop time in seconds")
+    collect.add_argument("--refresh-existing", action="store_true", help="Refresh the external meme index first")
+
     stats = subparsers.add_parser("stats", help="Show local collection statistics")
     add_common_room(stats)
     stats.add_argument("--database", type=path_argument, default=DEFAULT_DATABASE)
@@ -70,11 +96,15 @@ def create_parser() -> argparse.ArgumentParser:
 
 async def _run_sync(args: argparse.Namespace) -> None:
     page_size = args.page_size if args.page_size is not None else existing_page_size()
+    await _sync_existing(args.output, args.api_url, page_size, args.retries)
+
+
+async def _sync_existing(output: Path, api_url: str | None, page_size: int, retries: int) -> None:
     if page_size <= 0:
         raise ValueError("--page-size must be positive")
-    payload = await fetch_existing_index(args.api_url or existing_api_url(), page_size, args.retries)
-    write_json_atomic(args.output, payload)
-    print(f"Synced {payload['total']} records ({len(payload['items'])} normalized entries) to {args.output}")
+    payload = await fetch_existing_index(api_url or existing_api_url(), page_size, retries)
+    write_json_atomic(output, payload)
+    print(f"Synced {payload['total']} records ({len(payload['items'])} normalized entries) to {output}")
 
 
 def _run_candidates(args: argparse.Namespace) -> None:
@@ -105,6 +135,48 @@ def _run_import_jsonl(args: argparse.Namespace) -> None:
     )
 
 
+def _run_catalog(args: argparse.Namespace) -> None:
+    existing_index = read_json(args.existing_index, {"items": {}, "total": 0})
+    memes = read_json(args.memes, {"memes": []})
+    payload = build_catalog(existing_index, memes, args.room_id)
+    write_json_atomic(args.output, payload)
+    print(f"Wrote {payload['summary']['mergedItems']} catalog items to {args.output}")
+
+
+async def _run_collect(args: argparse.Namespace) -> None:
+    if args.refresh_existing or not args.existing_index.is_file():
+        await _sync_existing(args.existing_index, None, existing_page_size(), 2)
+    if args.flush_interval <= 0 or args.batch_size <= 0 or args.window_hours <= 0:
+        raise ValueError("flush interval, batch size, and window hours must be positive")
+    if args.min_count < 1 or args.max_candidates < 0:
+        raise ValueError("min count must be positive; max candidates cannot be negative")
+    if not 0.5 <= args.similarity_threshold <= 1.0:
+        raise ValueError("--similarity-threshold must be between 0.5 and 1.0")
+    if args.duration is not None and args.duration <= 0:
+        raise ValueError("--duration must be positive")
+
+    settings = CollectionSettings(
+        room_id=args.room_id,
+        database_path=args.database,
+        input_path=args.input,
+        checkpoint_path=args.checkpoint,
+        existing_index_path=args.existing_index,
+        output_path=args.output,
+        flush_interval=args.flush_interval,
+        batch_size=args.batch_size,
+        window_hours=args.window_hours,
+        min_count=args.min_count,
+        max_candidates=args.max_candidates,
+        similarity_threshold=args.similarity_threshold,
+        duration_seconds=args.duration,
+    )
+    result = await run_collection(settings, user_hash_salt(), Path.cwd())
+    print(
+        f"Stopped: final import={result['import']['imported']}; "
+        f"candidates={len(result['candidates']['candidates'])}; output={args.output}"
+    )
+
+
 def _run_stats(args: argparse.Namespace) -> None:
     with DanmakuDatabase(args.database) as database:
         values = database.stats(args.room_id)
@@ -121,18 +193,24 @@ def _run_stats(args: argparse.Namespace) -> None:
 def main(argv: list[str] | None = None) -> int:
     load_dotenv()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+    logging.getLogger("httpx").setLevel(logging.WARNING)
     args = create_parser().parse_args(argv)
     try:
         if args.command == "sync-existing":
-            import asyncio
-
             asyncio.run(_run_sync(args))
         elif args.command == "import-jsonl":
             _run_import_jsonl(args)
+        elif args.command == "collect":
+            asyncio.run(_run_collect(args))
+        elif args.command == "build-catalog":
+            _run_catalog(args)
         elif args.command == "build-candidates":
             _run_candidates(args)
         elif args.command == "stats":
             _run_stats(args)
+        return 0
+    except KeyboardInterrupt:
+        LOGGER.info("Stopped by user")
         return 0
     except (OSError, RuntimeError, ValueError) as exc:
         LOGGER.error("%s", exc)

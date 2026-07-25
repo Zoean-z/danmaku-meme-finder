@@ -60,3 +60,25 @@ The initial public repository is now published at
 `https://github.com/Zoean-z/danmaku-meme-finder` on the `main` branch. Its
 initial commit contains only the intended project code, documentation, curated
 JSON snapshots, and data policy; raw collection data remains untracked locally.
+
+The next workflow improvement is a single local `collect` CLI command. It will
+supervise the Node collector, periodically import its JSONL output into SQLite,
+and refresh a candidate file that already excludes the existing meme index.
+Raw messages will remain local because repeat counts require them; the existing
+index is used to filter candidate output rather than discard collection evidence.
+
+The `collect` command is implemented and verified. It starts the Node supervisor,
+imports complete JSONL records into SQLite every five seconds by default, and on
+stop performs a final import plus candidate build. A live eight-second smoke test
+resolved 6657 to 6979222, imported one newly received message, and refreshed
+`data/candidates.json`; the fixture suite now has 13 passing tests.
+
+Website data is now the next design focus. The recommended path is an offline
+merged catalog with one canonical record format, committed to GitHub for static
+reads. It should preserve legacy API tags and source IDs, retain local confirmed
+memes, and avoid adding counts from different sources together.
+
+The first real legacy sync on 2026-07-25 fetched 22,024 API records and reduced
+them to 21,603 normalized texts. `build-catalog` exported the matching static
+catalog successfully; the first full snapshot is about 10.6 MB, so it validates
+the one-file website path but may later need static sharding for faster loads.

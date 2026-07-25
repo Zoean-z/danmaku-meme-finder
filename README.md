@@ -17,10 +17,7 @@ pip install -e ".[dev]"
 npm install
 cp .env.example .env
 
-python -m danmaku_meme_finder.cli sync-existing
-node collector-js/collector.js
-python -m danmaku_meme_finder.cli import-jsonl
-python -m danmaku_meme_finder.cli build-candidates
+python -m danmaku_meme_finder.cli collect --duration 180 --refresh-existing
 python -m danmaku_meme_finder.cli stats
 ```
 
@@ -33,10 +30,7 @@ python -m pip install -e ".[dev]"
 npm install
 Copy-Item .env.example .env
 
-python -m danmaku_meme_finder.cli sync-existing
-node collector-js/collector.js
-python -m danmaku_meme_finder.cli import-jsonl
-python -m danmaku_meme_finder.cli build-candidates
+python -m danmaku_meme_finder.cli collect --duration 180 --refresh-existing
 python -m danmaku_meme_finder.cli stats
 ```
 
@@ -51,6 +45,27 @@ python -m danmaku_meme_finder.cli stats
 环境变量的值优先于 `.env`。不要提交 `.env`。
 
 ## 命令
+
+推荐直接运行一条命令进行本地采样。它启动 Node 的 `douyudm` 采集器、每 5 秒导入新增 JSONL 到 SQLite；停止时会最终落库并生成候选。候选默认要求至少重复 3 次、排除 `existing_index.json` 中已有文本，并合并明显的近似文本变体。原始弹幕仍只保留在本机数据库，绝不会上传：
+
+```bash
+python -m danmaku_meme_finder.cli collect --refresh-existing
+```
+
+按 `Ctrl+C` 停止；短时采样可直接指定秒数：
+
+```bash
+python -m danmaku_meme_finder.cli collect --duration 180 --refresh-existing
+```
+
+常用参数：`--room-id`、`--database`、`--flush-interval`、`--batch-size`、`--min-count`、`--similarity-threshold`、`--output`。已有索引不存在时会自动同步；已有缓存时，使用 `--refresh-existing` 获取最新索引。
+
+网站只读 GitHub 数据时，先同步旧接口，再将其与人工确认的 `memes.json` 合并为统一目录。合并按规范化文本去重，保留旧接口分类和每个来源的独立统计；不同来源的次数不会相加：
+
+```bash
+python -m danmaku_meme_finder.cli sync-existing
+python -m danmaku_meme_finder.cli build-catalog
+```
 
 同步已有梗库（自动翻页，直到空页或最后一页）：
 
@@ -112,6 +127,7 @@ python -m danmaku_meme_finder.cli stats
 - `data/candidates.json`：稳定排序的候选输出，适合提交到 GitHub 并由后续任务审阅。
 - `data/candidates-deduplicated.json`：可选的近似文本去重结果；代表项的 `similarVariants` 保留被合并的原文和计数。
 - `data/memes.json`：正式梗库初始文件；本项目不会改写其中的 `memes`。
+- `data/catalog.json`：网站读取的统一静态目录，融合旧接口梗和本地正式梗，并保留标签与来源信息。
 
 候选规则刻意简单：排除已有文本、空/纯标点/纯 Emoji、少于 2 个字符的文本；保留达到次数阈值的高频文本，以及长度至少 20 且仅出现一次的长文本。排序优先考虑次数、独立用户数、最近出现时间和适中长度。
 
