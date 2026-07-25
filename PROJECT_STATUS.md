@@ -55,3 +55,8 @@ The local Git repository has now been initialized on `main`. GitHub CLI
 authentication is available, and `.gitignore` has been checked against the raw
 database, JSONL, external index cache, and threshold comparison outputs. No
 remote, commit, or GitHub repository has been created yet.
+
+The initial public repository is now published at
+`https://github.com/Zoean-z/danmaku-meme-finder` on the `main` branch. Its
+initial commit contains only the intended project code, documentation, curated
+JSON snapshots, and data policy; raw collection data remains untracked locally.

@@ -15,8 +15,8 @@ only small curated JSON snapshots through GitHub.
 - [x] Add optional lexical near-duplicate merging for candidate review
 - [x] Define Git-tracked versus local-only data files
 - [x] Initialize the local Git repository and verify local-only data is ignored
-- [ ] Make the first focused commit
-- [ ] Create and connect a GitHub repository
+- [x] Make the first focused commit
+- [x] Create, connect, and publish the public GitHub repository
 
 # Decisions
 
@@ -28,9 +28,9 @@ only small curated JSON snapshots through GitHub.
 # Blockers
 
 - The v3.2.0 CLI sends no chatmsg when given a VIP/short ID; it needs the real rid.
-- A GitHub repository name and visibility have not been chosen.
+- None for the local-first MVP.
 
 # Next Step
 
-Initialize Git locally, then create a GitHub remote and publish the small
-read-only JSON artifacts without raw collection data.
+Run short sampled collections as needed, then update the small candidate snapshot
+and manually promote stable items to `data/memes.json`.
