@@ -26,4 +26,5 @@ def test_publish_curated_data_stages_only_requested_files(monkeypatch, tmp_path:
 
     assert message == "Curate 2 meme candidates"
     assert ["git", "add", "--", "data\\memes.json", "data\\catalog.json"] in calls
+    assert ["git", "commit", "--only", "-m", "Curate 2 meme candidates", "--", "data\\memes.json", "data\\catalog.json"] in calls
     assert ["git", "push", "origin", "main"] in calls

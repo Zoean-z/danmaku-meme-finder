@@ -34,7 +34,11 @@ def publish_curated_data(project_root: Path, files: list[Path], added_count: int
     _git(root, ["add", "--", *relative_files])
 
     staged = subprocess.run(
-        ["git", "diff", "--cached", "--quiet"], cwd=root, text=True, capture_output=True, check=False
+        ["git", "diff", "--cached", "--quiet", "--", *relative_files],
+        cwd=root,
+        text=True,
+        capture_output=True,
+        check=False,
     )
     if staged.returncode == 0:
         return None
@@ -43,7 +47,7 @@ def publish_curated_data(project_root: Path, files: list[Path], added_count: int
         raise RuntimeError(f"could not inspect staged Git changes: {detail or staged.returncode}")
 
     message = f"Curate {added_count} meme candidates" if added_count else "Update curated meme tags"
-    _git(root, ["commit", "-m", message])
+    _git(root, ["commit", "--only", "-m", message, "--", *relative_files])
     branch = _git(root, ["branch", "--show-current"]).stdout.strip()
     if not branch:
         raise RuntimeError("cannot publish a detached Git HEAD")
