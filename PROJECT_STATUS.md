@@ -125,3 +125,11 @@ map, `review-candidates` accepts codes or labels and `?` displays the menu. On
 completion it atomically updates the formal meme files, commits only those two
 public JSON files, and pushes the current branch. Candidate defaults are now
 100 entries; short texts and known activity text are excluded before review.
+
+The streamlined workflow now includes `collect-and-review`: it collects until
+`Ctrl+C` (or `--duration`), performs the existing final import and candidate
+build, then starts review. Each candidate shows the full tag catalog. `x` or
+`n` records a local rejection in ignored `data/review_state.json`; confirmed and
+rejected normalized texts are removed from future review queues without deleting
+the Git-tracked candidate snapshot. Confirmed records continue to auto-publish
+only `memes.json` and `catalog.json`.

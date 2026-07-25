@@ -28,6 +28,7 @@ only small curated JSON snapshots through GitHub.
 - [x] Store public live-session snapshots and associate collected messages with a session
 - [x] Backfill and publish the first observed sessions for 2026-07-24 and 2026-07-25
 - [x] Add label-assisted candidate review and automatic curated-data publishing
+- [x] Add a one-command collection-to-review workflow and local rejected-candidate queue
 
 # Decisions
 
@@ -41,6 +42,7 @@ only small curated JSON snapshots through GitHub.
 - Catalog items use stable five-digit numeric IDs; original upstream IDs remain source metadata.
 - Store room metadata once per collection; date fields describe local observation, not asserted platform start time.
 - Keep the tag code-to-label map as tracked JSON; review publishes only formal memes and catalog data.
+- Keep rejected-candidate state local and ignored; do not delete the Git-tracked candidate snapshot after review.
 
 # Blockers
 

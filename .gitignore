@@ -9,6 +9,7 @@ data/danmaku.db
 data/danmaku.db-*
 data/live.jsonl
 data/live.import.checkpoint.json
+data/review_state.json
 data/existing_index.json
 data/candidates-min*.json
 data/chrome-profile/

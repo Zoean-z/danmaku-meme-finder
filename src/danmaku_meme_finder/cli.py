@@ -19,6 +19,7 @@ from .existing_api import fetch_existing_index
 from .exporter import read_json, write_json_atomic
 from .import_jsonl import import_jsonl
 from .publication import publish_curated_data
+from .review_state import reject_candidate, review_queue
 
 LOGGER = logging.getLogger(__name__)
 DEFAULT_DATABASE = Path("data/danmaku.db")
@@ -27,6 +28,7 @@ DEFAULT_CANDIDATES = Path("data/candidates.json")
 DEFAULT_CATALOG = Path("data/catalog.json")
 DEFAULT_SESSIONS = Path("data/sessions.json")
 DEFAULT_TAGS = Path("data/tags.json")
+DEFAULT_REVIEW_STATE = Path("data/review_state.json")
 DEFAULT_LIVE_JSONL = Path("data/live.jsonl")
 DEFAULT_IMPORT_CHECKPOINT = Path("data/live.import.checkpoint.json")
 
@@ -83,6 +85,7 @@ def create_parser() -> argparse.ArgumentParser:
     review.add_argument("--existing-index", type=path_argument, default=DEFAULT_EXISTING_INDEX)
     review.add_argument("--catalog", type=path_argument, default=DEFAULT_CATALOG)
     review.add_argument("--tags", type=path_argument, default=DEFAULT_TAGS)
+    review.add_argument("--review-state", type=path_argument, default=DEFAULT_REVIEW_STATE)
     review.add_argument("--no-publish", action="store_true", help="Keep reviewed data local instead of committing and pushing it")
     add_common_room(review)
 
@@ -103,6 +106,30 @@ def create_parser() -> argparse.ArgumentParser:
     collect.add_argument("--similarity-threshold", type=float, default=0.88)
     collect.add_argument("--duration", type=int, default=None, help="Optional automatic stop time in seconds")
     collect.add_argument("--refresh-existing", action="store_true", help="Refresh the external meme index first")
+
+    collect_review = subparsers.add_parser(
+        "collect-and-review", help="Collect until stopped, then immediately start interactive review"
+    )
+    add_common_room(collect_review)
+    collect_review.add_argument("--database", type=path_argument, default=DEFAULT_DATABASE)
+    collect_review.add_argument("--input", type=path_argument, default=DEFAULT_LIVE_JSONL)
+    collect_review.add_argument("--checkpoint", type=path_argument, default=DEFAULT_IMPORT_CHECKPOINT)
+    collect_review.add_argument("--existing-index", type=path_argument, default=DEFAULT_EXISTING_INDEX)
+    collect_review.add_argument("--memes", type=path_argument, default=Path("data/memes.json"))
+    collect_review.add_argument("--output", type=path_argument, default=DEFAULT_CANDIDATES)
+    collect_review.add_argument("--sessions", type=path_argument, default=DEFAULT_SESSIONS)
+    collect_review.add_argument("--catalog", type=path_argument, default=DEFAULT_CATALOG)
+    collect_review.add_argument("--tags", type=path_argument, default=DEFAULT_TAGS)
+    collect_review.add_argument("--review-state", type=path_argument, default=DEFAULT_REVIEW_STATE)
+    collect_review.add_argument("--no-publish", action="store_true")
+    collect_review.add_argument("--flush-interval", type=float, default=5.0)
+    collect_review.add_argument("--batch-size", type=int, default=100)
+    collect_review.add_argument("--window-hours", type=int, default=24)
+    collect_review.add_argument("--min-count", type=int, default=3)
+    collect_review.add_argument("--max-candidates", type=int, default=100)
+    collect_review.add_argument("--similarity-threshold", type=float, default=0.88)
+    collect_review.add_argument("--duration", type=int, default=None, help="Optional automatic stop time in seconds")
+    collect_review.add_argument("--refresh-existing", action="store_true")
 
     stats = subparsers.add_parser("stats", help="Show local collection statistics")
     add_common_room(stats)
@@ -173,6 +200,11 @@ def _run_review_candidates(args: argparse.Namespace) -> None:
         raise ValueError("candidates must be a list")
     memes = read_json(args.memes, {"roomId": args.room_id, "memes": []})
     memes.setdefault("roomId", args.room_id)
+    review_state = read_json(args.review_state, {"schemaVersion": 1, "rejected": {}})
+    candidates = review_queue(candidates, memes, review_state)
+    if not candidates:
+        print("No unreviewed candidates. Generate a new candidate file after the next collection.")
+        return
     existing_index = read_json(args.existing_index, {"items": {}})
     catalog = read_json(args.catalog, {"items": []})
     labels = tag_labels(read_json(args.tags, {"tags": {}}))
@@ -180,6 +212,7 @@ def _run_review_candidates(args: argparse.Namespace) -> None:
         raise ValueError(f"tag catalog has no usable tags: {args.tags}")
     next_number = next_catalog_number(catalog, existing_index)
     added = 0
+    rejected = 0
     changed = False
 
     for index, candidate in enumerate(candidates, start=1):
@@ -191,12 +224,20 @@ def _run_review_candidates(args: argparse.Namespace) -> None:
             f"count={candidate.get('count', 0)} users={candidate.get('uniqueUsers', 0)} "
             f"source={candidate.get('source', 'unknown')}"
         )
+        print(format_tag_catalog(labels))
+        print("Enter tag codes or labels; x/n rejects locally; Enter skips; q ends.")
         answer = input("输入标签编号（如 06,24）；回车跳过；q 结束：").strip()
         if answer == "?":
             print(format_tag_catalog(labels))
             answer = input("Tag code or label (for example 06,HLTV; Enter skips): ").strip()
         if answer.lower() == "q":
             break
+        if answer.lower() in {"x", "n"}:
+            reject_candidate(review_state, candidate)
+            write_json_atomic(args.review_state, review_state)
+            rejected += 1
+            print("Rejected locally; it will not appear in the next review queue.")
+            continue
         tags = parse_tags(answer)
         if not tags:
             continue
@@ -215,6 +256,9 @@ def _run_review_candidates(args: argparse.Namespace) -> None:
             print(f"已收录为 #{catalog_id}")
         else:
             print("已存在，已合并标签")
+
+    if rejected:
+        print(f"Rejected locally: {rejected}")
 
     if changed:
         payload = build_catalog(existing_index, memes, args.room_id, catalog)
@@ -261,6 +305,16 @@ async def _run_collect(args: argparse.Namespace) -> None:
         f"Stopped: final import={result['import']['imported']}; "
         f"candidates={len(result['candidates']['candidates'])}; session={result['session']['id']}; output={args.output}"
     )
+
+
+async def _run_collect_and_review(args: argparse.Namespace) -> None:
+    """Finish the safe collection shutdown before starting the blocking review UI."""
+    try:
+        await _run_collect(args)
+    except KeyboardInterrupt:
+        LOGGER.info("Collection stopped; starting review")
+    args.candidates = args.output
+    _run_review_candidates(args)
 
 
 def _run_backfill_sessions(args: argparse.Namespace) -> None:
@@ -315,6 +369,8 @@ def main(argv: list[str] | None = None) -> int:
             _run_import_jsonl(args)
         elif args.command == "collect":
             asyncio.run(_run_collect(args))
+        elif args.command == "collect-and-review":
+            asyncio.run(_run_collect_and_review(args))
         elif args.command == "build-catalog":
             _run_catalog(args)
         elif args.command == "review-candidates":

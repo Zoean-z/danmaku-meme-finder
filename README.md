@@ -75,6 +75,12 @@ python -m danmaku_meme_finder.cli build-catalog
 python -m danmaku_meme_finder.cli review-candidates
 ```
 
+一条命令完成采集和审核：运行后持续采集，按 `Ctrl+C`（或使用 `--duration`）安全落库、生成最多 100 条候选并立刻进入审核。每条候选都会显示完整分类列表；输入分类编号或名称即可收录，输入 `x` 或 `n` 表示不通过。拒绝结果会写入本地忽略的 `data/review_state.json`，后续审核不会重复显示。正式收录的内容同样不会重复出现，因此无需删除 Git 跟踪的候选快照：
+
+```bash
+python -m danmaku_meme_finder.cli collect-and-review --refresh-existing
+```
+
 同步已有梗库（自动翻页，直到空页或最后一页）：
 
 ```bash

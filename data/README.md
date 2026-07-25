@@ -14,6 +14,7 @@ Local only and ignored by Git:
 - `danmaku.db` and `live.jsonl`: raw collection data.
 - `live.import.checkpoint.json`: local JSONL import state.
 - `existing_index.json`: a regenerable cache of the external meme API.
+- `review_state.json`: local-only rejected-candidate decisions, kept out of Git and the next review queue.
 - `candidates-min*.json`: one-off threshold comparison outputs.
 
 GitHub is the read-only distribution layer for the small curated JSON files, not
