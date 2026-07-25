@@ -60,11 +60,17 @@ python -m danmaku_meme_finder.cli collect --duration 180 --refresh-existing
 
 常用参数：`--room-id`、`--database`、`--flush-interval`、`--batch-size`、`--min-count`、`--similarity-threshold`、`--output`。已有索引不存在时会自动同步；已有缓存时，使用 `--refresh-existing` 获取最新索引。
 
-网站只读 GitHub 数据时，先同步旧接口，再将其与人工确认的 `memes.json` 合并为统一目录。每条目录项都有稳定的统一 `id`（`m_` 加规范化文本哈希）；旧接口的数字 ID 保留在 `sources[].sourceId`。合并按规范化文本去重，保留旧接口分类和每个来源的独立统计；不同来源的次数不会相加：
+网站只读 GitHub 数据时，先同步旧接口，再将其与人工确认的 `memes.json` 合并为统一目录。每条目录项都有稳定的五位数字 `id`（例如 `21982`）；首次导出优先沿用旧接口编号，新确认内容从当前最大编号继续分配。旧接口编号也保留在 `sources[].sourceId`。合并按规范化文本去重，保留旧接口分类和每个来源的独立统计；不同来源的次数不会相加：
 
 ```bash
 python -m danmaku_meme_finder.cli sync-existing
 python -m danmaku_meme_finder.cli build-catalog
+```
+
+人工审核候选时，运行下面的命令。它会逐条显示候选；输入标签编号（例如 `06,24`）即确认收录，直接回车跳过，输入 `q` 结束。每次确认会立即写入 `data/memes.json`，结束时自动刷新网站目录：
+
+```bash
+python -m danmaku_meme_finder.cli review-candidates
 ```
 
 同步已有梗库（自动翻页，直到空页或最后一页）：
@@ -126,7 +132,7 @@ python -m danmaku_meme_finder.cli stats
 - `data/existing_index.json`：从已有梗库同步出的规范化比对索引。
 - `data/candidates.json`：稳定排序的候选输出，适合提交到 GitHub 并由后续任务审阅。
 - `data/candidates-deduplicated.json`：可选的近似文本去重结果；代表项的 `similarVariants` 保留被合并的原文和计数。
-- `data/memes.json`：正式梗库初始文件；本项目不会改写其中的 `memes`。
+- `data/memes.json`：人工审核后的正式梗库；`review-candidates` 会以原子方式写入它。
 - `data/catalog.json`：网站读取的统一静态目录，融合旧接口梗和本地正式梗，并保留标签与来源信息。
 
 候选规则刻意简单：排除已有文本、空/纯标点/纯 Emoji、少于 2 个字符的文本；保留达到次数阈值的高频文本，以及长度至少 20 且仅出现一次的长文本。排序优先考虑次数、独立用户数、最近出现时间和适中长度。

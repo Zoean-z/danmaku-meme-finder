@@ -8,10 +8,11 @@ import logging
 from pathlib import Path
 
 from .aggregate import build_candidates
-from .catalog import build_catalog
+from .catalog import build_catalog, format_catalog_id, next_catalog_number
 from .collection_runner import CollectionSettings, run_collection
 from .config import existing_api_url, existing_page_size, load_dotenv, user_hash_salt
 from .database import DanmakuDatabase
+from .curation import add_confirmed_meme, parse_tags
 from .existing_api import fetch_existing_index
 from .exporter import read_json, write_json_atomic
 from .import_jsonl import import_jsonl
@@ -69,6 +70,13 @@ def create_parser() -> argparse.ArgumentParser:
     catalog.add_argument("--existing-index", type=path_argument, default=DEFAULT_EXISTING_INDEX)
     catalog.add_argument("--memes", type=path_argument, default=Path("data/memes.json"))
     catalog.add_argument("--output", type=path_argument, default=DEFAULT_CATALOG)
+
+    review = subparsers.add_parser("review-candidates", help="Interactively confirm candidates and enter tag IDs")
+    review.add_argument("--candidates", type=path_argument, default=DEFAULT_CANDIDATES)
+    review.add_argument("--memes", type=path_argument, default=Path("data/memes.json"))
+    review.add_argument("--existing-index", type=path_argument, default=DEFAULT_EXISTING_INDEX)
+    review.add_argument("--catalog", type=path_argument, default=DEFAULT_CATALOG)
+    add_common_room(review)
 
     collect = subparsers.add_parser("collect", help="Run Node collection with periodic SQLite import")
     add_common_room(collect)
@@ -138,9 +146,56 @@ def _run_import_jsonl(args: argparse.Namespace) -> None:
 def _run_catalog(args: argparse.Namespace) -> None:
     existing_index = read_json(args.existing_index, {"items": {}, "total": 0})
     memes = read_json(args.memes, {"memes": []})
-    payload = build_catalog(existing_index, memes, args.room_id)
+    previous_catalog = read_json(args.output, {"items": []})
+    payload = build_catalog(existing_index, memes, args.room_id, previous_catalog)
     write_json_atomic(args.output, payload)
     print(f"Wrote {payload['summary']['mergedItems']} catalog items to {args.output}")
+
+
+def _run_review_candidates(args: argparse.Namespace) -> None:
+    candidates = read_json(args.candidates, {"candidates": []}).get("candidates", [])
+    if not isinstance(candidates, list):
+        raise ValueError("candidates must be a list")
+    memes = read_json(args.memes, {"roomId": args.room_id, "memes": []})
+    memes.setdefault("roomId", args.room_id)
+    existing_index = read_json(args.existing_index, {"items": {}})
+    catalog = read_json(args.catalog, {"items": []})
+    next_number = next_catalog_number(catalog, existing_index)
+    added = 0
+    changed = False
+
+    for index, candidate in enumerate(candidates, start=1):
+        if not isinstance(candidate, dict):
+            continue
+        text = candidate.get("text", "")
+        print(f"\n[{index}/{len(candidates)}] {text}")
+        print(
+            f"count={candidate.get('count', 0)} users={candidate.get('uniqueUsers', 0)} "
+            f"source={candidate.get('source', 'unknown')}"
+        )
+        answer = input("输入标签编号（如 06,24）；回车跳过；q 结束：").strip()
+        if answer.lower() == "q":
+            break
+        tags = parse_tags(answer)
+        if not tags:
+            continue
+        catalog_id = format_catalog_id(next_number)
+        memes, created = add_confirmed_meme(memes, candidate, tags, catalog_id)
+        write_json_atomic(args.memes, memes)
+        changed = True
+        if created:
+            added += 1
+            next_number += 1
+            print(f"已收录为 #{catalog_id}")
+        else:
+            print("已存在，已合并标签")
+
+    if changed:
+        payload = build_catalog(existing_index, memes, args.room_id, catalog)
+        write_json_atomic(args.catalog, payload)
+        print(f"已更新 {args.memes} 和 {args.catalog}，新增 {added} 条。")
+    else:
+        print("没有新增正式梗。")
 
 
 async def _run_collect(args: argparse.Namespace) -> None:
@@ -204,6 +259,8 @@ def main(argv: list[str] | None = None) -> int:
             asyncio.run(_run_collect(args))
         elif args.command == "build-catalog":
             _run_catalog(args)
+        elif args.command == "review-candidates":
+            _run_review_candidates(args)
         elif args.command == "build-candidates":
             _run_candidates(args)
         elif args.command == "stats":

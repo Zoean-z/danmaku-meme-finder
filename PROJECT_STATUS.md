@@ -87,6 +87,13 @@ can now read only the GitHub raw `data/catalog.json` file and does not need to
 contact the legacy API at runtime.
 Catalog records now include a stable unified `id`; legacy and local source IDs
 remain separately available as `sources[].sourceId`.
-The unified-ID commit `699840a` is now published on GitHub. Websites can use
-the raw `data/catalog.json` file as their only runtime data source; they should
-read the top-level stable `id` and treat `sources[].sourceId` as provenance.
+The hash-style unified-ID commit `699840a` is published on GitHub. It is now
+being replaced with stable five-digit display IDs plus a local interactive
+candidate-review command for manual tag entry. Websites should continue to use
+the top-level `id` as canonical and treat `sources[].sourceId` as provenance.
+
+The replacement is implemented and validated locally: `review-candidates`
+accepts comma-separated tag IDs, skips on an empty line, and saves each
+accepted candidate atomically. The rebuilt schema-version-2 catalog contains
+21,603 unique five-digit IDs. This pending catalog update still needs a GitHub
+push before a website can consume the new numeric ID format.

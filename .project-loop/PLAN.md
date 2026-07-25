@@ -22,6 +22,8 @@ only small curated JSON snapshots through GitHub.
 - [x] Define a canonical public meme record with tags and source provenance
 - [x] Add an offline merged catalog export for the website
 - [x] Sync the legacy API, build the first full catalog, and publish it to GitHub
+- [x] Add a local interactive candidate-review command for manual tag entry
+- [x] Replace hash-style catalog IDs with stable five-digit numeric IDs and rebuild the catalog
 
 # Decisions
 
@@ -32,7 +34,7 @@ only small curated JSON snapshots through GitHub.
 - Raw messages remain in SQLite for repeat counting; existing-meme filtering applies to generated candidates.
 - Merge the legacy API and local confirmed memes offline into one GitHub JSON snapshot; do not merge them in the browser.
 - The first catalog is a single full snapshot; retain legacy tag IDs even without a label map.
-- Catalog items use stable text-derived IDs; original upstream IDs remain source metadata.
+- Catalog items use stable five-digit numeric IDs; original upstream IDs remain source metadata.
 
 # Blockers
 
@@ -45,5 +47,5 @@ only small curated JSON snapshots through GitHub.
 
 Point the website at `data/catalog.json`; if its initial 10.6 MB load is too slow,
 split the catalog into a manifest and static shards without changing item format.
-Implement the website's catalog reader and first browse/search view against the
-published stable-ID schema.
+Publish the verified five-digit-ID catalog, then implement the website's
+catalog reader and first browse/search view.
