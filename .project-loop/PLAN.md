@@ -32,6 +32,7 @@ only small curated JSON snapshots through GitHub.
 - Raw messages remain in SQLite for repeat counting; existing-meme filtering applies to generated candidates.
 - Merge the legacy API and local confirmed memes offline into one GitHub JSON snapshot; do not merge them in the browser.
 - The first catalog is a single full snapshot; retain legacy tag IDs even without a label map.
+- Catalog items use stable text-derived IDs; original upstream IDs remain source metadata.
 
 # Blockers
 

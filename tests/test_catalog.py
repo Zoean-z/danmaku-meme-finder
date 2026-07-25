@@ -1,4 +1,4 @@
-from danmaku_meme_finder.catalog import build_catalog
+from danmaku_meme_finder.catalog import build_catalog, catalog_id
 
 
 def test_catalog_merges_sources_without_adding_counts() -> None:
@@ -30,7 +30,12 @@ def test_catalog_merges_sources_without_adding_counts() -> None:
         "mergedItems": 2,
     }
     same = catalog["items"][1]
+    assert same["id"] == catalog_id("same meme")
     assert same["key"] == "same meme"
     assert same["tags"] == ["06", "24"]
     assert same["sources"][0]["count"] == 75
-    assert same["sources"][1] == {"kind": "local", "id": "local-1", "addedAt": "2026-07-25T12:00:00+08:00"}
+    assert same["sources"][1] == {
+        "kind": "local",
+        "sourceId": "local-1",
+        "addedAt": "2026-07-25T12:00:00+08:00",
+    }

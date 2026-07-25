@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 from typing import Any
 
 from .database import iso_now
@@ -18,6 +19,12 @@ def _tags(value: object) -> list[str]:
     return sorted({str(tag).strip() for tag in values if str(tag).strip()})
 
 
+def catalog_id(normalized_text: str) -> str:
+    """Return a stable public ID independent of either source's numeric IDs."""
+    digest = hashlib.sha256(normalized_text.encode("utf-8")).hexdigest()[:20]
+    return f"m_{digest}"
+
+
 def build_catalog(existing_index: dict[str, Any], memes: dict[str, Any], room_id: int) -> dict[str, Any]:
     """Merge by normalized text while retaining each source's own metadata."""
     merged: dict[str, dict[str, Any]] = {}
@@ -31,12 +38,13 @@ def build_catalog(existing_index: dict[str, Any], memes: dict[str, Any], room_id
             if not normalized or not isinstance(text, str) or not text:
                 continue
             merged[normalized] = {
+                "id": catalog_id(normalized),
                 "key": normalized,
                 "text": text,
                 "tags": _tags(raw.get("tags")),
                 "sources": [{
                     "kind": "legacy_api",
-                    "id": str(raw.get("id")),
+                    "sourceId": str(raw.get("id")),
                     "count": int(raw.get("cnt", 0) or 0),
                     "submittedAt": raw.get("submitTime"),
                 }],
@@ -56,6 +64,7 @@ def build_catalog(existing_index: dict[str, Any], memes: dict[str, Any], room_id
                 continue
             local_count += 1
             entry = merged.setdefault(normalized, {
+                "id": catalog_id(normalized),
                 "key": normalized,
                 "text": text,
                 "tags": [],
@@ -64,7 +73,7 @@ def build_catalog(existing_index: dict[str, Any], memes: dict[str, Any], room_id
             entry["tags"] = sorted(set(entry["tags"]) | set(_tags(raw.get("tags"))))
             source: dict[str, Any] = {"kind": "local"}
             if raw.get("id") is not None:
-                source["id"] = str(raw["id"])
+                source["sourceId"] = str(raw["id"])
             if raw.get("addedAt") is not None:
                 source["addedAt"] = raw["addedAt"]
             entry["sources"].append(source)

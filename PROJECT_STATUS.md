@@ -85,3 +85,5 @@ the one-file website path but may later need static sharding for faster loads.
 The catalog and its exporter are published on GitHub commit `6931d3c`; the website
 can now read only the GitHub raw `data/catalog.json` file and does not need to
 contact the legacy API at runtime.
+Catalog records now include a stable unified `id`; legacy and local source IDs
+remain separately available as `sources[].sourceId`.

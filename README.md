@@ -60,7 +60,7 @@ python -m danmaku_meme_finder.cli collect --duration 180 --refresh-existing
 
 常用参数：`--room-id`、`--database`、`--flush-interval`、`--batch-size`、`--min-count`、`--similarity-threshold`、`--output`。已有索引不存在时会自动同步；已有缓存时，使用 `--refresh-existing` 获取最新索引。
 
-网站只读 GitHub 数据时，先同步旧接口，再将其与人工确认的 `memes.json` 合并为统一目录。合并按规范化文本去重，保留旧接口分类和每个来源的独立统计；不同来源的次数不会相加：
+网站只读 GitHub 数据时，先同步旧接口，再将其与人工确认的 `memes.json` 合并为统一目录。每条目录项都有稳定的统一 `id`（`m_` 加规范化文本哈希）；旧接口的数字 ID 保留在 `sources[].sourceId`。合并按规范化文本去重，保留旧接口分类和每个来源的独立统计；不同来源的次数不会相加：
 
 ```bash
 python -m danmaku_meme_finder.cli sync-existing
