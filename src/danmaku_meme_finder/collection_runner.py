@@ -28,12 +28,13 @@ class CollectionSettings:
     checkpoint_path: Path
     existing_index_path: Path
     output_path: Path
+    memes_path: Path = Path("data/memes.json")
     sessions_path: Path = Path("data/sessions.json")
     flush_interval: float = 5.0
     batch_size: int = 100
     window_hours: int = 24
     min_count: int = 3
-    max_candidates: int = 200
+    max_candidates: int = 100
     similarity_threshold: float | None = 0.88
     duration_seconds: int | None = None
 
@@ -61,6 +62,7 @@ def build_current_candidates(settings: CollectionSettings) -> dict[str, Any]:
             settings.max_candidates,
             settings.existing_index_path,
             settings.similarity_threshold,
+            settings.memes_path,
         )
     write_json_atomic(settings.output_path, payload)
     return payload

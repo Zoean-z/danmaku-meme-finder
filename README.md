@@ -69,7 +69,7 @@ python -m danmaku_meme_finder.cli sync-existing
 python -m danmaku_meme_finder.cli build-catalog
 ```
 
-人工审核候选时，运行下面的命令。它会逐条显示候选；输入标签编号（例如 `06,24`）即确认收录，直接回车跳过，输入 `q` 结束。每次确认会立即写入 `data/memes.json`，结束时自动刷新网站目录：
+人工审核候选时，运行下面的命令。它会逐条显示候选；输入标签编号或名称（例如 `06,HLTV`）即确认收录，输入 `?` 显示标签表，直接回车跳过，输入 `q` 结束。每次确认会立即写入 `data/memes.json`；结束时自动刷新网站目录，并且只提交 `memes.json` 与 `catalog.json` 后推送 GitHub。传入 `--no-publish` 可只在本地保存：
 
 ```bash
 python -m danmaku_meme_finder.cli review-candidates
@@ -111,7 +111,7 @@ python -m danmaku_meme_finder.cli import-jsonl --input data/live.jsonl --checkpo
 生成最近 24 小时候选：
 
 ```bash
-python -m danmaku_meme_finder.cli build-candidates --window-hours 24 --min-count 3 --max-candidates 200
+python -m danmaku_meme_finder.cli build-candidates --window-hours 24 --min-count 3 --max-candidates 100
 ```
 
 如果同一套话有加长版、重复版或轻微改写版，可额外输出一份近似文本去重后的候选。它只使用字符级比较，不会做语义聚类；原始候选文件不会被改写：
@@ -137,6 +137,7 @@ python -m danmaku_meme_finder.cli stats
 - `data/memes.json`：人工审核后的正式梗库；`review-candidates` 会以原子方式写入它。
 - `data/catalog.json`：网站读取的统一静态目录，融合旧接口梗和本地正式梗，并保留标签与来源信息。
 - `data/sessions.json`：公开直播场次快照，保存标题、分区、斗鱼封面 URL、观察时间和消息数；不保存原始弹幕或观众昵称。
+- `data/tags.json`：标签编号与名称的公开对照表，供本地审核和网站共用。
 
 候选规则刻意简单：排除已有文本、空/纯标点/纯 Emoji、少于 2 个字符的文本；保留达到次数阈值的高频文本，以及长度至少 20 且仅出现一次的长文本。排序优先考虑次数、独立用户数、最近出现时间和适中长度。
 

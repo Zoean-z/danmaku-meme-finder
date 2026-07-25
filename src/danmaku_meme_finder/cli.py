@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import logging
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -13,10 +14,11 @@ from .catalog import build_catalog, format_catalog_id, next_catalog_number
 from .collection_runner import CollectionSettings, run_collection
 from .config import existing_api_url, existing_page_size, load_dotenv, user_hash_salt
 from .database import DanmakuDatabase
-from .curation import add_confirmed_meme, parse_tags
+from .curation import add_confirmed_meme, format_tag_catalog, parse_tags, resolve_tags, tag_labels
 from .existing_api import fetch_existing_index
 from .exporter import read_json, write_json_atomic
 from .import_jsonl import import_jsonl
+from .publication import publish_curated_data
 
 LOGGER = logging.getLogger(__name__)
 DEFAULT_DATABASE = Path("data/danmaku.db")
@@ -24,6 +26,7 @@ DEFAULT_EXISTING_INDEX = Path("data/existing_index.json")
 DEFAULT_CANDIDATES = Path("data/candidates.json")
 DEFAULT_CATALOG = Path("data/catalog.json")
 DEFAULT_SESSIONS = Path("data/sessions.json")
+DEFAULT_TAGS = Path("data/tags.json")
 DEFAULT_LIVE_JSONL = Path("data/live.jsonl")
 DEFAULT_IMPORT_CHECKPOINT = Path("data/live.import.checkpoint.json")
 
@@ -56,9 +59,10 @@ def create_parser() -> argparse.ArgumentParser:
     add_common_room(candidates)
     candidates.add_argument("--window-hours", type=int, default=24)
     candidates.add_argument("--min-count", type=int, default=3)
-    candidates.add_argument("--max-candidates", type=int, default=200)
+    candidates.add_argument("--max-candidates", type=int, default=100)
     candidates.add_argument("--database", type=path_argument, default=DEFAULT_DATABASE)
     candidates.add_argument("--existing-index", type=path_argument, default=DEFAULT_EXISTING_INDEX)
+    candidates.add_argument("--memes", type=path_argument, default=Path("data/memes.json"))
     candidates.add_argument("--output", type=path_argument, default=DEFAULT_CANDIDATES)
     candidates.add_argument(
         "--similarity-threshold",
@@ -78,6 +82,8 @@ def create_parser() -> argparse.ArgumentParser:
     review.add_argument("--memes", type=path_argument, default=Path("data/memes.json"))
     review.add_argument("--existing-index", type=path_argument, default=DEFAULT_EXISTING_INDEX)
     review.add_argument("--catalog", type=path_argument, default=DEFAULT_CATALOG)
+    review.add_argument("--tags", type=path_argument, default=DEFAULT_TAGS)
+    review.add_argument("--no-publish", action="store_true", help="Keep reviewed data local instead of committing and pushing it")
     add_common_room(review)
 
     collect = subparsers.add_parser("collect", help="Run Node collection with periodic SQLite import")
@@ -86,13 +92,14 @@ def create_parser() -> argparse.ArgumentParser:
     collect.add_argument("--input", type=path_argument, default=DEFAULT_LIVE_JSONL)
     collect.add_argument("--checkpoint", type=path_argument, default=DEFAULT_IMPORT_CHECKPOINT)
     collect.add_argument("--existing-index", type=path_argument, default=DEFAULT_EXISTING_INDEX)
+    collect.add_argument("--memes", type=path_argument, default=Path("data/memes.json"))
     collect.add_argument("--output", type=path_argument, default=DEFAULT_CANDIDATES)
     collect.add_argument("--sessions", type=path_argument, default=DEFAULT_SESSIONS)
     collect.add_argument("--flush-interval", type=float, default=5.0)
     collect.add_argument("--batch-size", type=int, default=100)
     collect.add_argument("--window-hours", type=int, default=24)
     collect.add_argument("--min-count", type=int, default=3)
-    collect.add_argument("--max-candidates", type=int, default=200)
+    collect.add_argument("--max-candidates", type=int, default=100)
     collect.add_argument("--similarity-threshold", type=float, default=0.88)
     collect.add_argument("--duration", type=int, default=None, help="Optional automatic stop time in seconds")
     collect.add_argument("--refresh-existing", action="store_true", help="Refresh the external meme index first")
@@ -136,6 +143,7 @@ def _run_candidates(args: argparse.Namespace) -> None:
             args.max_candidates,
             args.existing_index,
             args.similarity_threshold,
+            args.memes,
         )
     write_json_atomic(args.output, payload)
     print(f"Wrote {len(payload['candidates'])} candidates to {args.output}")
@@ -167,6 +175,9 @@ def _run_review_candidates(args: argparse.Namespace) -> None:
     memes.setdefault("roomId", args.room_id)
     existing_index = read_json(args.existing_index, {"items": {}})
     catalog = read_json(args.catalog, {"items": []})
+    labels = tag_labels(read_json(args.tags, {"tags": {}}))
+    if not labels:
+        raise ValueError(f"tag catalog has no usable tags: {args.tags}")
     next_number = next_catalog_number(catalog, existing_index)
     added = 0
     changed = False
@@ -181,10 +192,18 @@ def _run_review_candidates(args: argparse.Namespace) -> None:
             f"source={candidate.get('source', 'unknown')}"
         )
         answer = input("输入标签编号（如 06,24）；回车跳过；q 结束：").strip()
+        if answer == "?":
+            print(format_tag_catalog(labels))
+            answer = input("Tag code or label (for example 06,HLTV; Enter skips): ").strip()
         if answer.lower() == "q":
             break
         tags = parse_tags(answer)
         if not tags:
+            continue
+        try:
+            tags = resolve_tags(",".join(tags), labels)
+        except ValueError as exc:
+            print(f"Not saved: {exc}")
             continue
         catalog_id = format_catalog_id(next_number)
         memes, created = add_confirmed_meme(memes, candidate, tags, catalog_id)
@@ -200,6 +219,9 @@ def _run_review_candidates(args: argparse.Namespace) -> None:
     if changed:
         payload = build_catalog(existing_index, memes, args.room_id, catalog)
         write_json_atomic(args.catalog, payload)
+        if not args.no_publish:
+            message = publish_curated_data(Path.cwd(), [args.memes, args.catalog], added)
+            print("Pushed to GitHub." if message else "No curated-data changes to push.")
         print(f"已更新 {args.memes} 和 {args.catalog}，新增 {added} 条。")
     else:
         print("没有新增正式梗。")
@@ -223,6 +245,7 @@ async def _run_collect(args: argparse.Namespace) -> None:
         input_path=args.input,
         checkpoint_path=args.checkpoint,
         existing_index_path=args.existing_index,
+        memes_path=args.memes,
         output_path=args.output,
         sessions_path=args.sessions,
         flush_interval=args.flush_interval,
@@ -279,6 +302,8 @@ def _run_stats(args: argparse.Namespace) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(errors="backslashreplace")
     load_dotenv()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     logging.getLogger("httpx").setLevel(logging.WARNING)

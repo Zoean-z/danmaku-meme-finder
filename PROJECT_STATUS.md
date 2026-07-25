@@ -36,6 +36,16 @@ End-to-end validation completed: importing `data/live.jsonl` wrote 69 records
 to SQLite, with 38 unique texts in the last 24 hours. Candidate generation then
 wrote 10 candidates. Node syntax validation and all 11 Python tests pass.
 
+Candidate output now excludes normalized texts shorter than five characters and
+the known Douyu activity text `保卫鱼娘`. The candidate JSON records per-rule
+exclusion counts. Existing-meme exclusion still depends on refreshing
+`data/existing_index.json`; the local `data/memes.json` currently contains no
+entries.
+
+Candidate generation also checks confirmed entries in `data/memes.json` in
+addition to the refreshed external index, so locally reviewed memes no longer
+reappear as candidates.
+
 Follow-up collection validation wrote 3,625 additional JSONL records and imported
 them successfully, for 3,694 local messages and 1,029 unique texts in the
 24-hour window. Candidate review should retain a broad pool: using `min-count=20`
@@ -109,3 +119,9 @@ JSONL/SQLite records, and closes the session with its message count. The first
 two observed snapshots are backfilled: 3,694 messages on 2026-07-24 and one
 message on 2026-07-25. `sessions.json` is public and stores only room metadata,
 observation times, counts, and an external Douyu CDN cover URL.
+
+Label-assisted review is implemented: `data/tags.json` mirrors the website tag
+map, `review-candidates` accepts codes or labels and `?` displays the menu. On
+completion it atomically updates the formal meme files, commits only those two
+public JSON files, and pushes the current branch. Candidate defaults are now
+100 entries; short texts and known activity text are excluded before review.

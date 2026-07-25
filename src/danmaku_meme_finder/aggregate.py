@@ -9,7 +9,26 @@ from typing import Any
 
 from .database import DanmakuDatabase, iso_now
 from .exporter import read_json
-from .normalize import has_meaningful_content
+from .normalize import has_meaningful_content, normalize_text
+
+MIN_CANDIDATE_LENGTH = 5
+EXCLUDED_ACTIVITY_TEXTS = frozenset({"保卫鱼娘"})
+
+
+def _local_meme_keys(memes_path: Path | None) -> set[str]:
+    if memes_path is None:
+        return set()
+    payload = read_json(memes_path, {"memes": []})
+    records = payload.get("memes", []) if isinstance(payload, dict) else []
+    if not isinstance(records, list):
+        return set()
+    return {
+        normalized
+        for record in records
+        if isinstance(record, dict)
+        and isinstance(record.get("text"), str)
+        and (normalized := normalize_text(record["text"]))
+    }
 
 
 def _near_duplicate(left: str, right: str, threshold: float) -> bool:
@@ -64,6 +83,7 @@ def build_candidates(
     max_candidates: int,
     existing_index_path: Path,
     similarity_threshold: float | None = None,
+    memes_path: Path | None = None,
 ) -> dict[str, Any]:
     end = iso_now()
     start = end - timedelta(hours=window_hours)
@@ -71,7 +91,12 @@ def build_candidates(
     index = read_json(existing_index_path, {"items": {}})
     existing = index.get("items", {})
     existing_keys = set(existing) if isinstance(existing, dict) else set()
+    local_meme_keys = _local_meme_keys(memes_path)
     existing_filtered = 0
+    local_meme_filtered = 0
+    short_filtered = 0
+    activity_filtered = 0
+    meaningless_filtered = 0
     candidates: list[dict[str, Any]] = []
 
     for row in rows:
@@ -80,7 +105,17 @@ def build_candidates(
         if normalized in existing_keys:
             existing_filtered += 1
             continue
-        if len(normalized) < 2 or not has_meaningful_content(normalized):
+        if normalized in local_meme_keys:
+            local_meme_filtered += 1
+            continue
+        if normalized in EXCLUDED_ACTIVITY_TEXTS:
+            activity_filtered += 1
+            continue
+        if len(normalized) < MIN_CANDIDATE_LENGTH:
+            short_filtered += 1
+            continue
+        if not has_meaningful_content(normalized):
+            meaningless_filtered += 1
             continue
         source: str | None = "high_frequency" if count >= min_count else None
         if source is None and count == 1 and len(normalized) >= 20:
@@ -103,6 +138,9 @@ def build_candidates(
         "roomId": room_id, "windowStart": start.isoformat(), "windowEnd": end.isoformat(),
         "generatedAt": iso_now().isoformat(), "totalRawMessages": raw_count,
         "totalUniqueMessages": len(rows), "existingFilteredCount": existing_filtered,
+        "localMemeFilteredCount": local_meme_filtered,
+        "shortFilteredCount": short_filtered, "activityFilteredCount": activity_filtered,
+        "meaninglessFilteredCount": meaningless_filtered,
     }
     if similarity_threshold is not None:
         candidates, merged = deduplicate_similar_candidates(candidates, similarity_threshold)

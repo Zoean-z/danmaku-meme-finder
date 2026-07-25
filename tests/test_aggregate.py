@@ -37,6 +37,44 @@ def test_candidate_rules_existing_filter_and_stable_order(tmp_path: Path) -> Non
     assert first["candidates"] == second["candidates"]
 
 
+def test_candidate_rules_exclude_short_and_activity_texts(tmp_path: Path) -> None:
+    database_path = tmp_path / "danmaku.db"
+    existing_path = tmp_path / "existing.json"
+    write_json_atomic(existing_path, {"items": {}})
+    with DanmakuDatabase(database_path) as database:
+        database.insert_many([
+            message("tiny", 4, "a"), message("tiny", 3, "b"), message("tiny", 2, "c"),
+            message("保卫鱼娘", 4, "d"), message("保卫鱼娘", 3, "e"), message("保卫鱼娘", 2, "f"),
+            message("eligible phrase", 4, "g"), message("eligible phrase", 3, "h"), message("eligible phrase", 2, "i"),
+        ])
+        payload = build_candidates(database, 6657, 24, 3, 200, existing_path)
+
+    assert payload["shortFilteredCount"] == 1
+    assert payload["activityFilteredCount"] == 1
+    assert [candidate["text"] for candidate in payload["candidates"]] == ["eligible phrase"]
+
+
+def test_candidate_rules_exclude_local_confirmed_memes(tmp_path: Path) -> None:
+    database_path = tmp_path / "danmaku.db"
+    existing_path = tmp_path / "existing.json"
+    memes_path = tmp_path / "memes.json"
+    write_json_atomic(existing_path, {"items": {}})
+    write_json_atomic(memes_path, {"memes": [{"text": "confirmed local meme"}]})
+    with DanmakuDatabase(database_path) as database:
+        database.insert_many([
+            message("confirmed local meme", 4, "a"),
+            message("confirmed local meme", 3, "b"),
+            message("confirmed local meme", 2, "c"),
+            message("new eligible phrase", 4, "d"),
+            message("new eligible phrase", 3, "e"),
+            message("new eligible phrase", 2, "f"),
+        ])
+        payload = build_candidates(database, 6657, 24, 3, 200, existing_path, memes_path=memes_path)
+
+    assert payload["localMemeFilteredCount"] == 1
+    assert [candidate["text"] for candidate in payload["candidates"]] == ["new eligible phrase"]
+
+
 def test_similar_candidates_keep_first_ranked_representative() -> None:
     candidates = [
         {

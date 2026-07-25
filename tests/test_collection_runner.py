@@ -15,7 +15,7 @@ def test_import_and_candidate_build_keep_repeated_non_existing_text(tmp_path: Pa
     existing_path = tmp_path / "existing.json"
     output_path = tmp_path / "candidates.json"
     records = [
-        {"ts": f"2026-07-25T12:00:0{index}+08:00", "roomId": 6657, "uid": str(index), "text": "新梗模板"}
+        {"ts": f"2026-07-25T12:00:0{index}+08:00", "roomId": 6657, "uid": str(index), "text": "新梗模板文本"}
         for index in range(3)
     ] + [
         {"ts": f"2026-07-25T12:01:0{index}+08:00", "roomId": 6657, "uid": str(10 + index), "text": "已有梗"}
@@ -37,5 +37,5 @@ def test_import_and_candidate_build_keep_repeated_non_existing_text(tmp_path: Pa
     candidates = build_current_candidates(settings)
 
     assert result["imported"] == 6
-    assert [candidate["text"] for candidate in candidates["candidates"]] == ["新梗模板"]
+    assert [candidate["text"] for candidate in candidates["candidates"]] == ["新梗模板文本"]
     assert json.loads(output_path.read_text(encoding="utf-8"))["candidates"] == candidates["candidates"]

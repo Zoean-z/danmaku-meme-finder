@@ -12,6 +12,7 @@ only small curated JSON snapshots through GitHub.
 - [x] Add checkpointed Python JSONL import
 - [x] Remove Python WebSocket/TLS collector dependencies and update docs/tests
 - [x] Run end-to-end local verification
+- [x] Exclude short (<5 characters) and known activity texts from candidate output
 - [x] Add optional lexical near-duplicate merging for candidate review
 - [x] Define Git-tracked versus local-only data files
 - [x] Initialize the local Git repository and verify local-only data is ignored
@@ -26,6 +27,7 @@ only small curated JSON snapshots through GitHub.
 - [x] Replace hash-style catalog IDs with stable five-digit numeric IDs and rebuild the catalog
 - [x] Store public live-session snapshots and associate collected messages with a session
 - [x] Backfill and publish the first observed sessions for 2026-07-24 and 2026-07-25
+- [x] Add label-assisted candidate review and automatic curated-data publishing
 
 # Decisions
 
@@ -38,6 +40,7 @@ only small curated JSON snapshots through GitHub.
 - The first catalog is a single full snapshot; retain legacy tag IDs even without a label map.
 - Catalog items use stable five-digit numeric IDs; original upstream IDs remain source metadata.
 - Store room metadata once per collection; date fields describe local observation, not asserted platform start time.
+- Keep the tag code-to-label map as tracked JSON; review publishes only formal memes and catalog data.
 
 # Blockers
 
@@ -51,4 +54,4 @@ only small curated JSON snapshots through GitHub.
 Point the website at `data/catalog.json`; if its initial 10.6 MB load is too slow,
 split the catalog into a manifest and static shards without changing item format.
 Implement the website's catalog reader and first browse/search view using the
-catalog and session snapshots.
+catalog, tag catalog, and session snapshots.

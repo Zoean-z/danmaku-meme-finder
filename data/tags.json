@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "tags": {
+    "00": { "label": "喷玩机器" },
+    "01": { "label": "喷选手" },
+    "02": { "label": "加一" },
+    "03": { "label": "QUQU" },
+    "05": { "label": "木柜子" },
+    "06": { "label": "群魔乱舞" },
+    "07": { "label": "NiKo" },
+    "08": { "label": "ropz" },
+    "09": { "label": "直播间互喷" },
+    "10": { "label": "Donk" },
+    "11": { "label": "伟伟" },
+    "12": { "label": "Zywoo" },
+    "13": { "label": "m0NESY" },
+    "14": { "label": "丰川祥子" },
+    "15": { "label": "device" },
+    "16": { "label": "Twistzz" },
+    "17": { "label": "DOTA" },
+    "18": { "label": "千早爱音" },
+    "19": { "label": "三角初华" },
+    "20": { "label": "Falcons" },
+    "21": { "label": "S1mple" },
+    "22": { "label": "赛事梗" },
+    "23": { "label": "京介" },
+    "24": { "label": "HLTV" },
+    "25": { "label": "Team Spirit" },
+    "26": { "label": "chopper" },
+    "27": { "label": "🗿🗿🗿" },
+    "28": { "label": "足小子" }
+  }
+}
