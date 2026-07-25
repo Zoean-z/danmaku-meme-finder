@@ -45,8 +45,15 @@ def _parse_record(raw: bytes) -> IncomingDanmaku:
     else:
         timestamp = timestamp.astimezone(SHANGHAI)
     uid = payload.get("uid")
+    session_id = payload.get("sessionId")
+    if session_id is not None and (not isinstance(session_id, str) or not session_id.strip()):
+        raise ValueError("JSONL record sessionId must be a non-empty string when provided")
     return IncomingDanmaku(
-        room_id=room_id, content=text, user_id=None if uid is None else str(uid), sent_at=timestamp
+        room_id=room_id,
+        content=text,
+        user_id=None if uid is None else str(uid),
+        session_id=session_id,
+        sent_at=timestamp,
     )
 
 

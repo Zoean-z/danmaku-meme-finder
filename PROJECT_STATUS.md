@@ -97,3 +97,15 @@ accepts comma-separated tag IDs, skips on an empty line, and saves each
 accepted candidate atomically. The rebuilt schema-version-2 catalog contains
 21,603 unique five-digit IDs. This pending catalog update still needs a GitHub
 push before a website can consume the new numeric ID format.
+
+The next data addition is a small public `sessions.json`: one metadata snapshot
+per collection, with a best-effort Douyu title/category/cover URL and explicit
+local observation times. Raw danmaku remains local, but its SQLite rows will be
+associated with a session ID for per-live candidate context.
+
+Live-session storage is now implemented and validated. The collector obtains a
+best-effort public room snapshot before each run, writes a session ID into new
+JSONL/SQLite records, and closes the session with its message count. The first
+two observed snapshots are backfilled: 3,694 messages on 2026-07-24 and one
+message on 2026-07-25. `sessions.json` is public and stores only room metadata,
+observation times, counts, and an external Douyu CDN cover URL.

@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS raw_danmaku (
     content TEXT NOT NULL,
     normalized_content TEXT NOT NULL,
     user_key TEXT,
+    session_id TEXT,
     sent_at TEXT NOT NULL,
     collected_at TEXT NOT NULL
 );
@@ -40,6 +41,12 @@ class DanmakuDatabase:
         self.connection = sqlite3.connect(self.path)
         self.connection.execute("PRAGMA journal_mode=WAL")
         self.connection.executescript(SCHEMA)
+        columns = {row[1] for row in self.connection.execute("PRAGMA table_info(raw_danmaku)")}
+        if "session_id" not in columns:
+            self.connection.execute("ALTER TABLE raw_danmaku ADD COLUMN session_id TEXT")
+        self.connection.execute(
+            "CREATE INDEX IF NOT EXISTS idx_raw_danmaku_session ON raw_danmaku(session_id, sent_at)"
+        )
         return self
 
     def close(self) -> None:
@@ -63,18 +70,33 @@ class DanmakuDatabase:
         if not messages:
             return 0
         values = [
-            (message.room_id, message.content, message.normalized_content, message.user_key,
+            (message.room_id, message.content, message.normalized_content, message.user_key, message.session_id,
              message.sent_at.isoformat(), message.collected_at.isoformat())
             for message in messages
         ]
         with self.conn:
             self.conn.executemany(
                 """INSERT INTO raw_danmaku
-                (room_id, content, normalized_content, user_key, sent_at, collected_at)
-                VALUES (?, ?, ?, ?, ?, ?)""",
+                (room_id, content, normalized_content, user_key, session_id, sent_at, collected_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)""",
                 values,
             )
         return len(values)
+
+    def attach_session_for_range(self, session_id: str, room_id: int, start: datetime, end: datetime) -> int:
+        """Associate unclassified historical messages with an observed session."""
+        with self.conn:
+            cursor = self.conn.execute(
+                """UPDATE raw_danmaku SET session_id = ?
+                   WHERE room_id = ? AND session_id IS NULL AND sent_at >= ? AND sent_at <= ?""",
+                (session_id, room_id, start.isoformat(), end.isoformat()),
+            )
+        return int(cursor.rowcount)
+
+    def session_message_count(self, session_id: str) -> int:
+        return int(
+            self.conn.execute("SELECT COUNT(*) FROM raw_danmaku WHERE session_id = ?", (session_id,)).fetchone()[0]
+        )
 
     def aggregate_since(self, room_id: int, start: datetime) -> tuple[int, list[sqlite3.Row]]:
         self.conn.row_factory = sqlite3.Row

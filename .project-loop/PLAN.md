@@ -24,6 +24,8 @@ only small curated JSON snapshots through GitHub.
 - [x] Sync the legacy API, build the first full catalog, and publish it to GitHub
 - [x] Add a local interactive candidate-review command for manual tag entry
 - [x] Replace hash-style catalog IDs with stable five-digit numeric IDs and rebuild the catalog
+- [x] Store public live-session snapshots and associate collected messages with a session
+- [x] Backfill and publish the first observed sessions for 2026-07-24 and 2026-07-25
 
 # Decisions
 
@@ -35,6 +37,7 @@ only small curated JSON snapshots through GitHub.
 - Merge the legacy API and local confirmed memes offline into one GitHub JSON snapshot; do not merge them in the browser.
 - The first catalog is a single full snapshot; retain legacy tag IDs even without a label map.
 - Catalog items use stable five-digit numeric IDs; original upstream IDs remain source metadata.
+- Store room metadata once per collection; date fields describe local observation, not asserted platform start time.
 
 # Blockers
 
@@ -47,5 +50,5 @@ only small curated JSON snapshots through GitHub.
 
 Point the website at `data/catalog.json`; if its initial 10.6 MB load is too slow,
 split the catalog into a manifest and static shards without changing item format.
-Publish the verified five-digit-ID catalog, then implement the website's
-catalog reader and first browse/search view.
+Implement the website's catalog reader and first browse/search view using the
+catalog and session snapshots.

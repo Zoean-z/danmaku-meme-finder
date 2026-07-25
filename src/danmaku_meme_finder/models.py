@@ -11,6 +11,7 @@ class IncomingDanmaku(BaseModel):
     room_id: int
     content: str
     user_id: str | None = None
+    session_id: str | None = None
     sent_at: datetime
 
 
@@ -19,6 +20,7 @@ class StoredDanmaku(BaseModel):
     content: str
     normalized_content: str
     user_key: str | None = None
+    session_id: str | None = None
     sent_at: datetime
     collected_at: datetime
 

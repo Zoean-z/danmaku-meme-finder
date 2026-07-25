@@ -9,6 +9,7 @@ const outputPath = path.resolve(process.env.LIVE_JSONL_PATH || path.join(__dirna
 const maxRuntimeSeconds = process.env.COLLECTOR_MAX_SECONDS == null
   ? null
   : Number.parseInt(process.env.COLLECTOR_MAX_SECONDS, 10)
+const sessionId = process.env.SESSION_ID || null
 
 if (!Number.isInteger(roomId) || roomId <= 0) {
   throw new Error('ROOM_ID must be a positive integer')
@@ -82,6 +83,7 @@ async function main() {
     const record = {
       ts: new Date().toISOString(),
       roomId,
+      sessionId,
       uid: message.uid == null ? null : String(message.uid),
       text
     }

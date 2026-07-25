@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-07-25T18:46:25+08:00",
+  "sessions": [
+    {
+      "id": "6657-20260724-172527",
+      "roomId": 6657,
+      "rid": 6979222,
+      "title": "小众宝藏结晶直播间 6657",
+      "category": "CS2",
+      "coverUrl": "https://rpic.douyucdn.cn/asrpic/260724/6979222_src_2347.avif/dy4",
+      "sourceUrl": "https://www.douyu.com/6657",
+      "observedStartedAt": "2026-07-24T17:25:27.527000+08:00",
+      "observedEndedAt": "2026-07-24T21:58:07.849000+08:00",
+      "metadataFetchedAt": "2026-07-25T18:46:25+08:00",
+      "messageCount": 3694
+    },
+    {
+      "id": "6657-20260725-102416",
+      "roomId": 6657,
+      "rid": 6979222,
+      "title": "小众宝藏结晶直播间 6657",
+      "category": "CS2",
+      "coverUrl": "https://rpic.douyucdn.cn/asrpic/260725/6979222_src_1843.avif/dy4",
+      "sourceUrl": "https://www.douyu.com/6657",
+      "observedStartedAt": "2026-07-25T10:24:16.011000+08:00",
+      "observedEndedAt": "2026-07-25T10:24:16.011000+08:00",
+      "metadataFetchedAt": "2026-07-25T18:46:25+08:00",
+      "messageCount": 1
+    }
+  ]
+}

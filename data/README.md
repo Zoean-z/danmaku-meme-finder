@@ -6,6 +6,7 @@ Tracked in GitHub:
 - `candidates.json`: the current candidate snapshot for review.
 - `candidates-deduplicated.json`: an optional current snapshot that collapses obvious text variants while retaining them in `similarVariants`.
 - `catalog.json`: the static website catalog merged from the legacy index and local confirmed memes.
+- `sessions.json`: public live-session snapshots with metadata and a Douyu CDN cover URL.
 
 Local only and ignored by Git:
 

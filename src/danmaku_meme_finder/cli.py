@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import logging
+from datetime import datetime
 from pathlib import Path
 
 from .aggregate import build_candidates
@@ -22,6 +23,7 @@ DEFAULT_DATABASE = Path("data/danmaku.db")
 DEFAULT_EXISTING_INDEX = Path("data/existing_index.json")
 DEFAULT_CANDIDATES = Path("data/candidates.json")
 DEFAULT_CATALOG = Path("data/catalog.json")
+DEFAULT_SESSIONS = Path("data/sessions.json")
 DEFAULT_LIVE_JSONL = Path("data/live.jsonl")
 DEFAULT_IMPORT_CHECKPOINT = Path("data/live.import.checkpoint.json")
 
@@ -85,6 +87,7 @@ def create_parser() -> argparse.ArgumentParser:
     collect.add_argument("--checkpoint", type=path_argument, default=DEFAULT_IMPORT_CHECKPOINT)
     collect.add_argument("--existing-index", type=path_argument, default=DEFAULT_EXISTING_INDEX)
     collect.add_argument("--output", type=path_argument, default=DEFAULT_CANDIDATES)
+    collect.add_argument("--sessions", type=path_argument, default=DEFAULT_SESSIONS)
     collect.add_argument("--flush-interval", type=float, default=5.0)
     collect.add_argument("--batch-size", type=int, default=100)
     collect.add_argument("--window-hours", type=int, default=24)
@@ -99,6 +102,10 @@ def create_parser() -> argparse.ArgumentParser:
     stats.add_argument("--database", type=path_argument, default=DEFAULT_DATABASE)
     stats.add_argument("--existing-index", type=path_argument, default=DEFAULT_EXISTING_INDEX)
     stats.add_argument("--candidates", type=path_argument, default=DEFAULT_CANDIDATES)
+
+    backfill = subparsers.add_parser("backfill-sessions", help="Associate stored historical messages with session JSON")
+    backfill.add_argument("--database", type=path_argument, default=DEFAULT_DATABASE)
+    backfill.add_argument("--sessions", type=path_argument, default=DEFAULT_SESSIONS)
     return parser
 
 
@@ -217,6 +224,7 @@ async def _run_collect(args: argparse.Namespace) -> None:
         checkpoint_path=args.checkpoint,
         existing_index_path=args.existing_index,
         output_path=args.output,
+        sessions_path=args.sessions,
         flush_interval=args.flush_interval,
         batch_size=args.batch_size,
         window_hours=args.window_hours,
@@ -228,8 +236,33 @@ async def _run_collect(args: argparse.Namespace) -> None:
     result = await run_collection(settings, user_hash_salt(), Path.cwd())
     print(
         f"Stopped: final import={result['import']['imported']}; "
-        f"candidates={len(result['candidates']['candidates'])}; output={args.output}"
+        f"candidates={len(result['candidates']['candidates'])}; session={result['session']['id']}; output={args.output}"
     )
+
+
+def _run_backfill_sessions(args: argparse.Namespace) -> None:
+    payload = read_json(args.sessions, {"sessions": []})
+    sessions = payload.get("sessions", [])
+    if not isinstance(sessions, list):
+        raise ValueError("sessions must be a list")
+    updated = 0
+    with DanmakuDatabase(args.database) as database:
+        for session in sessions:
+            if not isinstance(session, dict):
+                continue
+            identifier = session.get("id")
+            room_id = session.get("roomId")
+            start = session.get("observedStartedAt")
+            end = session.get("observedEndedAt")
+            if not isinstance(identifier, str) or not isinstance(room_id, int) or not isinstance(start, str) or not isinstance(end, str):
+                continue
+            count = database.attach_session_for_range(
+                identifier, room_id, datetime.fromisoformat(start), datetime.fromisoformat(end)
+            )
+            session["messageCount"] = database.session_message_count(identifier)
+            updated += count
+    write_json_atomic(args.sessions, payload)
+    print(f"Associated {updated} historical messages with sessions in {args.sessions}")
 
 
 def _run_stats(args: argparse.Namespace) -> None:
@@ -265,6 +298,8 @@ def main(argv: list[str] | None = None) -> int:
             _run_candidates(args)
         elif args.command == "stats":
             _run_stats(args)
+        elif args.command == "backfill-sessions":
+            _run_backfill_sessions(args)
         return 0
     except KeyboardInterrupt:
         LOGGER.info("Stopped by user")

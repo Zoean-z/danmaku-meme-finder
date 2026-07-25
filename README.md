@@ -58,6 +58,8 @@ python -m danmaku_meme_finder.cli collect --refresh-existing
 python -m danmaku_meme_finder.cli collect --duration 180 --refresh-existing
 ```
 
+每次 `collect` 会在开始时抓取一次公开房间页的标题、分区、封面 URL 和真实 `rid`，并写入 Git 跟踪的 `data/sessions.json`。记录的 `observedStartedAt` / `observedEndedAt` 是本地观察和采集时间，不会伪装成斗鱼官方开播时间；元数据抓取失败不会阻塞弹幕采集。
+
 常用参数：`--room-id`、`--database`、`--flush-interval`、`--batch-size`、`--min-count`、`--similarity-threshold`、`--output`。已有索引不存在时会自动同步；已有缓存时，使用 `--refresh-existing` 获取最新索引。
 
 网站只读 GitHub 数据时，先同步旧接口，再将其与人工确认的 `memes.json` 合并为统一目录。每条目录项都有稳定的五位数字 `id`（例如 `21982`）；首次导出优先沿用旧接口编号，新确认内容从当前最大编号继续分配。旧接口编号也保留在 `sources[].sourceId`。合并按规范化文本去重，保留旧接口分类和每个来源的独立统计；不同来源的次数不会相加：
@@ -134,6 +136,7 @@ python -m danmaku_meme_finder.cli stats
 - `data/candidates-deduplicated.json`：可选的近似文本去重结果；代表项的 `similarVariants` 保留被合并的原文和计数。
 - `data/memes.json`：人工审核后的正式梗库；`review-candidates` 会以原子方式写入它。
 - `data/catalog.json`：网站读取的统一静态目录，融合旧接口梗和本地正式梗，并保留标签与来源信息。
+- `data/sessions.json`：公开直播场次快照，保存标题、分区、斗鱼封面 URL、观察时间和消息数；不保存原始弹幕或观众昵称。
 
 候选规则刻意简单：排除已有文本、空/纯标点/纯 Emoji、少于 2 个字符的文本；保留达到次数阈值的高频文本，以及长度至少 20 且仅出现一次的长文本。排序优先考虑次数、独立用户数、最近出现时间和适中长度。
 

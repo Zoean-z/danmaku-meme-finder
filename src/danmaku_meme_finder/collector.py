@@ -22,6 +22,7 @@ def make_stored(message: IncomingDanmaku, salt: str, collected_at: datetime | No
         content=message.content,
         normalized_content=normalize_text(message.content),
         user_key=_user_key(message.user_id, salt),
+        session_id=message.session_id,
         sent_at=message.sent_at,
         collected_at=collected_at or iso_now(),
     )

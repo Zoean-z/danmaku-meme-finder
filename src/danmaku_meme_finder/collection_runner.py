@@ -9,10 +9,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import httpx
+
 from .aggregate import build_candidates
 from .database import DanmakuDatabase
-from .exporter import write_json_atomic
+from .exporter import read_json, write_json_atomic
 from .import_jsonl import import_jsonl
+from .sessions import begin_session, fetch_room_metadata, finish_session
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,6 +28,7 @@ class CollectionSettings:
     checkpoint_path: Path
     existing_index_path: Path
     output_path: Path
+    sessions_path: Path = Path("data/sessions.json")
     flush_interval: float = 5.0
     batch_size: int = 100
     window_hours: int = 24
@@ -73,6 +77,16 @@ async def run_collection(settings: CollectionSettings, salt: str, project_root: 
     if settings.duration_seconds is not None:
         environment["COLLECTOR_MAX_SECONDS"] = str(settings.duration_seconds)
 
+    try:
+        metadata = await fetch_room_metadata(settings.room_id)
+    except (httpx.HTTPError, OSError, ValueError) as exc:
+        LOGGER.warning("Could not fetch room metadata: %s", exc)
+        metadata = {"roomId": settings.room_id, "sourceUrl": f"https://www.douyu.com/{settings.room_id}"}
+    sessions = read_json(settings.sessions_path, {"schemaVersion": 1, "sessions": []})
+    session = begin_session(sessions, settings.room_id, metadata)
+    write_json_atomic(settings.sessions_path, sessions)
+    environment["SESSION_ID"] = str(session["id"])
+
     supervisor = project_root / "collector-js" / "run-collector.js"
     process = await asyncio.create_subprocess_exec(
         "node", str(supervisor), cwd=str(project_root), env=environment
@@ -101,8 +115,12 @@ async def run_collection(settings: CollectionSettings, salt: str, project_root: 
                 await process.wait()
         final_import = import_pending(settings, salt)
         candidates = build_current_candidates(settings)
+        with DanmakuDatabase(settings.database_path) as database:
+            message_count = database.session_message_count(str(session["id"]))
+        finish_session(sessions, str(session["id"]), message_count)
+        write_json_atomic(settings.sessions_path, sessions)
         LOGGER.info(
             "Final import=%s; wrote %s candidates to %s",
             final_import["imported"], len(candidates["candidates"]), settings.output_path,
         )
-    return {"import": final_import, "candidates": candidates}
+    return {"import": final_import, "candidates": candidates, "session": session}
