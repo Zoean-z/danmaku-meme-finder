@@ -72,11 +72,16 @@ def add_confirmed_meme(
             memes["updatedAt"] = iso_now().isoformat()
             return memes, False
 
-    records.append({
+    record: dict[str, Any] = {
         "id": catalog_id,
         "text": text,
         "tags": tags,
         "addedAt": iso_now().isoformat(),
-    })
+    }
+    for field in ("firstSeenAt", "lastSeenAt"):
+        value = candidate.get(field)
+        if isinstance(value, str) and value:
+            record[field] = value
+    records.append(record)
     memes["updatedAt"] = iso_now().isoformat()
     return memes, True

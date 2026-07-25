@@ -29,6 +29,7 @@ only small curated JSON snapshots through GitHub.
 - [x] Backfill and publish the first observed sessions for 2026-07-24 and 2026-07-25
 - [x] Add label-assisted candidate review and automatic curated-data publishing
 - [x] Add a one-command collection-to-review workflow and local rejected-candidate queue
+- [x] Add a static event-date table and preserve local meme observation dates for website joins
 
 # Decisions
 
@@ -43,6 +44,7 @@ only small curated JSON snapshots through GitHub.
 - Store room metadata once per collection; date fields describe local observation, not asserted platform start time.
 - Keep the tag code-to-label map as tracked JSON; review publishes only formal memes and catalog data.
 - Keep rejected-candidate state local and ignored; do not delete the Git-tracked candidate snapshot after review.
+- Keep event metadata in one manual date-range table; the website joins it by inclusive local calendar date.
 
 # Blockers
 

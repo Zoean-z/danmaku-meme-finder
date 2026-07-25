@@ -169,8 +169,9 @@ def build_catalog(
             source: dict[str, Any] = {"kind": "local"}
             if raw.get("id") is not None:
                 source["sourceId"] = str(raw["id"])
-            if raw.get("addedAt") is not None:
-                source["addedAt"] = raw["addedAt"]
+            for field in ("addedAt", "firstSeenAt", "lastSeenAt"):
+                if raw.get(field) is not None:
+                    source[field] = raw[field]
             entry["sources"].append(source)
 
     _assign_ids(merged, previous_catalog or {})

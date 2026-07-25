@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": null,
+  "events": [
+    {
+      "id": "blast-bounty-2026-season-2",
+      "beginDate": "2026-07-20",
+      "endDate": "2026-08-02",
+      "event": "BLAST Bounty 2026 Season 2",
+      "teams": [
+        "100 Thieves",
+        "Aurora",
+        "FaZe Clan",
+        "Falcons",
+        "FURIA",
+        "MOUZ",
+        "Spirit",
+        "The MongolZ",
+        "Vitality"
+      ],
+      "streamTitle": "BLAST Bounty 2026 Season 2 赛事解说",
+      "coverUrl": "https://rpic.douyucdn.cn/asrpic/260724/6979222_src_2347.avif/dy4"
+    }
+  ]
+}

@@ -133,3 +133,10 @@ build, then starts review. Each candidate shows the full tag catalog. `x` or
 rejected normalized texts are removed from future review queues without deleting
 the Git-tracked candidate snapshot. Confirmed records continue to auto-publish
 only `memes.json` and `catalog.json`.
+
+Public tournament context is stored separately in `data/events.json`. Each event
+has an inclusive `beginDate` / `endDate` range, named teams, a display stream
+title, and an optional reusable cover URL. Local formal memes now retain their
+candidate `firstSeenAt` / `lastSeenAt` values and catalog local sources expose
+those fields, so the website can associate a date with an event without copying
+tournament metadata into raw danmaku.

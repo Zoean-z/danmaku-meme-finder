@@ -6,7 +6,12 @@ from danmaku_meme_finder.curation import add_confirmed_meme, parse_tags, resolve
 def test_add_confirmed_meme_assigns_id_and_tags() -> None:
     memes, created = add_confirmed_meme(
         {"roomId": 6657, "memes": []},
-        {"text": "New Meme", "normalizedText": "new meme"},
+        {
+            "text": "New Meme",
+            "normalizedText": "new meme",
+            "firstSeenAt": "2026-07-24T17:25:27+08:00",
+            "lastSeenAt": "2026-07-24T19:25:27+08:00",
+        },
         ["24", "06"],
         "22025",
     )
@@ -17,6 +22,8 @@ def test_add_confirmed_meme_assigns_id_and_tags() -> None:
         "text": "New Meme",
         "tags": ["24", "06"],
         "addedAt": memes["memes"][0]["addedAt"],
+        "firstSeenAt": "2026-07-24T17:25:27+08:00",
+        "lastSeenAt": "2026-07-24T19:25:27+08:00",
     }]
 
 

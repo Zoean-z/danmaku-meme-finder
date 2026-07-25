@@ -16,7 +16,14 @@ def test_catalog_merges_sources_without_adding_counts() -> None:
     }
     memes = {
         "memes": [
-            {"id": "local-1", "text": "same meme", "tags": ["24"], "addedAt": "2026-07-25T12:00:00+08:00"},
+            {
+                "id": "local-1",
+                "text": "same meme",
+                "tags": ["24"],
+                "addedAt": "2026-07-25T12:00:00+08:00",
+                "firstSeenAt": "2026-07-24T17:25:27+08:00",
+                "lastSeenAt": "2026-07-24T19:25:27+08:00",
+            },
             {"text": "Local only", "tags": []},
         ]
     }
@@ -38,6 +45,8 @@ def test_catalog_merges_sources_without_adding_counts() -> None:
         "kind": "local",
         "sourceId": "local-1",
         "addedAt": "2026-07-25T12:00:00+08:00",
+        "firstSeenAt": "2026-07-24T17:25:27+08:00",
+        "lastSeenAt": "2026-07-24T19:25:27+08:00",
     }
 
 
