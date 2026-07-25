@@ -87,3 +87,6 @@ can now read only the GitHub raw `data/catalog.json` file and does not need to
 contact the legacy API at runtime.
 Catalog records now include a stable unified `id`; legacy and local source IDs
 remain separately available as `sources[].sourceId`.
+The unified-ID commit `699840a` is now published on GitHub. Websites can use
+the raw `data/catalog.json` file as their only runtime data source; they should
+read the top-level stable `id` and treat `sources[].sourceId` as provenance.

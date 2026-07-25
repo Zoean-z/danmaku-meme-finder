@@ -39,8 +39,11 @@ only small curated JSON snapshots through GitHub.
 - The v3.2.0 CLI sends no chatmsg when given a VIP/short ID; it needs the real rid.
 - None for the local-first MVP.
 - Legacy tag IDs need a tag-name mapping if the website should render human-readable category labels.
+- None for the current data-publishing path.
 
 # Next Step
 
 Point the website at `data/catalog.json`; if its initial 10.6 MB load is too slow,
 split the catalog into a manifest and static shards without changing item format.
+Implement the website's catalog reader and first browse/search view against the
+published stable-ID schema.
