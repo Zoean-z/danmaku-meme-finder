@@ -21,6 +21,7 @@ only small curated JSON snapshots through GitHub.
 - [x] Verify the new command with fixtures and a short live smoke test
 - [x] Define a canonical public meme record with tags and source provenance
 - [x] Add an offline merged catalog export for the website
+- [x] Sync the legacy API, build the first full catalog, and publish it to GitHub
 
 # Decisions
 

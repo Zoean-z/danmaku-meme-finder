@@ -82,3 +82,6 @@ The first real legacy sync on 2026-07-25 fetched 22,024 API records and reduced
 them to 21,603 normalized texts. `build-catalog` exported the matching static
 catalog successfully; the first full snapshot is about 10.6 MB, so it validates
 the one-file website path but may later need static sharding for faster loads.
+The catalog and its exporter are published on GitHub commit `6931d3c`; the website
+can now read only the GitHub raw `data/catalog.json` file and does not need to
+contact the legacy API at runtime.
