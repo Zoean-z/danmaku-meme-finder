@@ -33,6 +33,9 @@ def test_session_lifecycle_uses_observed_times() -> None:
     finish_session(payload, record["id"], 12, datetime.fromisoformat("2026-07-24T21:58:08+08:00"))
 
     assert record["id"] == "6657-20260724-214308"
+    assert record["date"] == "2026-07-24"
     assert payload["schemaVersion"] == 1
+    assert payload["sessions"][0]["barrageCount"] == 12
+    assert payload["sessions"][0]["memeCount"] == 0
     assert payload["sessions"][0]["messageCount"] == 12
     assert payload["sessions"][0]["observedEndedAt"] == "2026-07-24T21:58:08+08:00"

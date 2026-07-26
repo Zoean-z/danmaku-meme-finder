@@ -140,3 +140,19 @@ title, and an optional reusable cover URL. Local formal memes now retain their
 candidate `firstSeenAt` / `lastSeenAt` values and catalog local sources expose
 those fields, so the website can associate a date with an event without copying
 tournament metadata into raw danmaku.
+
+The public presentation data is being promoted from runtime derivation to stable
+JSON contracts. `events.json` now uses `title`, `startDate`, `endDate`, and a
+local cover path while retaining optional event details. `sessions.json` adds a
+calendar date, editorial summary, and explicit meme/barrage counts without
+discarding collector observation metadata. Monthly report index and article
+files for May through July 2026 are tracked separately so copy can be maintained
+without changing frontend code. Daily trends remain derived from `catalog.json`
+for now.
+
+The matching website adapter now loads the four presentation datasets directly
+from GitHub, and the former hardcoded event table and runtime monthly-article
+generator have been removed. Existing site artwork is copied into stable event,
+session, and report cover paths so each JSON record can be updated independently.
+The Python suite passes all 26 tests, the package compiles, and the website
+production build succeeds after the migration.

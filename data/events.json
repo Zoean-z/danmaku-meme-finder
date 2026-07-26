@@ -1,12 +1,55 @@
 {
   "schemaVersion": 1,
-  "updatedAt": null,
+  "updatedAt": "2026-07-26",
   "events": [
     {
+      "id": "iem-cologne-2025",
+      "title": "IEM Cologne 2025",
+      "startDate": "2025-07-23",
+      "endDate": "2025-08-03",
+      "coverUrl": "/covers/events/iem-cologne-2025.png"
+    },
+    {
+      "id": "esl-pro-league-s22",
+      "title": "ESL Pro League Season 22",
+      "startDate": "2025-09-27",
+      "endDate": "2025-10-12",
+      "coverUrl": "/covers/events/esl-pro-league-s22.png"
+    },
+    {
+      "id": "cac-2025",
+      "title": "CS Asia Championships 2025",
+      "startDate": "2025-10-14",
+      "endDate": "2025-10-20",
+      "coverUrl": "/covers/events/cac-2025.png"
+    },
+    {
+      "id": "iem-chengdu-2025",
+      "title": "IEM Chengdu 2025",
+      "startDate": "2025-11-03",
+      "endDate": "2025-11-09",
+      "coverUrl": "/covers/events/iem-chengdu-2025.png"
+    },
+    {
+      "id": "blast-rivals-s2-2025",
+      "title": "BLAST Rivals Season 2",
+      "startDate": "2025-11-12",
+      "endDate": "2025-11-17",
+      "coverUrl": "/covers/events/blast-rivals-s2-2025.png"
+    },
+    {
+      "id": "starladder-budapest-major-2025",
+      "title": "StarLadder Budapest Major 2025",
+      "startDate": "2025-11-24",
+      "endDate": "2025-12-15",
+      "coverUrl": "/covers/events/starladder-budapest-major-2025.png"
+    },
+    {
       "id": "blast-bounty-2026-season-2",
-      "beginDate": "2026-07-20",
+      "title": "BLAST Bounty 2026 Season 2",
+      "startDate": "2026-07-20",
       "endDate": "2026-08-02",
-      "event": "BLAST Bounty 2026 Season 2",
+      "coverUrl": "/covers/events/blast-bounty-2026-season-2.png",
       "teams": [
         "100 Thieves",
         "Aurora",
@@ -18,8 +61,7 @@
         "The MongolZ",
         "Vitality"
       ],
-      "streamTitle": "BLAST Bounty 2026 Season 2 赛事解说",
-      "coverUrl": "https://rpic.douyucdn.cn/asrpic/260724/6979222_src_2347.avif/dy4"
+      "streamTitle": "BLAST Bounty 2026 Season 2 赛事解说"
     }
   ]
 }

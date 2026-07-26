@@ -142,9 +142,10 @@ python -m danmaku_meme_finder.cli stats
 - `data/candidates-deduplicated.json`：可选的近似文本去重结果；代表项的 `similarVariants` 保留被合并的原文和计数。
 - `data/memes.json`：人工审核后的正式梗库；`review-candidates` 会以原子方式写入它。
 - `data/catalog.json`：网站读取的统一静态目录，融合旧接口梗和本地正式梗，并保留标签与来源信息。
-- `data/sessions.json`：公开直播场次快照，保存标题、分区、斗鱼封面 URL、观察时间和消息数；不保存原始弹幕或观众昵称。
+- `data/sessions.json`：公开直播场次快照，保存标题、网站封面路径、摘要、统计数和观察时间；不保存原始弹幕或观众昵称。
 - `data/tags.json`：标签编号与名称的公开对照表，供本地审核和网站共用。
-- `data/events.json`：手工维护的赛事日期表；网站按 `beginDate` / `endDate`（含首尾日期）关联直播场次或正式梗来源日期。赛事可以复用对应直播的 `coverUrl`，不需要把赛事字段重复写入每条原始弹幕。
+- `data/events.json`：手工维护的赛事日期表；网站按 `startDate` / `endDate`（含首尾日期）关联直播场次或正式梗来源日期，不需要把赛事字段重复写入每条原始弹幕。
+- `data/monthly-reports/`：月报索引与独立文章 JSON；正文、摘要和封面路径不再由网站运行时生成。
 
 候选规则刻意简单：排除已有文本、空/纯标点/纯 Emoji、少于 2 个字符的文本；保留达到次数阈值的高频文本，以及长度至少 20 且仅出现一次的长文本。排序优先考虑次数、独立用户数、最近出现时间和适中长度。
 

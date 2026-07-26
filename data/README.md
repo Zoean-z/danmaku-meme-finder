@@ -6,9 +6,11 @@ Tracked in GitHub:
 - `candidates.json`: the current candidate snapshot for review.
 - `candidates-deduplicated.json`: an optional current snapshot that collapses obvious text variants while retaining them in `similarVariants`.
 - `catalog.json`: the static website catalog merged from the legacy index and local confirmed memes.
-- `sessions.json`: public live-session snapshots with metadata and a Douyu CDN cover URL.
+- `sessions.json`: public live-session snapshots with presentation fields, counts, and collector observation metadata.
 - `tags.json`: the public code-to-label tag catalog used by local review and the website.
-- `events.json`: manually maintained tournament date ranges, teams, display title, and reusable cover URL.
+- `events.json`: manually maintained tournament date ranges and website cover paths.
+- `monthly-reports/index.json`: ordered list of published monthly report documents.
+- `monthly-reports/YYYY-MM.json`: manually maintained monthly article content and summary metrics.
 
 Local only and ignored by Git:
 
@@ -21,7 +23,10 @@ Local only and ignored by Git:
 GitHub is the read-only distribution layer for the small curated JSON files, not
 the raw danmaku archive.
 
-`events.json` uses inclusive `beginDate` / `endDate` values in the
+`events.json` uses inclusive `startDate` / `endDate` values in the
 `Asia/Shanghai` calendar. The website associates a session's observation date,
 or a local meme source's `firstSeenAt` / `lastSeenAt`, with the matching event;
 raw danmaku rows do not duplicate event metadata.
+
+Cover files live in the website repository under `public/covers/`; the JSON
+stores root-relative URLs such as `/covers/sessions/2026-07-24.png`.

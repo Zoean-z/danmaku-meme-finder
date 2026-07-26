@@ -30,6 +30,10 @@ only small curated JSON snapshots through GitHub.
 - [x] Add label-assisted candidate review and automatic curated-data publishing
 - [x] Add a one-command collection-to-review workflow and local rejected-candidate queue
 - [x] Add a static event-date table and preserve local meme observation dates for website joins
+- [x] Promote events and sessions to stable website-facing JSON contracts
+- [x] Add independently maintainable monthly report index and article files
+- [x] Make the website load events, sessions, tags, and monthly reports from GitHub JSON
+- [x] Validate the Python suite and production website build after the data migration
 
 # Decisions
 
@@ -45,6 +49,8 @@ only small curated JSON snapshots through GitHub.
 - Keep the tag code-to-label map as tracked JSON; review publishes only formal memes and catalog data.
 - Keep rejected-candidate state local and ignored; do not delete the Git-tracked candidate snapshot after review.
 - Keep event metadata in one manual date-range table; the website joins it by inclusive local calendar date.
+- Keep report prose and session summaries in tracked JSON; the website renders them without inventing copy at runtime.
+- Keep daily trend data derived from the catalog until a separately maintained snapshot is demonstrably useful.
 
 # Blockers
 
@@ -55,7 +61,5 @@ only small curated JSON snapshots through GitHub.
 
 # Next Step
 
-Point the website at `data/catalog.json`; if its initial 10.6 MB load is too slow,
-split the catalog into a manifest and static shards without changing item format.
-Implement the website's catalog reader and first browse/search view using the
-catalog, tag catalog, and session snapshots.
+Finish the website adapter migration so events, sessions, tags, and monthly
+reports come from the tracked data files, then validate and publish the result.

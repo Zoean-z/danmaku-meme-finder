@@ -72,6 +72,7 @@ def begin_session(
     started = (started_at or iso_now()).astimezone(SHANGHAI)
     record = {
         "id": session_id(room_id, started),
+        "date": started.date().isoformat(),
         "roomId": room_id,
         "rid": metadata.get("rid"),
         "title": metadata.get("title"),
@@ -81,6 +82,9 @@ def begin_session(
         "observedStartedAt": started.isoformat(),
         "observedEndedAt": None,
         "metadataFetchedAt": iso_now().isoformat(),
+        "summary": "",
+        "memeCount": 0,
+        "barrageCount": 0,
         "messageCount": 0,
     }
     sessions = payload.setdefault("sessions", [])
@@ -99,6 +103,7 @@ def finish_session(payload: dict[str, Any], identifier: str, message_count: int,
     for record in sessions:
         if isinstance(record, dict) and record.get("id") == identifier:
             record["observedEndedAt"] = (ended_at or iso_now()).astimezone(SHANGHAI).isoformat()
+            record["barrageCount"] = message_count
             record["messageCount"] = message_count
             payload["updatedAt"] = iso_now().isoformat()
             return

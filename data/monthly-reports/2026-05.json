@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "monthly-2026-05",
+  "month": "2026-05",
+  "title": "2026年5月总结",
+  "publishedAt": "2026-05-31",
+  "startDate": "2026-05-01",
+  "endDate": "2026-05-31",
+  "coverUrl": "/covers/reports/2026-05.png",
+  "summary": "5月目录记录以群魔乱舞、加一、喷玩机器和喷选手为主要标签，构成当前月度归档的基线。",
+  "sessionCount": 0,
+  "memeCount": 1023,
+  "barrageCount": 53238,
+  "eventTitles": [],
+  "topTagCodes": ["06", "02", "00", "01", "07"],
+  "sections": [
+    {
+      "heading": "本月概览",
+      "paragraphs": [
+        "公开目录中有1023条来源日期落在5月的记录，来源关联计数合计53238；该口径用于描述归档活跃度，不代表原始弹幕采集总数。",
+        "群魔乱舞占据最明显的位置，加一、喷玩机器、喷选手和NiKo相关内容随后。"
+      ]
+    },
+    {
+      "heading": "数据说明",
+      "paragraphs": [
+        "当前没有5月的逐场直播快照。月报正文和场次数据已经拆分，未来补档时可以分别维护。"
+      ]
+    }
+  ]
+}

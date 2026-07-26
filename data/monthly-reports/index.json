@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "reports": [
+    {
+      "id": "monthly-2026-07",
+      "month": "2026-07",
+      "title": "2026年7月总结",
+      "publishedAt": "2026-07-26",
+      "coverUrl": "/covers/reports/2026-07.png",
+      "file": "monthly-reports/2026-07.json"
+    },
+    {
+      "id": "monthly-2026-06",
+      "month": "2026-06",
+      "title": "2026年6月总结",
+      "publishedAt": "2026-06-30",
+      "coverUrl": "/covers/reports/2026-06.png",
+      "file": "monthly-reports/2026-06.json"
+    },
+    {
+      "id": "monthly-2026-05",
+      "month": "2026-05",
+      "title": "2026年5月总结",
+      "publishedAt": "2026-05-31",
+      "coverUrl": "/covers/reports/2026-05.png",
+      "file": "monthly-reports/2026-05.json"
+    }
+  ]
+}
