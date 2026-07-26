@@ -209,7 +209,7 @@ async function createReport() {
 }
 
 async function publish() {
-  if (!window.confirm("将重建 catalog.json、提交公开数据并推送到 GitHub。继续吗？")) return;
+  if (!window.confirm("将重建活跃目录、月度归档和趋势摘要，并推送到 GitHub。继续吗？")) return;
   setBusy(true);
   $("#publish-result").textContent = "正在重建目录并推送……";
   try {

@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-26T23:47:42.477717+08:00",
+  "roomId": 6657,
+  "total": 21603,
+  "active": {
+    "file": "catalog/active.json",
+    "months": [
+      "2026-05",
+      "2026-06",
+      "2026-07"
+    ],
+    "count": 2498
+  },
+  "archives": [
+    {
+      "month": "2026-04",
+      "file": "catalog/archive/2026-04.json",
+      "count": 860
+    },
+    {
+      "month": "2026-03",
+      "file": "catalog/archive/2026-03.json",
+      "count": 842
+    },
+    {
+      "month": "2026-02",
+      "file": "catalog/archive/2026-02.json",
+      "count": 649
+    },
+    {
+      "month": "2026-01",
+      "file": "catalog/archive/2026-01.json",
+      "count": 646
+    },
+    {
+      "month": "2025-12",
+      "file": "catalog/archive/2025-12.json",
+      "count": 1311
+    },
+    {
+      "month": "2025-11",
+      "file": "catalog/archive/2025-11.json",
+      "count": 1045
+    },
+    {
+      "month": "2025-10",
+      "file": "catalog/archive/2025-10.json",
+      "count": 912
+    },
+    {
+      "month": "2025-09",
+      "file": "catalog/archive/2025-09.json",
+      "count": 873
+    },
+    {
+      "month": "2025-08",
+      "file": "catalog/archive/2025-08.json",
+      "count": 1176
+    },
+    {
+      "month": "2025-07",
+      "file": "catalog/archive/2025-07.json",
+      "count": 814
+    },
+    {
+      "month": "2025-06",
+      "file": "catalog/archive/2025-06.json",
+      "count": 1095
+    },
+    {
+      "month": "2025-05",
+      "file": "catalog/archive/2025-05.json",
+      "count": 1139
+    },
+    {
+      "month": "2025-04",
+      "file": "catalog/archive/2025-04.json",
+      "count": 568
+    },
+    {
+      "month": "2025-03",
+      "file": "catalog/archive/2025-03.json",
+      "count": 794
+    },
+    {
+      "month": "2025-02",
+      "file": "catalog/archive/2025-02.json",
+      "count": 916
+    },
+    {
+      "month": "2025-01",
+      "file": "catalog/archive/2025-01.json",
+      "count": 816
+    },
+    {
+      "month": "2024-12",
+      "file": "catalog/archive/2024-12.json",
+      "count": 733
+    },
+    {
+      "month": "2024-11",
+      "file": "catalog/archive/2024-11.json",
+      "count": 737
+    },
+    {
+      "month": "2024-10",
+      "file": "catalog/archive/2024-10.json",
+      "count": 475
+    },
+    {
+      "month": "2024-09",
+      "file": "catalog/archive/2024-09.json",
+      "count": 2704
+    }
+  ]
+}

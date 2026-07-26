@@ -59,7 +59,7 @@ python -m danmaku_meme_finder.cli admin
 - 候选逐条审核、完整标签点选、通过、不通过和键盘快捷键。
 - 集中编辑 `events.json`、`sessions.json`、`tags.json`、`memes.json` 和月报文件。
 - 新建月报时自动创建文章并更新 `monthly-reports/index.json`。
-- 显式“发布到 GitHub”按钮；点击确认后才会重建 `catalog.json`、提交并推送公开数据。
+- 显式“发布到 GitHub”按钮；点击确认后才会重建活跃目录、月度归档和趋势摘要，再提交并推送公开数据。
 
 不希望自动打开浏览器，或端口被占用时：
 
@@ -94,7 +94,7 @@ python -m danmaku_meme_finder.cli sync-existing
 python -m danmaku_meme_finder.cli build-catalog
 ```
 
-人工审核候选时，运行下面的命令。它会逐条显示候选；输入标签编号或名称（例如 `06,HLTV`）即确认收录，输入 `?` 显示标签表，直接回车跳过，输入 `q` 结束。每次确认会立即写入 `data/memes.json`；结束时自动刷新网站目录，并且只提交 `memes.json` 与 `catalog.json` 后推送 GitHub。传入 `--no-publish` 可只在本地保存：
+人工审核候选时，运行下面的命令。它会逐条显示候选；输入标签编号或名称（例如 `06,HLTV`）即确认收录，输入 `?` 显示标签表，直接回车跳过，输入 `q` 结束。每次确认会立即写入 `data/memes.json`；结束时自动刷新网站目录分片与趋势摘要，并且只提交这些公开数据后推送 GitHub。传入 `--no-publish` 可只在本地保存：
 
 ```bash
 python -m danmaku_meme_finder.cli review-candidates
@@ -166,7 +166,10 @@ python -m danmaku_meme_finder.cli stats
 - `data/candidates.json`：稳定排序的候选输出，适合提交到 GitHub 并由后续任务审阅。
 - `data/candidates-deduplicated.json`：可选的近似文本去重结果；代表项的 `similarVariants` 保留被合并的原文和计数。
 - `data/memes.json`：人工审核后的正式梗库；`review-candidates` 会以原子方式写入它。
-- `data/catalog.json`：网站读取的统一静态目录，融合旧接口梗和本地正式梗，并保留标签与来源信息。
+- `data/catalog/manifest.json`：目录总量、活跃月份和历史归档文件清单。
+- `data/catalog/active.json`：最近三个月的活跃目录，网站首屏只读取这一份。
+- `data/catalog/archive/YYYY-MM.json`：按最新来源月份归档的旧内容；网站进入对应日期或赛事时再加载。
+- `data/trends/daily.json`：预计算的每日梗数、关联计数和标签计数，避免趋势图下载历史目录。
 - `data/sessions.json`：公开直播场次快照，保存标题、网站封面路径、摘要、统计数和观察时间；不保存原始弹幕或观众昵称。
 - `data/tags.json`：标签编号与名称的公开对照表，供本地审核和网站共用。
 - `data/events.json`：手工维护的赛事日期表；网站按 `startDate` / `endDate`（含首尾日期）关联直播场次或正式梗来源日期，不需要把赛事字段重复写入每条原始弹幕。

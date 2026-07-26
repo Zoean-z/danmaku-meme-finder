@@ -26,7 +26,8 @@ def make_service(root: Path) -> AdminService:
         },
     )
     write_json_atomic(data / "memes.json", {"updatedAt": None, "roomId": 6657, "memes": []})
-    write_json_atomic(data / "catalog.json", {"items": []})
+    write_json_atomic(data / "catalog" / "active.json", {"items": []})
+    write_json_atomic(data / "catalog" / "manifest.json", {"total": 0, "archives": []})
     write_json_atomic(data / "existing_index.json", {"total": 0, "items": {}})
     write_json_atomic(data / "events.json", {"schemaVersion": 1, "events": []})
     write_json_atomic(data / "sessions.json", {"schemaVersion": 1, "sessions": []})
@@ -47,7 +48,7 @@ def test_admin_approves_candidate_without_rebuilding_catalog(tmp_path: Path) -> 
     assert result["state"]["counts"]["pending"] == 0
     memes = json.loads((tmp_path / "data" / "memes.json").read_text(encoding="utf-8"))
     assert memes["memes"][0]["tags"] == ["06"]
-    catalog = json.loads((tmp_path / "data" / "catalog.json").read_text(encoding="utf-8"))
+    catalog = json.loads((tmp_path / "data" / "catalog" / "active.json").read_text(encoding="utf-8"))
     assert catalog == {"items": []}
 
 
@@ -116,5 +117,6 @@ def test_admin_publish_rebuilds_catalog_and_uses_explicit_files(monkeypatch, tmp
     assert result["published"] is True
     assert result["catalogItems"] == 1
     assert published["root"] == tmp_path
-    assert tmp_path / "data" / "catalog.json" in published["files"]
+    assert tmp_path / "data" / "catalog" in published["files"]
+    assert tmp_path / "data" / "trends" / "daily.json" in published["files"]
     assert published["message"] == "Update managed site content"

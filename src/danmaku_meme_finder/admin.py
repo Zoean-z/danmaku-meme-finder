@@ -16,7 +16,13 @@ from urllib.parse import urlparse
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
-from .catalog import build_catalog, format_catalog_id, next_catalog_number
+from .catalog import (
+    build_catalog,
+    format_catalog_id,
+    load_distributed_catalog,
+    next_catalog_number,
+    write_distributed_catalog,
+)
 from .curation import add_confirmed_meme, resolve_tags, tag_labels
 from .exporter import read_json, write_json_atomic
 from .publication import publish_files
@@ -115,8 +121,8 @@ class AdminService:
             if not resolved:
                 raise ValueError("select at least one tag before approving")
             existing = read_json(self.settings.data("existing_index.json"), {"items": {}})
-            catalog = read_json(self.settings.data("catalog.json"), {"items": []})
-            catalog_id = format_catalog_id(next_catalog_number(catalog, existing))
+            catalog = load_distributed_catalog(self.settings.data("catalog"))
+            catalog_id = format_catalog_id(next_catalog_number(catalog, existing, memes))
             memes.setdefault("roomId", self.settings.room_id)
             memes, created = add_confirmed_meme(memes, candidate, resolved, catalog_id)
             write_json_atomic(memes_path, memes)
@@ -142,16 +148,21 @@ class AdminService:
             if not existing_path.is_file():
                 raise ValueError("缺少 data/existing_index.json，请先运行 sync-existing 再发布")
             memes_path = self.settings.data("memes.json")
-            catalog_path = self.settings.data("catalog.json")
+            catalog_path = self.settings.data("catalog")
+            legacy_catalog_path = self.settings.data("catalog.json")
+            trends_path = self.settings.data("trends/daily.json")
             existing = read_json(existing_path, {"items": {}, "total": 0})
             memes = read_json(memes_path, {"roomId": self.settings.room_id, "memes": []})
-            previous = read_json(catalog_path, {"items": []})
+            previous = load_distributed_catalog(catalog_path)
             catalog = build_catalog(existing, memes, self.settings.room_id, previous)
-            write_json_atomic(catalog_path, catalog)
+            manifest = write_distributed_catalog(catalog, catalog_path, trends_path)
+            if legacy_catalog_path.is_file():
+                legacy_catalog_path.unlink()
 
             public_files = [
                 memes_path,
                 catalog_path,
+                trends_path,
                 self.settings.data("events.json"),
                 self.settings.data("sessions.json"),
                 self.settings.data("tags.json"),
@@ -162,7 +173,7 @@ class AdminService:
             return {
                 "published": message is not None,
                 "message": message or "没有需要发布的公开数据变更",
-                "catalogItems": catalog["summary"]["mergedItems"],
+                "catalogItems": manifest["total"],
                 "state": self.state(),
             }
 

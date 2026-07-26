@@ -11,7 +11,13 @@ from pathlib import Path
 
 from .aggregate import build_candidates
 from .admin import run_admin
-from .catalog import build_catalog, format_catalog_id, next_catalog_number
+from .catalog import (
+    build_catalog,
+    format_catalog_id,
+    load_distributed_catalog,
+    next_catalog_number,
+    write_distributed_catalog,
+)
 from .collection_runner import CollectionSettings, run_collection
 from .config import existing_api_url, existing_page_size, load_dotenv, user_hash_salt
 from .database import DanmakuDatabase
@@ -26,7 +32,9 @@ LOGGER = logging.getLogger(__name__)
 DEFAULT_DATABASE = Path("data/danmaku.db")
 DEFAULT_EXISTING_INDEX = Path("data/existing_index.json")
 DEFAULT_CANDIDATES = Path("data/candidates.json")
-DEFAULT_CATALOG = Path("data/catalog.json")
+DEFAULT_CATALOG = Path("data/catalog")
+DEFAULT_LEGACY_CATALOG = Path("data/catalog.json")
+DEFAULT_TRENDS = Path("data/trends/daily.json")
 DEFAULT_SESSIONS = Path("data/sessions.json")
 DEFAULT_TAGS = Path("data/tags.json")
 DEFAULT_REVIEW_STATE = Path("data/review_state.json")
@@ -78,13 +86,17 @@ def create_parser() -> argparse.ArgumentParser:
     add_common_room(catalog)
     catalog.add_argument("--existing-index", type=path_argument, default=DEFAULT_EXISTING_INDEX)
     catalog.add_argument("--memes", type=path_argument, default=Path("data/memes.json"))
-    catalog.add_argument("--output", type=path_argument, default=DEFAULT_CATALOG)
+    catalog.add_argument("--output", type=path_argument, default=DEFAULT_CATALOG, help="Catalog output directory")
+    catalog.add_argument("--trends", type=path_argument, default=DEFAULT_TRENDS)
+    catalog.add_argument("--legacy-catalog", type=path_argument, default=DEFAULT_LEGACY_CATALOG)
 
     review = subparsers.add_parser("review-candidates", help="Interactively confirm candidates and enter tag IDs")
     review.add_argument("--candidates", type=path_argument, default=DEFAULT_CANDIDATES)
     review.add_argument("--memes", type=path_argument, default=Path("data/memes.json"))
     review.add_argument("--existing-index", type=path_argument, default=DEFAULT_EXISTING_INDEX)
     review.add_argument("--catalog", type=path_argument, default=DEFAULT_CATALOG)
+    review.add_argument("--trends", type=path_argument, default=DEFAULT_TRENDS)
+    review.add_argument("--legacy-catalog", type=path_argument, default=DEFAULT_LEGACY_CATALOG)
     review.add_argument("--tags", type=path_argument, default=DEFAULT_TAGS)
     review.add_argument("--review-state", type=path_argument, default=DEFAULT_REVIEW_STATE)
     review.add_argument("--no-publish", action="store_true", help="Keep reviewed data local instead of committing and pushing it")
@@ -120,6 +132,8 @@ def create_parser() -> argparse.ArgumentParser:
     collect_review.add_argument("--output", type=path_argument, default=DEFAULT_CANDIDATES)
     collect_review.add_argument("--sessions", type=path_argument, default=DEFAULT_SESSIONS)
     collect_review.add_argument("--catalog", type=path_argument, default=DEFAULT_CATALOG)
+    collect_review.add_argument("--trends", type=path_argument, default=DEFAULT_TRENDS)
+    collect_review.add_argument("--legacy-catalog", type=path_argument, default=DEFAULT_LEGACY_CATALOG)
     collect_review.add_argument("--tags", type=path_argument, default=DEFAULT_TAGS)
     collect_review.add_argument("--review-state", type=path_argument, default=DEFAULT_REVIEW_STATE)
     collect_review.add_argument("--no-publish", action="store_true")
@@ -193,10 +207,19 @@ def _run_import_jsonl(args: argparse.Namespace) -> None:
 def _run_catalog(args: argparse.Namespace) -> None:
     existing_index = read_json(args.existing_index, {"items": {}, "total": 0})
     memes = read_json(args.memes, {"memes": []})
-    previous_catalog = read_json(args.output, {"items": []})
+    previous_catalog = (
+        load_distributed_catalog(args.output)
+        if args.output.is_dir()
+        else read_json(args.legacy_catalog, {"items": []})
+    )
     payload = build_catalog(existing_index, memes, args.room_id, previous_catalog)
-    write_json_atomic(args.output, payload)
-    print(f"Wrote {payload['summary']['mergedItems']} catalog items to {args.output}")
+    manifest = write_distributed_catalog(payload, args.output, args.trends)
+    if args.legacy_catalog.is_file():
+        args.legacy_catalog.unlink()
+    print(
+        f"Wrote {manifest['total']} catalog items: {manifest['active']['count']} active, "
+        f"{len(manifest['archives'])} archive shards"
+    )
 
 
 def _run_review_candidates(args: argparse.Namespace) -> None:
@@ -211,11 +234,11 @@ def _run_review_candidates(args: argparse.Namespace) -> None:
         print("No unreviewed candidates. Generate a new candidate file after the next collection.")
         return
     existing_index = read_json(args.existing_index, {"items": {}})
-    catalog = read_json(args.catalog, {"items": []})
+    catalog = load_distributed_catalog(args.catalog)
     labels = tag_labels(read_json(args.tags, {"tags": {}}))
     if not labels:
         raise ValueError(f"tag catalog has no usable tags: {args.tags}")
-    next_number = next_catalog_number(catalog, existing_index)
+    next_number = next_catalog_number(catalog, existing_index, memes)
     added = 0
     rejected = 0
     changed = False
@@ -267,9 +290,13 @@ def _run_review_candidates(args: argparse.Namespace) -> None:
 
     if changed:
         payload = build_catalog(existing_index, memes, args.room_id, catalog)
-        write_json_atomic(args.catalog, payload)
+        write_distributed_catalog(payload, args.catalog, args.trends)
+        if args.legacy_catalog.is_file():
+            args.legacy_catalog.unlink()
         if not args.no_publish:
-            message = publish_curated_data(Path.cwd(), [args.memes, args.catalog], added)
+            message = publish_curated_data(
+                Path.cwd(), [args.memes, args.catalog, args.trends], added
+            )
             print("Pushed to GitHub." if message else "No curated-data changes to push.")
         print(f"已更新 {args.memes} 和 {args.catalog}，新增 {added} 条。")
     else:

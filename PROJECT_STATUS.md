@@ -174,3 +174,12 @@ publishing. The suite now has 31 passing tests, the localhost HTTP smoke test
 returns the real 100-item queue and eight managed documents, JavaScript syntax
 passes, the wheel contains all three admin assets, and both review/content views
 were checked in a real browser without console errors.
+
+Catalog performance was measured before starting a migration. The current
+`catalog.json` has 21,603 items and is 10.66 MiB uncompressed (1.97 MiB gzip),
+and the website currently downloads and parses all of it before slicing a
+50-item page in memory. Every record has a usable source date. Keeping May,
+June, and July 2026 active would retain 2,498 items at roughly 0.9 MiB raw;
+the remaining 20 months can be immutable monthly shards. The recommended next
+step is therefore active-plus-monthly-archive lazy loading, not merely visual
+pagination over the same monolithic download.

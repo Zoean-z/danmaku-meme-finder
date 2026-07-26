@@ -5,7 +5,10 @@ Tracked in GitHub:
 - `memes.json`: the small, manually curated public meme library.
 - `candidates.json`: the current candidate snapshot for review.
 - `candidates-deduplicated.json`: an optional current snapshot that collapses obvious text variants while retaining them in `similarVariants`.
-- `catalog.json`: the static website catalog merged from the legacy index and local confirmed memes.
+- `catalog/manifest.json`: catalog totals plus active and archive shard metadata.
+- `catalog/active.json`: the current month and two preceding months for the website's initial load.
+- `catalog/archive/YYYY-MM.json`: immutable older records grouped by latest source month.
+- `trends/daily.json`: small precomputed historical totals for charts and event summaries.
 - `sessions.json`: public live-session snapshots with presentation fields, counts, and collector observation metadata.
 - `tags.json`: the public code-to-label tag catalog used by local review and the website.
 - `events.json`: manually maintained tournament date ranges and website cover paths.

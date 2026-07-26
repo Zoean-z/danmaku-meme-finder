@@ -1,8 +1,7 @@
 # Current Goal
 
-Add a small localhost-only web administration workspace for reviewing candidates
-and maintaining the tracked JSON content without replacing the local-first
-SQLite/CLI pipeline.
+Replace the monolithic website catalog with a small active catalog plus immutable
+monthly archive shards, then make the website load archives only when requested.
 
 # Active Checklist
 
@@ -38,6 +37,13 @@ SQLite/CLI pipeline.
 - [x] Build the candidate-review and structured JSON editing interface
 - [x] Add an explicit GitHub publish action and safety checks
 - [x] Add tests, documentation, and a production smoke test
+- [x] Measure current catalog size and date distribution
+- [ ] Export a manifest, a three-month active catalog, and monthly archive shards
+- [ ] Export a small daily trend summary so historical charts do not load archive items
+- [ ] Keep stable five-digit IDs and source metadata unchanged across shards
+- [ ] Switch the website's initial load from catalog.json to catalog/active.json
+- [ ] Add archive-month lazy loading and preserve 50-item client pagination
+- [ ] Remove the monolithic catalog only after the website migration is verified
 
 # Decisions
 
@@ -47,17 +53,20 @@ SQLite/CLI pipeline.
 - GitHub distributes `memes.json` and candidate snapshots only; raw data stays local.
 - Raw messages remain in SQLite for repeat counting; existing-meme filtering applies to generated candidates.
 - Merge the legacy API and local confirmed memes offline into one GitHub JSON snapshot; do not merge them in the browser.
-- The first catalog is a single full snapshot; retain legacy tag IDs even without a label map.
+- The catalog is distributed as an active snapshot plus monthly archives; retain legacy tag IDs and source metadata unchanged.
 - Catalog items use stable five-digit numeric IDs; original upstream IDs remain source metadata.
 - Store room metadata once per collection; date fields describe local observation, not asserted platform start time.
 - Keep the tag code-to-label map as tracked JSON; review publishes only formal memes and catalog data.
 - Keep rejected-candidate state local and ignored; do not delete the Git-tracked candidate snapshot after review.
 - Keep event metadata in one manual date-range table; the website joins it by inclusive local calendar date.
 - Keep report prose and session summaries in tracked JSON; the website renders them without inventing copy at runtime.
-- Keep daily trend data derived from the catalog until a separately maintained snapshot is demonstrably useful.
+- Generate daily trend data during catalog export so charts and old event totals remain available without downloading archive items.
 - Bind the admin server to localhost and use the standard library; do not add a public backend or database service.
 - Keep candidate review as the primary workspace; expose events, sessions, reports, and tags as validated editors.
 - Require an explicit click before any Git commit/push operation.
+- Treat the current month plus two previous months as the maintained active set; older months become read-only archives.
+- Shard archives by latest source month so every catalog item appears in exactly one file.
+- Do not add page-sized files yet; monthly shards already cap normal fetches near one megabyte and keep filtering practical.
 
 # Blockers
 
@@ -68,5 +77,5 @@ SQLite/CLI pipeline.
 
 # Next Step
 
-Use the local admin for the next real review session. Add schema-specific forms
-only for content types where the JSON editor proves too slow in normal use.
+Implement the catalog exporter and migration compatibility tests, then update
+the website adapter to load the active set first and archive months on demand.
