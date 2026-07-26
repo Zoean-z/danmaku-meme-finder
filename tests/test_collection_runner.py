@@ -31,6 +31,7 @@ def test_import_and_candidate_build_keep_repeated_non_existing_text(tmp_path: Pa
         existing_index_path=existing_path,
         output_path=output_path,
         similarity_threshold=None,
+        window_hours=48,
     )
 
     result = import_pending(settings, "salt")
