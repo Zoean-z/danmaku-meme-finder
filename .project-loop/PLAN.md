@@ -61,5 +61,6 @@ only small curated JSON snapshots through GitHub.
 
 # Next Step
 
-Finish the website adapter migration so events, sessions, tags, and monthly
-reports come from the tracked data files, then validate and publish the result.
+Maintain new sessions and monthly articles as content is reviewed. Add a tracked
+daily trend snapshot only when the catalog-derived trend becomes too slow or
+needs counts that the catalog cannot represent accurately.
