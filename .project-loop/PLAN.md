@@ -38,12 +38,12 @@ monthly archive shards, then make the website load archives only when requested.
 - [x] Add an explicit GitHub publish action and safety checks
 - [x] Add tests, documentation, and a production smoke test
 - [x] Measure current catalog size and date distribution
-- [ ] Export a manifest, a three-month active catalog, and monthly archive shards
-- [ ] Export a small daily trend summary so historical charts do not load archive items
-- [ ] Keep stable five-digit IDs and source metadata unchanged across shards
-- [ ] Switch the website's initial load from catalog.json to catalog/active.json
-- [ ] Add archive-month lazy loading and preserve 50-item client pagination
-- [ ] Remove the monolithic catalog only after the website migration is verified
+- [x] Export a manifest, a three-month active catalog, and monthly archive shards
+- [x] Export a small daily trend summary so historical charts do not load archive items
+- [x] Keep stable five-digit IDs and source metadata unchanged across shards
+- [x] Switch the website's initial load from catalog.json to catalog/active.json
+- [x] Add archive-month lazy loading and preserve 50-item client pagination
+- [x] Remove the monolithic catalog after the website migration is verified
 
 # Decisions
 
@@ -77,5 +77,5 @@ monthly archive shards, then make the website load archives only when requested.
 
 # Next Step
 
-Implement the catalog exporter and migration compatibility tests, then update
-the website adapter to load the active set first and archive months on demand.
+Use the local admin workflow for normal catalog maintenance and watch real site
+traffic before considering smaller-than-monthly archive shards.

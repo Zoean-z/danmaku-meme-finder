@@ -183,3 +183,13 @@ June, and July 2026 active would retain 2,498 items at roughly 0.9 MiB raw;
 the remaining 20 months can be immutable monthly shards. The recommended next
 step is therefore active-plus-monthly-archive lazy loading, not merely visual
 pagination over the same monolithic download.
+
+The catalog migration is complete and published. `data/catalog/manifest.json`
+now describes a 2,498-item active set for May through July 2026 and 20 immutable
+monthly archive shards containing the other 19,105 items. The former 10.66 MiB
+`data/catalog.json` monolith has been removed. A 617-point daily trend summary
+keeps historical charts and event totals available without loading archived
+records. The website loads only the active catalog initially, fetches an archive
+month when an old date or event requests it, and retains 50-item client pages.
+All 33 Python tests, package import compilation, and the website production
+build pass; Sites version 6 is deployed in production.
