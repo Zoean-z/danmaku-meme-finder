@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>6657 数据管理</title>
+    <link rel="stylesheet" href="/app.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-mark">65</span>
+          <div><strong>6657 数据管理</strong><small>仅在本机运行</small></div>
+        </div>
+        <nav aria-label="管理导航">
+          <button class="nav-item active" data-view="review"><span>候选审核</span><em id="pending-badge">0</em></button>
+          <button class="nav-item" data-view="content"><span>内容数据</span><em>JSON</em></button>
+          <button class="nav-item" data-view="publish"><span>发布中心</span><em>Git</em></button>
+        </nav>
+        <div class="sidebar-foot">
+          <span class="status-dot"></span>
+          <p>本地文件自动原子写入<br />公开数据需手动发布</p>
+        </div>
+      </aside>
+
+      <main>
+        <header class="topbar">
+          <div><span id="eyebrow">审核队列</span><h1 id="page-title">把值得保留的弹幕挑出来</h1></div>
+          <button id="refresh-button" class="quiet-button">刷新数据</button>
+        </header>
+
+        <section id="review-view" class="view active">
+          <div class="metric-strip" id="metrics"></div>
+          <div class="review-layout">
+            <section class="candidate-workspace">
+              <div class="candidate-meta"><span id="candidate-progress">0 / 0</span><span id="candidate-source">等待载入</span></div>
+              <blockquote id="candidate-text">正在读取候选数据……</blockquote>
+              <div class="candidate-facts" id="candidate-facts"></div>
+              <div class="tag-heading"><strong>选择标签</strong><span>支持多选；每次都显示完整列表</span></div>
+              <div class="tag-list" id="tag-list"></div>
+              <div class="review-actions">
+                <button id="reject-button" class="danger-button">不通过 <kbd>X</kbd></button>
+                <button id="skip-button" class="quiet-button">稍后再看 <kbd>S</kbd></button>
+                <button id="approve-button" class="primary-button">通过并保存 <kbd>Enter</kbd></button>
+              </div>
+            </section>
+            <aside class="review-context">
+              <span>审核提示</span>
+              <h2>只做判断，不改原文</h2>
+              <p>通过后写入正式梗库，不通过只记录在本地审核状态。目录会在发布时一次性重建。</p>
+              <dl><div><dt>原始候选</dt><dd id="context-total">0</dd></div><div><dt>待审核</dt><dd id="context-pending">0</dd></div><div><dt>已确认</dt><dd id="context-approved">0</dd></div></dl>
+            </aside>
+          </div>
+        </section>
+
+        <section id="content-view" class="view">
+          <div class="content-toolbar">
+            <div><span>结构化内容</span><h2>集中维护网站数据</h2></div>
+            <button id="new-report-button" class="quiet-button">新建月报</button>
+          </div>
+          <div class="editor-layout">
+            <div id="document-list" class="document-list"></div>
+            <section class="json-editor">
+              <div class="editor-head"><div><span id="document-key">—</span><strong id="document-title">选择数据文件</strong></div><button id="save-document-button" class="primary-button">验证并保存</button></div>
+              <textarea id="document-editor" spellcheck="false" aria-label="JSON 编辑器"></textarea>
+              <p class="editor-help">保存时会检查顶层结构，并使用临时文件原子替换。月报文件会自动同步月报索引。</p>
+            </section>
+          </div>
+        </section>
+
+        <section id="publish-view" class="view">
+          <div class="publish-panel">
+            <span>显式发布</span>
+            <h2>确认后才会更新 GitHub</h2>
+            <p>发布会用本地已有梗索引重建 <code>catalog.json</code>，只提交正式梗库、标签、赛事、直播场次和月报数据，不包含 SQLite、JSONL 或审核拒绝记录。</p>
+            <div class="publish-checks"><div><strong>本地审核</strong><small>随时保存，不触发 Git</small></div><div><strong>目录重建</strong><small>发布时统一执行</small></div><div><strong>远端更新</strong><small>需要点击下面按钮确认</small></div></div>
+            <button id="publish-button" class="primary-button publish-button">重建目录并发布到 GitHub</button>
+            <p id="publish-result" class="publish-result"></p>
+          </div>
+        </section>
+      </main>
+    </div>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <script src="/app.js"></script>
+  </body>
+</html>

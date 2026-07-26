@@ -1,8 +1,8 @@
 # Current Goal
 
-Use `douyudm` v3.2.0's current WebSocket implementation to write JSONL, then
-import that local stream into the existing SQLite/candidate pipeline. Publish
-only small curated JSON snapshots through GitHub.
+Add a small localhost-only web administration workspace for reviewing candidates
+and maintaining the tracked JSON content without replacing the local-first
+SQLite/CLI pipeline.
 
 # Active Checklist
 
@@ -34,6 +34,10 @@ only small curated JSON snapshots through GitHub.
 - [x] Add independently maintainable monthly report index and article files
 - [x] Make the website load events, sessions, tags, and monthly reports from GitHub JSON
 - [x] Validate the Python suite and production website build after the data migration
+- [x] Define the local admin API and reuse existing review/publish behavior
+- [x] Build the candidate-review and structured JSON editing interface
+- [x] Add an explicit GitHub publish action and safety checks
+- [x] Add tests, documentation, and a production smoke test
 
 # Decisions
 
@@ -51,6 +55,9 @@ only small curated JSON snapshots through GitHub.
 - Keep event metadata in one manual date-range table; the website joins it by inclusive local calendar date.
 - Keep report prose and session summaries in tracked JSON; the website renders them without inventing copy at runtime.
 - Keep daily trend data derived from the catalog until a separately maintained snapshot is demonstrably useful.
+- Bind the admin server to localhost and use the standard library; do not add a public backend or database service.
+- Keep candidate review as the primary workspace; expose events, sessions, reports, and tags as validated editors.
+- Require an explicit click before any Git commit/push operation.
 
 # Blockers
 
@@ -61,6 +68,5 @@ only small curated JSON snapshots through GitHub.
 
 # Next Step
 
-Maintain new sessions and monthly articles as content is reviewed. Add a tracked
-daily trend snapshot only when the catalog-derived trend becomes too slow or
-needs counts that the catalog cannot represent accurately.
+Use the local admin for the next real review session. Add schema-specific forms
+only for content types where the JSON editor proves too slow in normal use.

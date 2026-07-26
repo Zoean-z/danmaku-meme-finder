@@ -156,3 +156,21 @@ generator have been removed. Existing site artwork is copied into stable event,
 session, and report cover paths so each JSON record can be updated independently.
 The Python suite passes all 26 tests, the package compiles, and the website
 production build succeeds after the migration.
+
+The next project direction is a localhost-only management workspace. It will
+reuse the existing candidate review, atomic JSON writing, catalog building, and
+Git publishing code while adding a browser UI for high-volume review and manual
+maintenance of events, sessions, tags, and monthly reports. This is an operator
+tool, not a public service or replacement for SQLite/CLI collection.
+
+The local management workspace is implemented under the `admin` CLI command.
+It provides a dense candidate-review surface with complete tag selection,
+approve/reject/skip actions and keyboard shortcuts; a central validated editor
+for events, sessions, tags, formal memes, and monthly reports; automatic monthly
+index maintenance; and an explicit publish action that rebuilds the catalog and
+pushes only named public files. It binds only to `127.0.0.1`, never exposes raw
+JSONL or SQLite data, and requires a current local existing-index cache before
+publishing. The suite now has 31 passing tests, the localhost HTTP smoke test
+returns the real 100-item queue and eight managed documents, JavaScript syntax
+passes, the wheel contains all three admin assets, and both review/content views
+were checked in a real browser without console errors.

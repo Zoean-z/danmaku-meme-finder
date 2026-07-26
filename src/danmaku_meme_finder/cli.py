@@ -10,6 +10,7 @@ from datetime import datetime
 from pathlib import Path
 
 from .aggregate import build_candidates
+from .admin import run_admin
 from .catalog import build_catalog, format_catalog_id, next_catalog_number
 from .collection_runner import CollectionSettings, run_collection
 from .config import existing_api_url, existing_page_size, load_dotenv, user_hash_salt
@@ -140,6 +141,10 @@ def create_parser() -> argparse.ArgumentParser:
     backfill = subparsers.add_parser("backfill-sessions", help="Associate stored historical messages with session JSON")
     backfill.add_argument("--database", type=path_argument, default=DEFAULT_DATABASE)
     backfill.add_argument("--sessions", type=path_argument, default=DEFAULT_SESSIONS)
+
+    admin = subparsers.add_parser("admin", help="Open the localhost data management workspace")
+    admin.add_argument("--port", type=int, default=8765)
+    admin.add_argument("--no-open", action="store_true", help="Do not open the browser automatically")
     return parser
 
 
@@ -381,6 +386,8 @@ def main(argv: list[str] | None = None) -> int:
             _run_stats(args)
         elif args.command == "backfill-sessions":
             _run_backfill_sessions(args)
+        elif args.command == "admin":
+            run_admin(Path.cwd(), args.port, not args.no_open)
         return 0
     except KeyboardInterrupt:
         LOGGER.info("Stopped by user")

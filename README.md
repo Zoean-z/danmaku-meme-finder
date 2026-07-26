@@ -46,6 +46,31 @@ python -m danmaku_meme_finder.cli stats
 
 ## 命令
 
+### 本地管理后台
+
+候选和网站内容较多时，推荐直接打开本地管理后台：
+
+```bash
+python -m danmaku_meme_finder.cli admin
+```
+
+它只监听 `http://127.0.0.1:8765`，默认自动打开浏览器。后台提供：
+
+- 候选逐条审核、完整标签点选、通过、不通过和键盘快捷键。
+- 集中编辑 `events.json`、`sessions.json`、`tags.json`、`memes.json` 和月报文件。
+- 新建月报时自动创建文章并更新 `monthly-reports/index.json`。
+- 显式“发布到 GitHub”按钮；点击确认后才会重建 `catalog.json`、提交并推送公开数据。
+
+不希望自动打开浏览器，或端口被占用时：
+
+```bash
+python -m danmaku_meme_finder.cli admin --no-open --port 8766
+```
+
+管理后台不会读取或上传 `live.jsonl` 的用户标识，也不会通过网页公开监听。发布前需要本机存在最新的 `data/existing_index.json`；缺失时先执行 `sync-existing`，以免用不完整的旧接口数据重建目录。
+
+### 采集与命令行审核
+
 推荐直接运行一条命令进行本地采样。它启动 Node 的 `douyudm` 采集器、每 5 秒导入新增 JSONL 到 SQLite；停止时会最终落库并生成候选。候选默认要求至少重复 3 次、排除 `existing_index.json` 中已有文本，并合并明显的近似文本变体。原始弹幕仍只保留在本机数据库，绝不会上传：
 
 ```bash
