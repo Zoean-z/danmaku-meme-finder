@@ -1,7 +1,7 @@
 # Current Goal
 
-Preserve exact collection-session provenance from raw danmaku through curated
-catalog records, and make events and sessions easy to create in the local admin.
+Keep each manual review session small and high-signal by limiting the queue to
+20 candidates and collapsing obvious textual variants by default.
 
 # Active Checklist
 
@@ -55,6 +55,11 @@ catalog records, and make events and sessions easy to create in the local admin.
 - [x] Add a compact full-catalog search index without restoring the monolithic initial download
 - [x] Rename the website's active-only "全部梗" view to "近期收录"
 - [x] Expose historical records through on-demand full-library search or archive browsing
+- [x] Change every candidate-generation entry point from 100 to 20 by default
+- [x] Make conservative lexical near-duplicate clustering the default
+- [x] Remove common mention prefixes and activity-copy variants before comparison
+- [x] Re-rank merged families by their combined evidence while preserving the representative text
+- [x] Regenerate the current review snapshot and verify the resulting 20 candidates
 
 # Decisions
 
@@ -83,6 +88,8 @@ catalog records, and make events and sessions easy to create in the local admin.
 - Recompute the full-catalog hot top 100 only when local data is published; website visits read the resulting static snapshot and do no ranking work.
 - Do not freeze the hot list permanently, because newly collected memes must be able to enter it.
 - Call the three-month active view "近期收录"; reserve "全部梗" for a real full-library view.
+- Candidate review should show at most 20 high-signal representatives per run.
+- Near-duplicate filtering is a deterministic source rule, not an optional review-time cleanup.
 
 # Blockers
 
@@ -93,6 +100,5 @@ catalog records, and make events and sessions easy to create in the local admin.
 
 # Next Step
 
-Use the three explicit website scopes for normal browsing: recent items for the
-fast default view, the full-catalog top 100 for ranking, and the on-demand
-compact index for historical browsing and search.
+Use the regenerated 20-item snapshot for the next review; tune the lexical
+threshold only from concrete false-positive or false-negative examples.

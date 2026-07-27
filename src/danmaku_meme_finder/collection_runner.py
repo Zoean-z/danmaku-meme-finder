@@ -11,7 +11,7 @@ from typing import Any
 
 import httpx
 
-from .aggregate import build_candidates
+from .aggregate import DEFAULT_SIMILARITY_THRESHOLD, build_candidates
 from .database import DanmakuDatabase
 from .exporter import read_json, write_json_atomic
 from .import_jsonl import import_jsonl
@@ -30,12 +30,13 @@ class CollectionSettings:
     output_path: Path
     memes_path: Path = Path("data/memes.json")
     sessions_path: Path = Path("data/sessions.json")
+    review_state_path: Path = Path("data/review_state.json")
     flush_interval: float = 5.0
     batch_size: int = 100
     window_hours: int = 24
     min_count: int = 3
-    max_candidates: int = 100
-    similarity_threshold: float | None = 0.88
+    max_candidates: int = 20
+    similarity_threshold: float | None = DEFAULT_SIMILARITY_THRESHOLD
     duration_seconds: int | None = None
 
 
@@ -63,6 +64,7 @@ def build_current_candidates(settings: CollectionSettings) -> dict[str, Any]:
             settings.existing_index_path,
             settings.similarity_threshold,
             settings.memes_path,
+            settings.review_state_path,
         )
     write_json_atomic(settings.output_path, payload)
     return payload

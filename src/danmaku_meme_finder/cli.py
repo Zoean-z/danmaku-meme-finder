@@ -9,7 +9,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from .aggregate import build_candidates
+from .aggregate import DEFAULT_SIMILARITY_THRESHOLD, build_candidates
 from .admin import run_admin
 from .catalog import (
     build_catalog,
@@ -71,16 +71,17 @@ def create_parser() -> argparse.ArgumentParser:
     add_common_room(candidates)
     candidates.add_argument("--window-hours", type=int, default=24)
     candidates.add_argument("--min-count", type=int, default=3)
-    candidates.add_argument("--max-candidates", type=int, default=100)
+    candidates.add_argument("--max-candidates", type=int, default=20)
     candidates.add_argument("--database", type=path_argument, default=DEFAULT_DATABASE)
     candidates.add_argument("--existing-index", type=path_argument, default=DEFAULT_EXISTING_INDEX)
     candidates.add_argument("--memes", type=path_argument, default=Path("data/memes.json"))
+    candidates.add_argument("--review-state", type=path_argument, default=DEFAULT_REVIEW_STATE)
     candidates.add_argument("--output", type=path_argument, default=DEFAULT_CANDIDATES)
     candidates.add_argument(
         "--similarity-threshold",
         type=float,
-        default=None,
-        help="Optionally merge obvious lexical variants (0.5 to 1.0; try 0.88)",
+        default=DEFAULT_SIMILARITY_THRESHOLD,
+        help=f"Merge obvious lexical variants (0.5 to 1.0; default {DEFAULT_SIMILARITY_THRESHOLD})",
     )
 
     catalog = subparsers.add_parser("build-catalog", help="Merge legacy and local memes for static GitHub reads")
@@ -114,12 +115,13 @@ def create_parser() -> argparse.ArgumentParser:
     collect.add_argument("--memes", type=path_argument, default=Path("data/memes.json"))
     collect.add_argument("--output", type=path_argument, default=DEFAULT_CANDIDATES)
     collect.add_argument("--sessions", type=path_argument, default=DEFAULT_SESSIONS)
+    collect.add_argument("--review-state", type=path_argument, default=DEFAULT_REVIEW_STATE)
     collect.add_argument("--flush-interval", type=float, default=5.0)
     collect.add_argument("--batch-size", type=int, default=100)
     collect.add_argument("--window-hours", type=int, default=24)
     collect.add_argument("--min-count", type=int, default=3)
-    collect.add_argument("--max-candidates", type=int, default=100)
-    collect.add_argument("--similarity-threshold", type=float, default=0.88)
+    collect.add_argument("--max-candidates", type=int, default=20)
+    collect.add_argument("--similarity-threshold", type=float, default=DEFAULT_SIMILARITY_THRESHOLD)
     collect.add_argument("--duration", type=int, default=None, help="Optional automatic stop time in seconds")
     collect.add_argument("--refresh-existing", action="store_true", help="Refresh the external meme index first")
 
@@ -144,8 +146,8 @@ def create_parser() -> argparse.ArgumentParser:
     collect_review.add_argument("--batch-size", type=int, default=100)
     collect_review.add_argument("--window-hours", type=int, default=24)
     collect_review.add_argument("--min-count", type=int, default=3)
-    collect_review.add_argument("--max-candidates", type=int, default=100)
-    collect_review.add_argument("--similarity-threshold", type=float, default=0.88)
+    collect_review.add_argument("--max-candidates", type=int, default=20)
+    collect_review.add_argument("--similarity-threshold", type=float, default=DEFAULT_SIMILARITY_THRESHOLD)
     collect_review.add_argument("--duration", type=int, default=None, help="Optional automatic stop time in seconds")
     collect_review.add_argument("--refresh-existing", action="store_true")
 
@@ -195,6 +197,7 @@ def _run_candidates(args: argparse.Namespace) -> None:
             args.existing_index,
             args.similarity_threshold,
             args.memes,
+            args.review_state,
         )
     write_json_atomic(args.output, payload)
     print(f"Wrote {len(payload['candidates'])} candidates to {args.output}")
@@ -337,6 +340,7 @@ async def _run_collect(args: argparse.Namespace) -> None:
         memes_path=args.memes,
         output_path=args.output,
         sessions_path=args.sessions,
+        review_state_path=args.review_state,
         flush_interval=args.flush_interval,
         batch_size=args.batch_size,
         window_hours=args.window_hours,

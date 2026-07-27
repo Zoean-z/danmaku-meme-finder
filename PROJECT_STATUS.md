@@ -220,3 +220,13 @@ The restored ranking starts with the same historical leaders as the former full
 catalog. The website labels its three-month view as recent content and provides
 separate hot-ranking and historical-library navigation. All 39 Python tests,
 package compilation, diff checks, and the website production build pass.
+
+Manual review is now capped at 20 candidates across `build-candidates`,
+`collect`, and `collect-and-review`. Lexical near-duplicate clustering is on by
+default at 0.82, ignores mention prefixes and decorative suffixes, rejects
+activity/control copy, and filters variants of existing, confirmed, or locally
+rejected texts before applying the cap. Similar families retain one ranked
+representative plus `similarVariants` and `familyCount`. The current 48-hour
+snapshot was rebuilt to 20 items: 98 existing-library variants and 208 reviewed
+variants were filtered, while 46 same-batch variants were merged. All 44 tests,
+package compilation, and diff checks pass.

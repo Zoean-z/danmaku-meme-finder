@@ -106,7 +106,7 @@ python -m danmaku_meme_finder.cli build-catalog
 python -m danmaku_meme_finder.cli review-candidates
 ```
 
-一条命令完成采集和审核：运行后持续采集，按 `Ctrl+C`（或使用 `--duration`）安全落库、生成最多 100 条候选并立刻进入审核。每条候选都会显示完整分类列表；输入分类编号或名称即可收录，输入 `x` 或 `n` 表示不通过。拒绝结果会写入本地忽略的 `data/review_state.json`，后续审核不会重复显示。正式收录的内容同样不会重复出现，因此无需删除 Git 跟踪的候选快照：
+一条命令完成采集和审核：运行后持续采集，按 `Ctrl+C`（或使用 `--duration`）安全落库、生成最多 20 条候选并立刻进入审核。候选会默认合并明显的重复、提及用户前缀和轻微改写，并排除与正式梗或历史拒绝项高度相似的内容。每条候选都会显示完整分类列表；输入分类编号或名称即可收录，输入 `x` 或 `n` 表示不通过。拒绝结果会写入本地忽略的 `data/review_state.json`，后续审核不会重复显示。
 
 ```bash
 python -m danmaku_meme_finder.cli collect-and-review --refresh-existing
@@ -148,13 +148,13 @@ python -m danmaku_meme_finder.cli import-jsonl --input data/live.jsonl --checkpo
 生成最近 24 小时候选：
 
 ```bash
-python -m danmaku_meme_finder.cli build-candidates --window-hours 24 --min-count 3 --max-candidates 100
+python -m danmaku_meme_finder.cli build-candidates --window-hours 24 --min-count 3 --max-candidates 20
 ```
 
 如果同一套话有加长版、重复版或轻微改写版，可额外输出一份近似文本去重后的候选。它只使用字符级比较，不会做语义聚类；原始候选文件不会被改写：
 
 ```bash
-python -m danmaku_meme_finder.cli build-candidates --min-count 20 --similarity-threshold 0.88 --output data/candidates-deduplicated.json
+python -m danmaku_meme_finder.cli build-candidates --min-count 20 --similarity-threshold 0.82
 ```
 
 查看本地数据量、最近 24 小时去重数、已有索引和候选数：
@@ -170,7 +170,7 @@ python -m danmaku_meme_finder.cli stats
 - `data/danmaku.db`：本地 SQLite 原始弹幕库，已被忽略，不应提交。
 - `data/existing_index.json`：从已有梗库同步出的规范化比对索引。
 - `data/candidates.json`：稳定排序的候选输出，适合提交到 GitHub 并由后续任务审阅。
-- `data/candidates-deduplicated.json`：可选的近似文本去重结果；代表项的 `similarVariants` 保留被合并的原文和计数。
+- 候选近似去重默认启用；代表项的 `similarVariants` 保留被合并的原文和计数，`familyCount` 表示整个相似文本组的出现总数。
 - `data/memes.json`：人工审核后的正式梗库；`review-candidates` 会以原子方式写入它，并保留 `collectionOccurrences[].sessionId` 场次来源。
 - `data/catalog/manifest.json`：目录总量、活跃月份和历史归档文件清单。
 - `data/catalog/active.json`：最近三个月的活跃目录，网站首屏只读取这一份。

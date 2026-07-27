@@ -123,6 +123,7 @@ def test_similar_candidates_keep_first_ranked_representative() -> None:
     assert merged == 1
     assert len(deduplicated) == 2
     assert deduplicated[0]["text"] == candidates[0]["text"]
+    assert deduplicated[0]["familyCount"] == 13
     assert deduplicated[0]["similarVariants"] == [
         {
             "text": candidates[1]["text"],
@@ -131,3 +132,94 @@ def test_similar_candidates_keep_first_ranked_representative() -> None:
             "uniqueUsers": 2,
         }
     ]
+
+
+def test_default_candidate_deduplication_strips_mentions_and_activity_copy(tmp_path: Path) -> None:
+    database_path = tmp_path / "danmaku.db"
+    existing_path = tmp_path / "existing.json"
+    write_json_atomic(existing_path, {"items": {}})
+    with DanmakuDatabase(database_path) as database:
+        database.insert_many([
+            message("@忍野忍：甜甜圈一个甜甜圈两个甜甜圈三个", 6, "a"),
+            message("@忍野忍：甜甜圈一个甜甜圈两个甜甜圈三个", 5, "b"),
+            message("@忍野忍：甜甜圈一个甜甜圈两个甜甜圈三个", 4, "c"),
+            message("甜甜圈一个甜甜圈两个甜甜圈三个", 3, "d"),
+            message("甜甜圈一个甜甜圈两个甜甜圈三个", 2, "e"),
+            message("甜甜圈一个甜甜圈两个甜甜圈三个", 1, "f"),
+            message("保卫男娘查看活动》", 3, "g"),
+            message("保卫男娘查看活动》", 2, "h"),
+            message("保卫男娘查看活动》", 1, "i"),
+            message("@rain：？", 3, "j"),
+            message("@rain：？", 2, "k"),
+            message("@rain：？", 1, "l"),
+            message("#显示猪头", 3, "m"),
+            message("#显示猪头", 2, "n"),
+            message("#显示猪头", 1, "o"),
+        ])
+        payload = build_candidates(database, 6657, 24, 3, 20, existing_path)
+
+    assert len(payload["candidates"]) == 1
+    assert payload["candidates"][0]["familyCount"] == 6
+    assert payload["similarityDeduplication"]["mergedCandidates"] == 1
+    assert payload["activityFilteredCount"] == 2
+    assert payload["meaninglessFilteredCount"] == 1
+
+
+def test_candidate_family_evidence_affects_final_ranking() -> None:
+    candidates = [
+        {"text": "standalone phrase", "normalizedText": "standalone phrase", "count": 5, "uniqueUsers": 5},
+        {"text": "template phrase one", "normalizedText": "template phrase one", "count": 4, "uniqueUsers": 4},
+        {"text": "@user：template phrase one", "normalizedText": "@user:template phrase one", "count": 4, "uniqueUsers": 3},
+    ]
+
+    deduplicated, merged = deduplicate_similar_candidates(candidates, 0.82)
+
+    assert merged == 1
+    assert deduplicated[0]["text"] == "template phrase one"
+    assert deduplicated[0]["familyCount"] == 8
+
+
+def test_candidate_filters_variants_of_previously_rejected_text(tmp_path: Path) -> None:
+    database_path = tmp_path / "danmaku.db"
+    existing_path = tmp_path / "existing.json"
+    review_state_path = tmp_path / "review-state.json"
+    write_json_atomic(existing_path, {"items": {}})
+    write_json_atomic(review_state_path, {
+        "rejected": {"机器你在哪里家里进白字了": {"text": "机器你在哪里家里进白字了"}}
+    })
+    with DanmakuDatabase(database_path) as database:
+        database.insert_many([
+            message("机器你在哪里？家里进白字了喵", 3, "a"),
+            message("机器你在哪里？家里进白字了喵", 2, "b"),
+            message("机器你在哪里？家里进白字了喵", 1, "c"),
+        ])
+        payload = build_candidates(
+            database,
+            6657,
+            24,
+            3,
+            20,
+            existing_path,
+            review_state_path=review_state_path,
+        )
+
+    assert payload["candidates"] == []
+    assert payload["reviewedSimilarFilteredCount"] == 1
+
+
+def test_candidate_filters_variants_of_existing_catalog_text(tmp_path: Path) -> None:
+    database_path = tmp_path / "danmaku.db"
+    existing_path = tmp_path / "existing.json"
+    write_json_atomic(existing_path, {
+        "items": {"机器你在哪里家里进白字了": {"id": 1}}
+    })
+    with DanmakuDatabase(database_path) as database:
+        database.insert_many([
+            message("@major：机器你在哪里？家里进白字了喵", 3, "a"),
+            message("@major：机器你在哪里？家里进白字了喵", 2, "b"),
+            message("@major：机器你在哪里？家里进白字了喵", 1, "c"),
+        ])
+        payload = build_candidates(database, 6657, 24, 3, 20, existing_path)
+
+    assert payload["candidates"] == []
+    assert payload["existingSimilarFilteredCount"] == 1
