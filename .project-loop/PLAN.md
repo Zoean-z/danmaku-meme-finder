@@ -51,6 +51,10 @@ catalog records, and make events and sessions easy to create in the local admin.
 - [x] Make website session pages filter by session ID with a legacy date fallback
 - [x] Backfill existing local memes from SQLite where exact session evidence exists
 - [x] Validate, publish data changes, and deploy the updated website
+- [x] Export a full-catalog top-100 snapshot during local publishing
+- [x] Add a compact full-catalog search index without restoring the monolithic initial download
+- [x] Rename the website's active-only "全部梗" view to "近期收录"
+- [x] Expose historical records through on-demand full-library search or archive browsing
 
 # Decisions
 
@@ -76,6 +80,9 @@ catalog records, and make events and sessions easy to create in the local admin.
 - Treat the current month plus two previous months as the maintained active set; older months become read-only archives.
 - Shard archives by latest source month so every catalog item appears in exactly one file.
 - Do not add page-sized files yet; monthly shards already cap normal fetches near one megabyte and keep filtering practical.
+- Recompute the full-catalog hot top 100 only when local data is published; website visits read the resulting static snapshot and do no ranking work.
+- Do not freeze the hot list permanently, because newly collected memes must be able to enter it.
+- Call the three-month active view "近期收录"; reserve "全部梗" for a real full-library view.
 
 # Blockers
 
@@ -86,5 +93,6 @@ catalog records, and make events and sessions easy to create in the local admin.
 
 # Next Step
 
-Use the local admin for normal event, session, report, and candidate maintenance;
-new collection runs now carry exact session provenance automatically.
+Use the three explicit website scopes for normal browsing: recent items for the
+fast default view, the full-catalog top 100 for ranking, and the on-demand
+compact index for historical browsing and search.

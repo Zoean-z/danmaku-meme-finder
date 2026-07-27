@@ -7,6 +7,8 @@ Tracked in GitHub:
 - `candidates-deduplicated.json`: an optional current snapshot that collapses obvious text variants while retaining them in `similarVariants`.
 - `catalog/manifest.json`: catalog totals plus active and archive shard metadata.
 - `catalog/active.json`: the current month and two preceding months for the website's initial load.
+- `catalog/hot.json`: the full-catalog top 100, recalculated only during local publishing.
+- `catalog/search-index.json`: a compact, on-demand index for full-library search and history browsing.
 - `catalog/archive/YYYY-MM.json`: immutable older records grouped by latest source month.
 - `trends/daily.json`: small precomputed historical totals for charts and event summaries.
 - `sessions.json`: public live-session snapshots with presentation fields, counts, and collector observation metadata.

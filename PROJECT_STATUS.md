@@ -212,3 +212,11 @@ The session-aware data is published on GitHub and Sites version 7 is live. A
 production HTTP check returned 200; the deployed JavaScript contains the exact
 session filter, and the public session/catalog JSON exposes the reconstructed
 evening session ID.
+
+Full-library discovery is restored without bringing back the monolithic initial
+download. Each local catalog publish now writes a 100-item `catalog/hot.json`
+from all 21,657 records and an on-demand compact `catalog/search-index.json`.
+The restored ranking starts with the same historical leaders as the former full
+catalog. The website labels its three-month view as recent content and provides
+separate hot-ranking and historical-library navigation. All 39 Python tests,
+package compilation, diff checks, and the website production build pass.

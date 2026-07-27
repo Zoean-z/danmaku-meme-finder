@@ -12,6 +12,7 @@ from .normalize import normalize_text
 
 MAX_CATALOG_ID = 99_999
 ACTIVE_MONTH_COUNT = 3
+HOT_CATALOG_LIMIT = 100
 DATE_FIELDS = ("submittedAt", "addedAt", "firstSeenAt", "lastSeenAt")
 
 
@@ -224,6 +225,91 @@ def _item_month(item: dict[str, Any]) -> str:
     return max(dates, default="undated")
 
 
+def _item_latest_at(item: dict[str, Any]) -> str:
+    dates = [
+        value
+        for source in item.get("sources", [])
+        if isinstance(source, dict)
+        for field in DATE_FIELDS
+        if isinstance((value := source.get(field)), str)
+    ]
+    dates.extend(
+        value
+        for source in item.get("sources", [])
+        if isinstance(source, dict)
+        for occurrence in source.get("collectionOccurrences", [])
+        if isinstance(occurrence, dict)
+        for field in ("lastSeenAt", "firstSeenAt", "date")
+        if isinstance((value := occurrence.get(field)), str)
+    )
+    return max(dates, default="")
+
+
+def _item_heat(item: dict[str, Any]) -> int:
+    total = 0
+    sources = item.get("sources", [])
+    if not isinstance(sources, list):
+        return 0
+    for source in sources:
+        if not isinstance(source, dict):
+            continue
+        if source.get("count") is not None:
+            total += int(source.get("count", 0) or 0)
+            continue
+        occurrences = source.get("collectionOccurrences", [])
+        occurrence_count = sum(
+            int(occurrence.get("count", 0) or 0)
+            for occurrence in occurrences
+            if isinstance(occurrence, dict)
+        ) if isinstance(occurrences, list) else 0
+        total += occurrence_count or 1
+    return total
+
+
+def _ranked_items(catalog: dict[str, Any]) -> list[dict[str, Any]]:
+    raw_items = catalog.get("items", [])
+    items = [item for item in raw_items if isinstance(item, dict)] if isinstance(raw_items, list) else []
+    items.sort(key=lambda item: str(item.get("id", "")))
+    items.sort(key=_item_latest_at, reverse=True)
+    items.sort(key=_item_heat, reverse=True)
+    return items
+
+
+def build_hot_catalog(catalog: dict[str, Any], limit: int = HOT_CATALOG_LIMIT) -> dict[str, Any]:
+    """Build a static full-catalog ranking for cheap website reads."""
+    items = _ranked_items(catalog)[:limit]
+    return {
+        "schemaVersion": 1,
+        "generatedAt": catalog.get("generatedAt") or iso_now().isoformat(),
+        "roomId": int(catalog.get("roomId", 6657)),
+        "total": len(items),
+        "items": items,
+    }
+
+
+def build_search_index(catalog: dict[str, Any]) -> dict[str, Any]:
+    """Build a compact full-library index for on-demand browsing and search."""
+    items = [
+        {
+            "id": str(item.get("id", "")),
+            "text": str(item.get("text", "")),
+            "tags": _tags(item.get("tags")),
+            "count": _item_heat(item),
+            "latestAt": _item_latest_at(item),
+            "month": _item_month(item),
+        }
+        for item in _ranked_items(catalog)
+        if item.get("id") and item.get("text")
+    ]
+    return {
+        "schemaVersion": 1,
+        "generatedAt": catalog.get("generatedAt") or iso_now().isoformat(),
+        "roomId": int(catalog.get("roomId", 6657)),
+        "total": len(items),
+        "items": items,
+    }
+
+
 def _previous_month(month: str) -> str:
     year, number = (int(part) for part in month.split("-", 1))
     return f"{year - 1}-12" if number == 1 else f"{year}-{number - 1:02d}"
@@ -285,6 +371,14 @@ def split_catalog(catalog: dict[str, Any], active_month_count: int = ACTIVE_MONT
             "file": "catalog/active.json",
             "months": active_months,
             "count": len(active_items),
+        },
+        "hot": {
+            "file": "catalog/hot.json",
+            "count": min(HOT_CATALOG_LIMIT, len(valid_items)),
+        },
+        "search": {
+            "file": "catalog/search-index.json",
+            "count": len(valid_items),
         },
         "archives": [
             {
@@ -374,6 +468,8 @@ def write_distributed_catalog(
     split = split_catalog(catalog)
     archive_dir = directory / "archive"
     write_json_atomic(directory / "active.json", split["active"])
+    write_json_atomic(directory / "hot.json", build_hot_catalog(catalog))
+    write_json_atomic(directory / "search-index.json", build_search_index(catalog), compact=True)
     expected: set[Path] = set()
     for month, document in split["archives"].items():
         path = archive_dir / f"{month}.json"

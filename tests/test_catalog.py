@@ -3,6 +3,8 @@ from pathlib import Path
 from danmaku_meme_finder.catalog import (
     build_catalog,
     build_daily_trends,
+    build_hot_catalog,
+    build_search_index,
     format_catalog_id,
     load_distributed_catalog,
     split_catalog,
@@ -103,6 +105,41 @@ def test_catalog_splits_recent_three_months_from_archives() -> None:
     assert all_ids == {"00001", "00002", "00003", "00004"}
 
 
+def test_full_catalog_hot_and_search_outputs_include_archives() -> None:
+    catalog = {
+        "generatedAt": "2026-07-26T12:00:00+08:00",
+        "roomId": 6657,
+        "items": [
+            {
+                "id": "00002",
+                "text": "Recent",
+                "tags": ["06"],
+                "sources": [{"submittedAt": "2026-07-01T00:00:00", "count": 2}],
+            },
+            {
+                "id": "00001",
+                "text": "Historic leader",
+                "tags": ["24"],
+                "sources": [{"submittedAt": "2024-01-01T00:00:00", "count": 99}],
+            },
+        ],
+    }
+
+    hot = build_hot_catalog(catalog, limit=1)
+    search = build_search_index(catalog)
+
+    assert hot["items"][0]["id"] == "00001"
+    assert [item["id"] for item in search["items"]] == ["00001", "00002"]
+    assert search["items"][0] == {
+        "id": "00001",
+        "text": "Historic leader",
+        "tags": ["24"],
+        "count": 99,
+        "latestAt": "2024-01-01T00:00:00",
+        "month": "2024-01",
+    }
+
+
 def test_distributed_catalog_round_trip_and_daily_trends(tmp_path: Path) -> None:
     catalog = {
         "generatedAt": "2026-07-26T12:00:00+08:00",
@@ -128,12 +165,16 @@ def test_distributed_catalog_round_trip_and_daily_trends(tmp_path: Path) -> None
     trends = build_daily_trends(catalog)
 
     assert manifest["total"] == 1
+    assert manifest["hot"] == {"file": "catalog/hot.json", "count": 1}
+    assert manifest["search"] == {"file": "catalog/search-index.json", "count": 1}
     assert loaded["items"][0]["id"] == "00007"
     assert trends["points"] == [
         {"date": "2026-04-15", "memeCount": 1, "barrageCount": 75, "tagCounts": {"06": 1, "24": 1}},
         {"date": "2026-07-24", "memeCount": 1, "barrageCount": 1, "tagCounts": {"06": 1, "24": 1}},
     ]
     assert trends_path.is_file()
+    assert (directory / "hot.json").is_file()
+    assert (directory / "search-index.json").is_file()
 
 
 def test_unchanged_archive_keeps_its_original_generated_time(tmp_path: Path) -> None:

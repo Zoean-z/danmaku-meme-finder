@@ -174,6 +174,8 @@ python -m danmaku_meme_finder.cli stats
 - `data/memes.json`：人工审核后的正式梗库；`review-candidates` 会以原子方式写入它，并保留 `collectionOccurrences[].sessionId` 场次来源。
 - `data/catalog/manifest.json`：目录总量、活跃月份和历史归档文件清单。
 - `data/catalog/active.json`：最近三个月的活跃目录，网站首屏只读取这一份。
+- `data/catalog/hot.json`：每次本地发布时从完整目录计算出的热度前 100，网站只读取结果。
+- `data/catalog/search-index.json`：按需加载的全库精简索引，用于历史归档和全库搜索。
 - `data/catalog/archive/YYYY-MM.json`：按最新来源月份归档的旧内容；网站进入对应日期或赛事时再加载。
 - `data/trends/daily.json`：预计算的每日梗数、关联计数和标签计数，避免趋势图下载历史目录。
 - `data/sessions.json`：公开直播场次快照，保存标题、网站封面路径、摘要、统计数和观察时间；发布时根据精确场次来源刷新 `memeCount`，不保存原始弹幕或观众昵称。

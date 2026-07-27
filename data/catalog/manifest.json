@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-07-27T09:42:46.957855+08:00",
+  "generatedAt": "2026-07-27T11:34:48.095804+08:00",
   "roomId": 6657,
   "total": 21657,
   "active": {
@@ -11,6 +11,14 @@
       "2026-07"
     ],
     "count": 2552
+  },
+  "hot": {
+    "file": "catalog/hot.json",
+    "count": 100
+  },
+  "search": {
+    "file": "catalog/search-index.json",
+    "count": 21657
   },
   "archives": [
     {
