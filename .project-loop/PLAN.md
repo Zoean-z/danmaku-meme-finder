@@ -50,7 +50,7 @@ catalog records, and make events and sessions easy to create in the local admin.
 - [x] Add structured new-event and new-session actions to the local admin
 - [x] Make website session pages filter by session ID with a legacy date fallback
 - [x] Backfill existing local memes from SQLite where exact session evidence exists
-- [ ] Validate, publish data changes, and deploy the updated website
+- [x] Validate, publish data changes, and deploy the updated website
 
 # Decisions
 
@@ -86,5 +86,5 @@ catalog records, and make events and sessions easy to create in the local admin.
 
 # Next Step
 
-Publish the session-aware data and code, deploy the compatible website reader,
-then use the admin for normal event and session maintenance.
+Use the local admin for normal event, session, report, and candidate maintenance;
+new collection runs now carry exact session provenance automatically.

@@ -208,3 +208,7 @@ API records that cannot have local session provenance. Unchanged historical
 catalog shards are no longer rewritten solely because the export timestamp
 changed. The Python suite now has 38 passing tests and the updated website
 production build succeeds.
+The session-aware data is published on GitHub and Sites version 7 is live. A
+production HTTP check returned 200; the deployed JavaScript contains the exact
+session filter, and the public session/catalog JSON exposes the reconstructed
+evening session ID.
