@@ -33,6 +33,14 @@ class ExistingMeme(BaseModel):
     submit_time: str | None = None
 
 
+class CollectionOccurrence(BaseModel):
+    sessionId: str
+    date: str
+    count: int
+    firstSeenAt: str
+    lastSeenAt: str
+
+
 class Candidate(BaseModel):
     text: str
     normalizedText: str
@@ -41,3 +49,4 @@ class Candidate(BaseModel):
     firstSeenAt: str
     lastSeenAt: str
     source: str
+    collectionOccurrences: list[CollectionOccurrence] = Field(default_factory=list)

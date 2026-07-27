@@ -11,6 +11,7 @@ def test_add_confirmed_meme_assigns_id_and_tags() -> None:
             "normalizedText": "new meme",
             "firstSeenAt": "2026-07-24T17:25:27+08:00",
             "lastSeenAt": "2026-07-24T19:25:27+08:00",
+            "collectionOccurrences": [{"sessionId": "session-a", "date": "2026-07-24", "count": 2}],
         },
         ["24", "06"],
         "22025",
@@ -24,6 +25,7 @@ def test_add_confirmed_meme_assigns_id_and_tags() -> None:
         "addedAt": memes["memes"][0]["addedAt"],
         "firstSeenAt": "2026-07-24T17:25:27+08:00",
         "lastSeenAt": "2026-07-24T19:25:27+08:00",
+        "collectionOccurrences": [{"sessionId": "session-a", "date": "2026-07-24", "count": 2}],
     }]
 
 

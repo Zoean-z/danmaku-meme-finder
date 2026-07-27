@@ -183,7 +183,7 @@ def build_catalog(
             source: dict[str, Any] = {"kind": "local"}
             if raw.get("id") is not None:
                 source["sourceId"] = str(raw["id"])
-            for field in ("addedAt", "firstSeenAt", "lastSeenAt"):
+            for field in ("addedAt", "firstSeenAt", "lastSeenAt", "collectionOccurrences"):
                 if raw.get(field) is not None:
                     source[field] = raw[field]
             entry["sources"].append(source)
@@ -212,6 +212,15 @@ def _item_month(item: dict[str, Any]) -> str:
         for field in DATE_FIELDS
         if isinstance((value := source.get(field)), str) and len(value) >= 7
     ]
+    dates.extend(
+        date[:7]
+        for source in item.get("sources", [])
+        if isinstance(source, dict)
+        for occurrence in source.get("collectionOccurrences", [])
+        if isinstance(occurrence, dict)
+        and isinstance((date := occurrence.get("date")), str)
+        and len(date) >= 7
+    )
     return max(dates, default="undated")
 
 
@@ -301,6 +310,15 @@ def build_daily_trends(catalog: dict[str, Any]) -> dict[str, Any]:
             for source in sources:
                 if not isinstance(source, dict):
                     continue
+                session_occurrences = source.get("collectionOccurrences", [])
+                if isinstance(session_occurrences, list) and session_occurrences:
+                    for occurrence in session_occurrences:
+                        if not isinstance(occurrence, dict):
+                            continue
+                        date = occurrence.get("date")
+                        if isinstance(date, str) and len(date) >= 10:
+                            occurrences[date[:10]] += int(occurrence.get("count", 1) or 1)
+                    continue
                 dates = [
                     value[:10]
                     for field in DATE_FIELDS
@@ -359,7 +377,9 @@ def write_distributed_catalog(
     expected: set[Path] = set()
     for month, document in split["archives"].items():
         path = archive_dir / f"{month}.json"
-        write_json_atomic(path, document)
+        previous = read_json(path, {})
+        if previous.get("items") != document.get("items"):
+            write_json_atomic(path, document)
         expected.add(path.resolve())
     if archive_dir.is_dir():
         for path in archive_dir.glob("*.json"):

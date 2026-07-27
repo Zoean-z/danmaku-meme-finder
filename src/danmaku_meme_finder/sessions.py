@@ -9,7 +9,8 @@ from typing import Any
 
 import httpx
 
-from .database import SHANGHAI, iso_now
+from .database import SHANGHAI, DanmakuDatabase, iso_now
+from .normalize import normalize_text
 
 ROOM_PAGE_URL = "https://www.douyu.com/{room_id}"
 MOBILE_ROOM_URL = "https://m.douyu.com/{room_id}"
@@ -108,3 +109,79 @@ def finish_session(payload: dict[str, Any], identifier: str, message_count: int,
             payload["updatedAt"] = iso_now().isoformat()
             return
     raise ValueError(f"unknown session ID: {identifier}")
+
+
+def refresh_session_provenance(
+    sessions_payload: dict[str, Any],
+    memes_payload: dict[str, Any],
+    database: DanmakuDatabase | None,
+    room_id: int,
+) -> int:
+    """Backfill exact meme occurrences and refresh public per-session totals."""
+    memes = memes_payload.get("memes", [])
+    sessions = sessions_payload.get("sessions", [])
+    if not isinstance(memes, list) or not isinstance(sessions, list):
+        raise ValueError("memes and sessions must be lists")
+
+    database_occurrences: dict[str, list[dict[str, Any]]] = {}
+    if database is not None:
+        for row in database.session_occurrences(room_id):
+            first_seen = str(row["first_seen_at"])
+            database_occurrences.setdefault(str(row["normalized_content"]), []).append({
+                "sessionId": str(row["session_id"]),
+                "date": datetime.fromisoformat(first_seen).astimezone(SHANGHAI).date().isoformat(),
+                "count": int(row["count"]),
+                "firstSeenAt": first_seen,
+                "lastSeenAt": str(row["last_seen_at"]),
+            })
+
+    updated = 0
+    for meme in memes:
+        if not isinstance(meme, dict) or not isinstance(meme.get("text"), str):
+            continue
+        occurrences = database_occurrences.get(normalize_text(meme["text"]))
+        if occurrences and meme.get("collectionOccurrences") != occurrences:
+            meme["collectionOccurrences"] = occurrences
+            meme["firstSeenAt"] = min(item["firstSeenAt"] for item in occurrences)
+            meme["lastSeenAt"] = max(item["lastSeenAt"] for item in occurrences)
+            updated += 1
+
+    meme_ids_by_session: dict[str, set[str]] = {}
+    tag_counts_by_session: dict[str, dict[str, int]] = {}
+    for index, meme in enumerate(memes):
+        if not isinstance(meme, dict):
+            continue
+        identifier = str(meme.get("id", index))
+        tags = [str(tag) for tag in meme.get("tags", [])] if isinstance(meme.get("tags"), list) else []
+        occurrences = meme.get("collectionOccurrences", [])
+        if not isinstance(occurrences, list):
+            continue
+        for occurrence in occurrences:
+            if not isinstance(occurrence, dict) or not isinstance(occurrence.get("sessionId"), str):
+                continue
+            session_identifier = occurrence["sessionId"]
+            meme_ids_by_session.setdefault(session_identifier, set()).add(identifier)
+            counts = tag_counts_by_session.setdefault(session_identifier, {})
+            for tag in tags:
+                counts[tag] = counts.get(tag, 0) + 1
+
+    for session in sessions:
+        if not isinstance(session, dict) or not isinstance(session.get("id"), str):
+            continue
+        identifier = session["id"]
+        session["memeCount"] = len(meme_ids_by_session.get(identifier, set()))
+        tag_counts = tag_counts_by_session.get(identifier, {})
+        session["tagCodes"] = [
+            code for code, _ in sorted(tag_counts.items(), key=lambda item: (-item[1], item[0]))[:3]
+        ]
+        if database is not None:
+            message_count = database.session_message_count(identifier)
+            if message_count > 0 or "messageCount" not in session:
+                session["barrageCount"] = message_count
+                session["messageCount"] = message_count
+
+    now = iso_now().isoformat()
+    sessions_payload["updatedAt"] = now
+    if updated:
+        memes_payload["updatedAt"] = now
+    return updated

@@ -1,7 +1,7 @@
 # Current Goal
 
-Replace the monolithic website catalog with a small active catalog plus immutable
-monthly archive shards, then make the website load archives only when requested.
+Preserve exact collection-session provenance from raw danmaku through curated
+catalog records, and make events and sessions easy to create in the local admin.
 
 # Active Checklist
 
@@ -44,6 +44,13 @@ monthly archive shards, then make the website load archives only when requested.
 - [x] Switch the website's initial load from catalog.json to catalog/active.json
 - [x] Add archive-month lazy loading and preserve 50-item client pagination
 - [x] Remove the monolithic catalog after the website migration is verified
+- [x] Aggregate candidate occurrences by session without duplicating public memes
+- [x] Preserve session occurrences through approval and catalog sharding
+- [x] Recalculate each session's meme and barrage totals during publishing
+- [x] Add structured new-event and new-session actions to the local admin
+- [x] Make website session pages filter by session ID with a legacy date fallback
+- [x] Backfill existing local memes from SQLite where exact session evidence exists
+- [ ] Validate, publish data changes, and deploy the updated website
 
 # Decisions
 
@@ -56,6 +63,8 @@ monthly archive shards, then make the website load archives only when requested.
 - The catalog is distributed as an active snapshot plus monthly archives; retain legacy tag IDs and source metadata unchanged.
 - Catalog items use stable five-digit numeric IDs; original upstream IDs remain source metadata.
 - Store room metadata once per collection; date fields describe local observation, not asserted platform start time.
+- Keep one public meme record per normalized text; store per-session counts and times in `collectionOccurrences`.
+- Prefer exact `sessionId` joins on the website and use calendar-date matching only for legacy records without session provenance.
 - Keep the tag code-to-label map as tracked JSON; review publishes only formal memes and catalog data.
 - Keep rejected-candidate state local and ignored; do not delete the Git-tracked candidate snapshot after review.
 - Keep event metadata in one manual date-range table; the website joins it by inclusive local calendar date.
@@ -77,5 +86,5 @@ monthly archive shards, then make the website load archives only when requested.
 
 # Next Step
 
-Use the local admin workflow for normal catalog maintenance and watch real site
-traffic before considering smaller-than-monthly archive shards.
+Publish the session-aware data and code, deploy the compatible website reader,
+then use the admin for normal event and session maintenance.

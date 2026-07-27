@@ -164,6 +164,90 @@ async function saveDocument() {
   }
 }
 
+function managedDocument(key) {
+  return app.state?.documents?.find((item) => item.key === key)?.payload;
+}
+
+function uniqueId(records, preferred) {
+  const used = new Set(records.map((record) => record?.id).filter(Boolean));
+  if (!used.has(preferred)) return preferred;
+  let suffix = 2;
+  while (used.has(`${preferred}-${suffix}`)) suffix += 1;
+  return `${preferred}-${suffix}`;
+}
+
+async function saveCreatedRecord(key, payload, message) {
+  setBusy(true);
+  try {
+    const result = await request("/api/documents", {
+      method: "POST",
+      body: JSON.stringify({ key, payload }),
+    });
+    app.state = result.state;
+    app.documentKey = key;
+    render();
+    switchView("content");
+    selectDocument(key);
+    toast(message);
+  } catch (error) {
+    toast(error.message, true);
+  } finally {
+    setBusy(false);
+  }
+}
+
+async function createEvent() {
+  const title = window.prompt("赛事名称");
+  if (!title?.trim()) return;
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Shanghai" }).format(new Date());
+  const startDate = window.prompt("开始日期（YYYY-MM-DD）", today);
+  if (!startDate) return;
+  const endDate = window.prompt("结束日期（YYYY-MM-DD）", startDate);
+  if (!endDate) return;
+  const document = structuredClone(managedDocument("events") || { schemaVersion: 1, events: [] });
+  const preferredId = `event-${startDate}`;
+  const id = window.prompt("赛事编号", uniqueId(document.events, preferredId));
+  if (!id?.trim()) return;
+  document.events.push({
+    id: id.trim(),
+    title: title.trim(),
+    startDate,
+    endDate,
+    coverUrl: `/covers/events/${id.trim()}.png`,
+    teams: [],
+    streamTitle: title.trim(),
+  });
+  await saveCreatedRecord("events", document, "赛事已创建，可继续编辑封面和参赛队伍");
+}
+
+async function createSession() {
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Shanghai" }).format(new Date());
+  const date = window.prompt("直播日期（YYYY-MM-DD）", today);
+  if (!date) return;
+  const title = window.prompt("直播标题", `直播收录 · ${date}`);
+  if (!title?.trim()) return;
+  const document = structuredClone(managedDocument("sessions") || { schemaVersion: 1, sessions: [] });
+  const preferredId = `6657-${date.replaceAll("-", "")}-manual`;
+  const id = window.prompt("场次编号", uniqueId(document.sessions, preferredId));
+  if (!id?.trim()) return;
+  document.sessions.push({
+    id: id.trim(),
+    date,
+    title: title.trim(),
+    coverUrl: `/covers/sessions/${date}.png`,
+    summary: "",
+    memeCount: 0,
+    barrageCount: 0,
+    messageCount: 0,
+    roomId: 6657,
+    sourceUrl: "https://www.douyu.com/6657",
+    observedStartedAt: null,
+    observedEndedAt: null,
+    tagCodes: [],
+  });
+  await saveCreatedRecord("sessions", document, "直播场次已创建；采集产生的场次仍会自动写入");
+}
+
 async function createReport() {
   const month = window.prompt("输入月份（YYYY-MM）", new Date().toISOString().slice(0, 7));
   if (!month) return;
@@ -269,6 +353,8 @@ $("#approve-button").addEventListener("click", () => review("approve"));
 $("#reject-button").addEventListener("click", () => review("reject"));
 $("#skip-button").addEventListener("click", skipCandidate);
 $("#save-document-button").addEventListener("click", saveDocument);
+$("#new-event-button").addEventListener("click", createEvent);
+$("#new-session-button").addEventListener("click", createSession);
 $("#new-report-button").addEventListener("click", createReport);
 $("#publish-button").addEventListener("click", publish);
 window.addEventListener("keydown", (event) => {

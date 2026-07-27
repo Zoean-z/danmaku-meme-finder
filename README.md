@@ -58,7 +58,7 @@ python -m danmaku_meme_finder.cli admin
 
 - 候选逐条审核、完整标签点选、通过、不通过和键盘快捷键。
 - 集中编辑 `events.json`、`sessions.json`、`tags.json`、`memes.json` 和月报文件。
-- 新建月报时自动创建文章并更新 `monthly-reports/index.json`。
+- 使用“新建赛事”“新建直播场次”和“新建月报”快速补录结构化内容；正常采集仍会自动创建直播场次。
 - 显式“发布到 GitHub”按钮；点击确认后才会重建活跃目录、月度归档和趋势摘要，再提交并推送公开数据。
 
 不希望自动打开浏览器，或端口被占用时：
@@ -83,9 +83,15 @@ python -m danmaku_meme_finder.cli collect --refresh-existing
 python -m danmaku_meme_finder.cli collect --duration 180 --refresh-existing
 ```
 
-每次 `collect` 会在开始时抓取一次公开房间页的标题、分区、封面 URL 和真实 `rid`，并写入 Git 跟踪的 `data/sessions.json`。记录的 `observedStartedAt` / `observedEndedAt` 是本地观察和采集时间，不会伪装成斗鱼官方开播时间；元数据抓取失败不会阻塞弹幕采集。
+每次 `collect` 会在开始时抓取一次公开房间页的标题、分区、封面 URL 和真实 `rid`，并写入 Git 跟踪的 `data/sessions.json`。采集器给该次运行生成唯一 `sessionId`，JSONL 和 SQLite 中的每条弹幕都携带它。候选和正式梗使用 `collectionOccurrences` 保留每个场次内的次数及首末出现时间，网站优先按 `sessionId` 精确筛选；只有没有场次来源的旧接口记录才回退到日期关联。记录的 `observedStartedAt` / `observedEndedAt` 是本地观察和采集时间，不会伪装成斗鱼官方开播时间；元数据抓取失败不会阻塞弹幕采集。
 
 常用参数：`--room-id`、`--database`、`--flush-interval`、`--batch-size`、`--min-count`、`--similarity-threshold`、`--output`。已有索引不存在时会自动同步；已有缓存时，使用 `--refresh-existing` 获取最新索引。
+
+旧版本采集数据如果已经在 `sessions.json` 中补好了起止时间，可以执行一次场次回填；它会给时间范围内尚未关联的 SQLite 弹幕补上 `sessionId`，并刷新正式梗的场次明细：
+
+```bash
+python -m danmaku_meme_finder.cli backfill-sessions
+```
 
 网站只读 GitHub 数据时，先同步旧接口，再将其与人工确认的 `memes.json` 合并为统一目录。每条目录项都有稳定的五位数字 `id`（例如 `21982`）；首次导出优先沿用旧接口编号，新确认内容从当前最大编号继续分配。旧接口编号也保留在 `sources[].sourceId`。合并按规范化文本去重，保留旧接口分类和每个来源的独立统计；不同来源的次数不会相加：
 
@@ -165,17 +171,17 @@ python -m danmaku_meme_finder.cli stats
 - `data/existing_index.json`：从已有梗库同步出的规范化比对索引。
 - `data/candidates.json`：稳定排序的候选输出，适合提交到 GitHub 并由后续任务审阅。
 - `data/candidates-deduplicated.json`：可选的近似文本去重结果；代表项的 `similarVariants` 保留被合并的原文和计数。
-- `data/memes.json`：人工审核后的正式梗库；`review-candidates` 会以原子方式写入它。
+- `data/memes.json`：人工审核后的正式梗库；`review-candidates` 会以原子方式写入它，并保留 `collectionOccurrences[].sessionId` 场次来源。
 - `data/catalog/manifest.json`：目录总量、活跃月份和历史归档文件清单。
 - `data/catalog/active.json`：最近三个月的活跃目录，网站首屏只读取这一份。
 - `data/catalog/archive/YYYY-MM.json`：按最新来源月份归档的旧内容；网站进入对应日期或赛事时再加载。
 - `data/trends/daily.json`：预计算的每日梗数、关联计数和标签计数，避免趋势图下载历史目录。
-- `data/sessions.json`：公开直播场次快照，保存标题、网站封面路径、摘要、统计数和观察时间；不保存原始弹幕或观众昵称。
+- `data/sessions.json`：公开直播场次快照，保存标题、网站封面路径、摘要、统计数和观察时间；发布时根据精确场次来源刷新 `memeCount`，不保存原始弹幕或观众昵称。
 - `data/tags.json`：标签编号与名称的公开对照表，供本地审核和网站共用。
 - `data/events.json`：手工维护的赛事日期表；网站按 `startDate` / `endDate`（含首尾日期）关联直播场次或正式梗来源日期，不需要把赛事字段重复写入每条原始弹幕。
 - `data/monthly-reports/`：月报索引与独立文章 JSON；正文、摘要和封面路径不再由网站运行时生成。
 
-候选规则刻意简单：排除已有文本、空/纯标点/纯 Emoji、少于 2 个字符的文本；保留达到次数阈值的高频文本，以及长度至少 20 且仅出现一次的长文本。排序优先考虑次数、独立用户数、最近出现时间和适中长度。
+候选规则刻意简单：排除已有文本、空/纯标点/纯 Emoji、少于 5 个字符的文本；保留达到次数阈值的高频文本，以及长度至少 20 且仅出现一次的长文本。排序优先考虑次数、独立用户数、最近出现时间和适中长度。
 
 ## 隐私与限制
 

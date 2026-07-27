@@ -78,9 +78,11 @@ def add_confirmed_meme(
         "tags": tags,
         "addedAt": iso_now().isoformat(),
     }
-    for field in ("firstSeenAt", "lastSeenAt"):
+    for field in ("firstSeenAt", "lastSeenAt", "collectionOccurrences"):
         value = candidate.get(field)
-        if isinstance(value, str) and value:
+        if field == "collectionOccurrences" and isinstance(value, list) and value:
+            record[field] = value
+        elif isinstance(value, str) and value:
             record[field] = value
     records.append(record)
     memes["updatedAt"] = iso_now().isoformat()

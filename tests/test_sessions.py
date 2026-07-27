@@ -1,6 +1,13 @@
 from datetime import datetime
 
-from danmaku_meme_finder.sessions import begin_session, finish_session, parse_room_metadata
+from danmaku_meme_finder.database import DanmakuDatabase
+from danmaku_meme_finder.models import StoredDanmaku
+from danmaku_meme_finder.sessions import (
+    begin_session,
+    finish_session,
+    parse_room_metadata,
+    refresh_session_provenance,
+)
 
 
 def test_parse_room_metadata_extracts_public_fields() -> None:
@@ -39,3 +46,28 @@ def test_session_lifecycle_uses_observed_times() -> None:
     assert payload["sessions"][0]["memeCount"] == 0
     assert payload["sessions"][0]["messageCount"] == 12
     assert payload["sessions"][0]["observedEndedAt"] == "2026-07-24T21:58:08+08:00"
+
+
+def test_refresh_session_provenance_backfills_memes_and_counts(tmp_path) -> None:
+    moment = datetime.fromisoformat("2026-07-24T21:43:08+08:00")
+    sessions = {"sessions": [{"id": "session-a", "date": "2026-07-24", "title": "Test"}]}
+    memes = {"memes": [{"id": "00001", "text": "Session Meme", "tags": ["06"]}]}
+    with DanmakuDatabase(tmp_path / "danmaku.db") as database:
+        database.insert_many([
+            StoredDanmaku(
+                room_id=6657,
+                content="Session Meme",
+                normalized_content="session meme",
+                user_key="u",
+                session_id="session-a",
+                sent_at=moment,
+                collected_at=moment,
+            )
+        ])
+        updated = refresh_session_provenance(sessions, memes, database, 6657)
+
+    assert updated == 1
+    assert memes["memes"][0]["collectionOccurrences"][0]["sessionId"] == "session-a"
+    assert sessions["sessions"][0]["memeCount"] == 1
+    assert sessions["sessions"][0]["barrageCount"] == 1
+    assert sessions["sessions"][0]["tagCodes"] == ["06"]

@@ -27,6 +27,7 @@ from .exporter import read_json, write_json_atomic
 from .import_jsonl import import_jsonl
 from .publication import publish_curated_data
 from .review_state import reject_candidate, review_queue
+from .sessions import refresh_session_provenance
 
 LOGGER = logging.getLogger(__name__)
 DEFAULT_DATABASE = Path("data/danmaku.db")
@@ -99,6 +100,8 @@ def create_parser() -> argparse.ArgumentParser:
     review.add_argument("--legacy-catalog", type=path_argument, default=DEFAULT_LEGACY_CATALOG)
     review.add_argument("--tags", type=path_argument, default=DEFAULT_TAGS)
     review.add_argument("--review-state", type=path_argument, default=DEFAULT_REVIEW_STATE)
+    review.add_argument("--database", type=path_argument, default=DEFAULT_DATABASE)
+    review.add_argument("--sessions", type=path_argument, default=DEFAULT_SESSIONS)
     review.add_argument("--no-publish", action="store_true", help="Keep reviewed data local instead of committing and pushing it")
     add_common_room(review)
 
@@ -153,8 +156,10 @@ def create_parser() -> argparse.ArgumentParser:
     stats.add_argument("--candidates", type=path_argument, default=DEFAULT_CANDIDATES)
 
     backfill = subparsers.add_parser("backfill-sessions", help="Associate stored historical messages with session JSON")
+    add_common_room(backfill)
     backfill.add_argument("--database", type=path_argument, default=DEFAULT_DATABASE)
     backfill.add_argument("--sessions", type=path_argument, default=DEFAULT_SESSIONS)
+    backfill.add_argument("--memes", type=path_argument, default=Path("data/memes.json"))
 
     admin = subparsers.add_parser("admin", help="Open the localhost data management workspace")
     admin.add_argument("--port", type=int, default=8765)
@@ -289,13 +294,21 @@ def _run_review_candidates(args: argparse.Namespace) -> None:
         print(f"Rejected locally: {rejected}")
 
     if changed:
+        sessions = read_json(args.sessions, {"schemaVersion": 1, "sessions": []})
+        if args.database.is_file():
+            with DanmakuDatabase(args.database) as database:
+                refresh_session_provenance(sessions, memes, database, args.room_id)
+        else:
+            refresh_session_provenance(sessions, memes, None, args.room_id)
+        write_json_atomic(args.memes, memes)
+        write_json_atomic(args.sessions, sessions)
         payload = build_catalog(existing_index, memes, args.room_id, catalog)
         write_distributed_catalog(payload, args.catalog, args.trends)
         if args.legacy_catalog.is_file():
             args.legacy_catalog.unlink()
         if not args.no_publish:
             message = publish_curated_data(
-                Path.cwd(), [args.memes, args.catalog, args.trends], added
+                Path.cwd(), [args.memes, args.sessions, args.catalog, args.trends], added
             )
             print("Pushed to GitHub." if message else "No curated-data changes to push.")
         print(f"已更新 {args.memes} 和 {args.catalog}，新增 {added} 条。")
@@ -351,6 +364,7 @@ async def _run_collect_and_review(args: argparse.Namespace) -> None:
 
 def _run_backfill_sessions(args: argparse.Namespace) -> None:
     payload = read_json(args.sessions, {"sessions": []})
+    memes = read_json(args.memes, {"roomId": args.room_id, "memes": []})
     sessions = payload.get("sessions", [])
     if not isinstance(sessions, list):
         raise ValueError("sessions must be a list")
@@ -370,8 +384,13 @@ def _run_backfill_sessions(args: argparse.Namespace) -> None:
             )
             session["messageCount"] = database.session_message_count(identifier)
             updated += count
+        meme_updates = refresh_session_provenance(payload, memes, database, args.room_id)
     write_json_atomic(args.sessions, payload)
-    print(f"Associated {updated} historical messages with sessions in {args.sessions}")
+    write_json_atomic(args.memes, memes)
+    print(
+        f"Associated {updated} historical messages and refreshed {meme_updates} memes "
+        f"in {args.sessions} and {args.memes}"
+    )
 
 
 def _run_stats(args: argparse.Namespace) -> None:

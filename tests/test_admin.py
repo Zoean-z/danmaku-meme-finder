@@ -101,6 +101,28 @@ def test_admin_rejects_report_with_mismatched_month(tmp_path: Path) -> None:
         )
 
 
+def test_admin_validates_new_events_and_sessions(tmp_path: Path) -> None:
+    service = make_service(tmp_path)
+    service.save_document(DocumentUpdate(key="events", payload={
+        "schemaVersion": 1,
+        "events": [{
+            "id": "event-2026", "title": "Event", "startDate": "2026-08-01", "endDate": "2026-08-03"
+        }],
+    }))
+    service.save_document(DocumentUpdate(key="sessions", payload={
+        "schemaVersion": 1,
+        "sessions": [{"id": "session-a", "date": "2026-08-01", "title": "Live"}],
+    }))
+
+    with pytest.raises(ValueError, match="duplicate events id"):
+        service.save_document(DocumentUpdate(key="events", payload={
+            "events": [
+                {"id": "same", "title": "A", "startDate": "2026-08-01", "endDate": "2026-08-02"},
+                {"id": "same", "title": "B", "startDate": "2026-08-03", "endDate": "2026-08-04"},
+            ]
+        }))
+
+
 def test_admin_publish_rebuilds_catalog_and_uses_explicit_files(monkeypatch, tmp_path: Path) -> None:
     service = make_service(tmp_path)
     service.review(ReviewAction(key="新的直播间梗", decision="approve", tags=["06"]))
@@ -120,3 +142,14 @@ def test_admin_publish_rebuilds_catalog_and_uses_explicit_files(monkeypatch, tmp
     assert tmp_path / "data" / "catalog" in published["files"]
     assert tmp_path / "data" / "trends" / "daily.json" in published["files"]
     assert published["message"] == "Update managed site content"
+
+
+def test_admin_ui_exposes_event_and_session_creation() -> None:
+    static = Path(__file__).parents[1] / "src" / "danmaku_meme_finder" / "admin_static"
+    html = (static / "index.html").read_text(encoding="utf-8")
+    script = (static / "app.js").read_text(encoding="utf-8")
+
+    assert 'id="new-event-button"' in html
+    assert 'id="new-session-button"' in html
+    assert "async function createEvent()" in script
+    assert "async function createSession()" in script

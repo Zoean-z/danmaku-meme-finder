@@ -7,7 +7,7 @@ from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
 
-from .database import DanmakuDatabase, iso_now
+from .database import SHANGHAI, DanmakuDatabase, iso_now
 from .exporter import read_json
 from .normalize import has_meaningful_content, normalize_text
 
@@ -88,6 +88,17 @@ def build_candidates(
     end = iso_now()
     start = end - timedelta(hours=window_hours)
     raw_count, rows = database.aggregate_since(room_id, start)
+    session_rows = database.session_occurrences(room_id, start)
+    occurrences_by_text: dict[str, list[dict[str, Any]]] = {}
+    for row in session_rows:
+        first_seen = str(row["first_seen_at"])
+        occurrences_by_text.setdefault(str(row["normalized_content"]), []).append({
+            "sessionId": str(row["session_id"]),
+            "date": datetime.fromisoformat(first_seen).astimezone(SHANGHAI).date().isoformat(),
+            "count": int(row["count"]),
+            "firstSeenAt": first_seen,
+            "lastSeenAt": str(row["last_seen_at"]),
+        })
     index = read_json(existing_index_path, {"items": {}})
     existing = index.get("items", {})
     existing_keys = set(existing) if isinstance(existing, dict) else set()
@@ -122,11 +133,14 @@ def build_candidates(
             source = "long_text"
         if source is None:
             continue
-        candidates.append({
+        candidate = {
             "text": row["text"], "normalizedText": normalized, "count": count,
             "uniqueUsers": int(row["unique_users"]), "firstSeenAt": row["first_seen_at"],
             "lastSeenAt": row["last_seen_at"], "source": source,
-        })
+        }
+        if occurrences := occurrences_by_text.get(normalized):
+            candidate["collectionOccurrences"] = occurrences
+        candidates.append(candidate)
 
     # Stable tiebreakers keep unchanged inputs from generating meaningless Git diffs.
     candidates.sort(key=lambda item: (

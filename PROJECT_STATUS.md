@@ -193,3 +193,18 @@ records. The website loads only the active catalog initially, fetches an archive
 month when an old date or event requests it, and retains 50-item client pages.
 All 33 Python tests, package import compilation, and the website production
 build pass; Sites version 6 is deployed in production.
+
+Session provenance now remains exact after raw storage. Candidate records carry
+per-session `collectionOccurrences`; approval preserves them in `memes.json`,
+catalog local sources expose them, and publishing recalculates session meme,
+tag, and raw barrage totals. The missing 2026-07-25 evening collection session
+was reconstructed from its SQLite time range: 10,637 previously unassigned rows
+now belong to `6657-20260725-184645`. All 54 current local memes have exact
+session provenance; the earlier 2026-07-24 session contains five of them.
+The local admin now has guided new-event and new-session actions in addition to
+new monthly reports, with duplicate-ID and calendar-date validation. Website
+session views use the exact session ID and retain date fallback only for legacy
+API records that cannot have local session provenance. Unchanged historical
+catalog shards are no longer rewritten solely because the export timestamp
+changed. The Python suite now has 38 passing tests and the updated website
+production build succeeds.

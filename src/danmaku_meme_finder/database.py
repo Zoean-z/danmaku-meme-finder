@@ -98,6 +98,24 @@ class DanmakuDatabase:
             self.conn.execute("SELECT COUNT(*) FROM raw_danmaku WHERE session_id = ?", (session_id,)).fetchone()[0]
         )
 
+    def session_occurrences(self, room_id: int, start: datetime | None = None) -> list[sqlite3.Row]:
+        """Return exact per-text, per-session observations for curation provenance."""
+        self.conn.row_factory = sqlite3.Row
+        where = "room_id = ? AND session_id IS NOT NULL"
+        parameters: list[object] = [room_id]
+        if start is not None:
+            where += " AND sent_at >= ?"
+            parameters.append(start.isoformat())
+        return self.conn.execute(
+            f"""SELECT normalized_content, session_id, COUNT(*) AS count,
+                       MIN(sent_at) AS first_seen_at, MAX(sent_at) AS last_seen_at
+                FROM raw_danmaku
+                WHERE {where}
+                GROUP BY normalized_content, session_id
+                ORDER BY normalized_content, session_id""",
+            parameters,
+        ).fetchall()
+
     def aggregate_since(self, room_id: int, start: datetime) -> tuple[int, list[sqlite3.Row]]:
         self.conn.row_factory = sqlite3.Row
         raw_count = self.conn.execute(

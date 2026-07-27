@@ -32,6 +32,9 @@ def test_catalog_merges_sources_without_adding_counts() -> None:
                 "addedAt": "2026-07-25T12:00:00+08:00",
                 "firstSeenAt": "2026-07-24T17:25:27+08:00",
                 "lastSeenAt": "2026-07-24T19:25:27+08:00",
+                "collectionOccurrences": [
+                    {"sessionId": "session-a", "date": "2026-07-24", "count": 2}
+                ],
             },
             {"text": "Local only", "tags": []},
         ]
@@ -56,6 +59,9 @@ def test_catalog_merges_sources_without_adding_counts() -> None:
         "addedAt": "2026-07-25T12:00:00+08:00",
         "firstSeenAt": "2026-07-24T17:25:27+08:00",
         "lastSeenAt": "2026-07-24T19:25:27+08:00",
+        "collectionOccurrences": [
+            {"sessionId": "session-a", "date": "2026-07-24", "count": 2}
+        ],
     }
 
 
@@ -128,3 +134,24 @@ def test_distributed_catalog_round_trip_and_daily_trends(tmp_path: Path) -> None
         {"date": "2026-07-24", "memeCount": 1, "barrageCount": 1, "tagCounts": {"06": 1, "24": 1}},
     ]
     assert trends_path.is_file()
+
+
+def test_unchanged_archive_keeps_its_original_generated_time(tmp_path: Path) -> None:
+    directory = tmp_path / "data" / "catalog"
+    trends_path = tmp_path / "data" / "trends" / "daily.json"
+    catalog = {
+        "generatedAt": "2026-07-01T00:00:00+08:00",
+        "roomId": 6657,
+        "items": [
+            {"id": "00001", "text": "Old", "sources": [{"submittedAt": "2025-01-01T00:00:00"}]},
+            {"id": "00002", "text": "New", "sources": [{"submittedAt": "2026-07-01T00:00:00"}]},
+        ],
+    }
+    write_distributed_catalog(catalog, directory, trends_path)
+    archive_path = directory / "archive" / "2025-01.json"
+    original = archive_path.read_text(encoding="utf-8")
+
+    catalog["generatedAt"] = "2026-07-02T00:00:00+08:00"
+    write_distributed_catalog(catalog, directory, trends_path)
+
+    assert archive_path.read_text(encoding="utf-8") == original

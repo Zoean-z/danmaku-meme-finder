@@ -8,6 +8,7 @@ import re
 import threading
 import webbrowser
 from dataclasses import dataclass
+from datetime import date
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -24,12 +25,15 @@ from .catalog import (
     write_distributed_catalog,
 )
 from .curation import add_confirmed_meme, resolve_tags, tag_labels
+from .database import DanmakuDatabase
 from .exporter import read_json, write_json_atomic
 from .publication import publish_files
 from .review_state import candidate_key, reject_candidate, review_queue
+from .sessions import refresh_session_provenance
 
 LOGGER = logging.getLogger(__name__)
 REPORT_KEY = re.compile(r"^report:(\d{4}-\d{2})$")
+DATE_VALUE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 MAX_REQUEST_BYTES = 8 * 1024 * 1024
 
 
@@ -148,11 +152,21 @@ class AdminService:
             if not existing_path.is_file():
                 raise ValueError("缺少 data/existing_index.json，请先运行 sync-existing 再发布")
             memes_path = self.settings.data("memes.json")
+            sessions_path = self.settings.data("sessions.json")
             catalog_path = self.settings.data("catalog")
             legacy_catalog_path = self.settings.data("catalog.json")
             trends_path = self.settings.data("trends/daily.json")
             existing = read_json(existing_path, {"items": {}, "total": 0})
             memes = read_json(memes_path, {"roomId": self.settings.room_id, "memes": []})
+            sessions = read_json(sessions_path, {"schemaVersion": 1, "sessions": []})
+            database_path = self.settings.data("danmaku.db")
+            if database_path.is_file():
+                with DanmakuDatabase(database_path) as database:
+                    refresh_session_provenance(sessions, memes, database, self.settings.room_id)
+            else:
+                refresh_session_provenance(sessions, memes, None, self.settings.room_id)
+            write_json_atomic(memes_path, memes)
+            write_json_atomic(sessions_path, sessions)
             previous = load_distributed_catalog(catalog_path)
             catalog = build_catalog(existing, memes, self.settings.room_id, previous)
             manifest = write_distributed_catalog(catalog, catalog_path, trends_path)
@@ -164,7 +178,7 @@ class AdminService:
                 catalog_path,
                 trends_path,
                 self.settings.data("events.json"),
-                self.settings.data("sessions.json"),
+                sessions_path,
                 self.settings.data("tags.json"),
                 self.settings.data("monthly-reports/index.json"),
                 *sorted((self.settings.data("monthly-reports")).glob("????-??.json")),
@@ -223,6 +237,27 @@ class AdminService:
             field, kind = expected[key]
             if not isinstance(payload.get(field), kind):
                 raise ValueError(f"{key} must contain {field} as {kind.__name__}")
+            if key == "events":
+                AdminService._validate_records(payload[field], key, ("id", "title", "startDate", "endDate"))
+                for record in payload[field]:
+                    if not DATE_VALUE.fullmatch(record["startDate"]) or not DATE_VALUE.fullmatch(record["endDate"]):
+                        raise ValueError("event dates must use YYYY-MM-DD")
+                    try:
+                        date.fromisoformat(record["startDate"])
+                        date.fromisoformat(record["endDate"])
+                    except ValueError as exc:
+                        raise ValueError("event dates must be valid calendar dates") from exc
+                    if record["startDate"] > record["endDate"]:
+                        raise ValueError("event startDate must not be after endDate")
+            elif key == "sessions":
+                AdminService._validate_records(payload[field], key, ("id", "date", "title"))
+                for record in payload[field]:
+                    if not DATE_VALUE.fullmatch(record["date"]):
+                        raise ValueError("session date must use YYYY-MM-DD")
+                    try:
+                        date.fromisoformat(record["date"])
+                    except ValueError as exc:
+                        raise ValueError("session date must be a valid calendar date") from exc
             return
         match = REPORT_KEY.fullmatch(key)
         if not match:
@@ -234,6 +269,20 @@ class AdminService:
                 raise ValueError(f"report field must be a string: {field}")
         if not isinstance(payload.get("sections"), list):
             raise ValueError("report sections must be a list")
+
+    @staticmethod
+    def _validate_records(records: list[Any], label: str, required: tuple[str, ...]) -> None:
+        identifiers: set[str] = set()
+        for record in records:
+            if not isinstance(record, dict):
+                raise ValueError(f"{label} entries must be objects")
+            for field in required:
+                if not isinstance(record.get(field), str) or not record[field].strip():
+                    raise ValueError(f"{label} field must be a non-empty string: {field}")
+            identifier = record["id"]
+            if identifier in identifiers:
+                raise ValueError(f"duplicate {label} id: {identifier}")
+            identifiers.add(identifier)
 
     def _upsert_report_index(self, report: dict[str, Any]) -> None:
         path = self.settings.data("monthly-reports/index.json")

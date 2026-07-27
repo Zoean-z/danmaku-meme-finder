@@ -57,14 +57,18 @@
         <section id="content-view" class="view">
           <div class="content-toolbar">
             <div><span>结构化内容</span><h2>集中维护网站数据</h2></div>
-            <button id="new-report-button" class="quiet-button">新建月报</button>
+            <div class="toolbar-actions">
+              <button id="new-event-button" class="quiet-button">新建赛事</button>
+              <button id="new-session-button" class="quiet-button">新建直播场次</button>
+              <button id="new-report-button" class="quiet-button">新建月报</button>
+            </div>
           </div>
           <div class="editor-layout">
             <div id="document-list" class="document-list"></div>
             <section class="json-editor">
               <div class="editor-head"><div><span id="document-key">—</span><strong id="document-title">选择数据文件</strong></div><button id="save-document-button" class="primary-button">验证并保存</button></div>
               <textarea id="document-editor" spellcheck="false" aria-label="JSON 编辑器"></textarea>
-              <p class="editor-help">保存时会检查顶层结构，并使用临时文件原子替换。月报文件会自动同步月报索引。</p>
+              <p class="editor-help">保存时会验证编号、日期和顶层结构，并使用临时文件原子替换。采集会自动新建场次，手动入口用于补录和修正。</p>
             </section>
           </div>
         </section>

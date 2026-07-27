@@ -7,11 +7,13 @@ from danmaku_meme_finder.exporter import write_json_atomic
 from danmaku_meme_finder.models import StoredDanmaku
 
 
-def message(content: str, minutes_ago: int, user_key: str | None = "u") -> StoredDanmaku:
+def message(
+    content: str, minutes_ago: int, user_key: str | None = "u", session_id: str | None = None
+) -> StoredDanmaku:
     now = iso_now()
     return StoredDanmaku(
         room_id=6657, content=content, normalized_content=content.lower(), user_key=user_key,
-        sent_at=now - timedelta(minutes=minutes_ago), collected_at=now,
+        session_id=session_id, sent_at=now - timedelta(minutes=minutes_ago), collected_at=now,
     )
 
 
@@ -52,6 +54,25 @@ def test_candidate_rules_exclude_short_and_activity_texts(tmp_path: Path) -> Non
     assert payload["shortFilteredCount"] == 1
     assert payload["activityFilteredCount"] == 1
     assert [candidate["text"] for candidate in payload["candidates"]] == ["eligible phrase"]
+
+
+def test_candidate_keeps_exact_session_occurrences(tmp_path: Path) -> None:
+    database_path = tmp_path / "danmaku.db"
+    existing_path = tmp_path / "existing.json"
+    write_json_atomic(existing_path, {"items": {}})
+    with DanmakuDatabase(database_path) as database:
+        database.insert_many([
+            message("session meme", 4, "a", "session-a"),
+            message("session meme", 3, "b", "session-a"),
+            message("session meme", 2, "c", "session-b"),
+        ])
+        payload = build_candidates(database, 6657, 24, 3, 200, existing_path)
+
+    occurrences = payload["candidates"][0]["collectionOccurrences"]
+    assert [(item["sessionId"], item["count"]) for item in occurrences] == [
+        ("session-a", 2),
+        ("session-b", 1),
+    ]
 
 
 def test_candidate_rules_exclude_local_confirmed_memes(tmp_path: Path) -> None:
