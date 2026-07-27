@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-07-27T09:42:45.483243+08:00",
+  "updatedAt": "2026-07-27T15:24:14.719544+08:00",
   "sessions": [
     {
       "id": "6657-20260724-172527",
@@ -23,24 +23,6 @@
         "00",
         "01"
       ]
-    },
-    {
-      "id": "6657-20260725-102416",
-      "date": "2026-07-25",
-      "title": "小众宝藏结晶直播间 6657",
-      "coverUrl": "/covers/sessions/2026-07-25.png",
-      "summary": "用于验证采集、导入和场次落盘流程的短时测试。",
-      "memeCount": 0,
-      "barrageCount": 1,
-      "roomId": 6657,
-      "rid": 6979222,
-      "category": "CS2",
-      "sourceUrl": "https://www.douyu.com/6657",
-      "observedStartedAt": "2026-07-25T10:24:16.011000+08:00",
-      "observedEndedAt": "2026-07-25T10:24:16.011000+08:00",
-      "metadataFetchedAt": "2026-07-25T18:46:25+08:00",
-      "messageCount": 1,
-      "tagCodes": []
     },
     {
       "id": "6657-20260725-184645",
