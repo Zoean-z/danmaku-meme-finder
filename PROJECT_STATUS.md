@@ -230,3 +230,16 @@ representative plus `similarVariants` and `familyCount`. The current 48-hour
 snapshot was rebuilt to 20 items: 98 existing-library variants and 208 reviewed
 variants were filtered, while 46 same-batch variants were merged. All 44 tests,
 package compilation, and diff checks pass.
+
+The localhost admin now includes a dedicated collection workspace. It can start
+one existing Node/Python collection workflow, accept a minute duration or run
+until stopped, poll the current session and SQLite import count, and request a
+graceful stop that preserves the runner's final import, candidate generation,
+and session close behavior. The browser never receives raw JSONL, SQLite rows,
+or user identifiers, and the public Vercel site cannot control this local task.
+
+Collection-controller and admin UI tests pass (10 tests), Python compilation and
+JavaScript syntax checks pass, the localhost HTTP UI loads real state, and the
+390px layout has no horizontal overflow. The full 47-test suite currently has
+one unrelated time-sensitive failure because a legacy fixture fixes messages at
+2026-07-25 while querying only the latest 48 hours on 2026-07-28.

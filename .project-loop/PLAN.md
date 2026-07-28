@@ -1,104 +1,28 @@
 # Current Goal
 
-Keep each manual review session small and high-signal by limiting the queue to
-20 candidates and collapsing obvious textual variants by default.
+Add safe local collection controls to the existing localhost admin without creating a public collector service.
 
 # Active Checklist
 
-- [x] Verify the v3.2.0 README and release notes
-- [x] Identify that 6657 is a VIP/short ID and verify its real rid 6979222 receives chatmsg
-- [x] Add and validate automatic short-ID resolution in the project collector
-- [x] Add checkpointed Python JSONL import
-- [x] Remove Python WebSocket/TLS collector dependencies and update docs/tests
-- [x] Run end-to-end local verification
-- [x] Exclude short (<5 characters) and known activity texts from candidate output
-- [x] Add optional lexical near-duplicate merging for candidate review
-- [x] Define Git-tracked versus local-only data files
-- [x] Initialize the local Git repository and verify local-only data is ignored
-- [x] Make the first focused commit
-- [x] Create, connect, and publish the public GitHub repository
-- [x] Add one `collect` command to supervise Node collection, periodic SQLite import, and candidate output
-- [x] Verify the new command with fixtures and a short live smoke test
-- [x] Define a canonical public meme record with tags and source provenance
-- [x] Add an offline merged catalog export for the website
-- [x] Sync the legacy API, build the first full catalog, and publish it to GitHub
-- [x] Add a local interactive candidate-review command for manual tag entry
-- [x] Replace hash-style catalog IDs with stable five-digit numeric IDs and rebuild the catalog
-- [x] Store public live-session snapshots and associate collected messages with a session
-- [x] Backfill and publish the first observed sessions for 2026-07-24 and 2026-07-25
-- [x] Add label-assisted candidate review and automatic curated-data publishing
-- [x] Add a one-command collection-to-review workflow and local rejected-candidate queue
-- [x] Add a static event-date table and preserve local meme observation dates for website joins
-- [x] Promote events and sessions to stable website-facing JSON contracts
-- [x] Add independently maintainable monthly report index and article files
-- [x] Make the website load events, sessions, tags, and monthly reports from GitHub JSON
-- [x] Validate the Python suite and production website build after the data migration
-- [x] Define the local admin API and reuse existing review/publish behavior
-- [x] Build the candidate-review and structured JSON editing interface
-- [x] Add an explicit GitHub publish action and safety checks
-- [x] Add tests, documentation, and a production smoke test
-- [x] Measure current catalog size and date distribution
-- [x] Export a manifest, a three-month active catalog, and monthly archive shards
-- [x] Export a small daily trend summary so historical charts do not load archive items
-- [x] Keep stable five-digit IDs and source metadata unchanged across shards
-- [x] Switch the website's initial load from catalog.json to catalog/active.json
-- [x] Add archive-month lazy loading and preserve 50-item client pagination
-- [x] Remove the monolithic catalog after the website migration is verified
-- [x] Aggregate candidate occurrences by session without duplicating public memes
-- [x] Preserve session occurrences through approval and catalog sharding
-- [x] Recalculate each session's meme and barrage totals during publishing
-- [x] Add structured new-event and new-session actions to the local admin
-- [x] Make website session pages filter by session ID with a legacy date fallback
-- [x] Backfill existing local memes from SQLite where exact session evidence exists
-- [x] Validate, publish data changes, and deploy the updated website
-- [x] Export a full-catalog top-100 snapshot during local publishing
-- [x] Add a compact full-catalog search index without restoring the monolithic initial download
-- [x] Rename the website's active-only "全部梗" view to "近期收录"
-- [x] Expose historical records through on-demand full-library search or archive browsing
-- [x] Change every candidate-generation entry point from 100 to 20 by default
-- [x] Make conservative lexical near-duplicate clustering the default
-- [x] Remove common mention prefixes and activity-copy variants before comparison
-- [x] Re-rank merged families by their combined evidence while preserving the representative text
-- [x] Regenerate the current review snapshot and verify the resulting 20 candidates
+- [x] Add one in-process collection controller around the existing `run_collection()` workflow.
+- [x] Expose localhost-only start, stop, and status endpoints.
+- [x] Add a compact collection workspace with duration, status, imported count, and candidate result.
+- [x] Keep graceful Node shutdown, final SQLite import, candidate generation, and session persistence unchanged.
+- [x] Cover start conflicts, stop behavior, status, and UI controls without a real Douyu connection.
+- [x] Update README and complete targeted Python, JavaScript, HTTP, and browser verification.
 
 # Decisions
 
-- Use `douyudm` v3.2.0; Python only owns local persistence and analysis.
-- Keep all state local: SQLite and JSON files only.
-- Keep broad candidate pools; only collapse obvious textual variants when requested.
-- GitHub distributes `memes.json` and candidate snapshots only; raw data stays local.
-- Raw messages remain in SQLite for repeat counting; existing-meme filtering applies to generated candidates.
-- Merge the legacy API and local confirmed memes offline into one GitHub JSON snapshot; do not merge them in the browser.
-- The catalog is distributed as an active snapshot plus monthly archives; retain legacy tag IDs and source metadata unchanged.
-- Catalog items use stable five-digit numeric IDs; original upstream IDs remain source metadata.
-- Store room metadata once per collection; date fields describe local observation, not asserted platform start time.
-- Keep one public meme record per normalized text; store per-session counts and times in `collectionOccurrences`.
-- Prefer exact `sessionId` joins on the website and use calendar-date matching only for legacy records without session provenance.
-- Keep the tag code-to-label map as tracked JSON; review publishes only formal memes and catalog data.
-- Keep rejected-candidate state local and ignored; do not delete the Git-tracked candidate snapshot after review.
-- Keep event metadata in one manual date-range table; the website joins it by inclusive local calendar date.
-- Keep report prose and session summaries in tracked JSON; the website renders them without inventing copy at runtime.
-- Generate daily trend data during catalog export so charts and old event totals remain available without downloading archive items.
-- Bind the admin server to localhost and use the standard library; do not add a public backend or database service.
-- Keep candidate review as the primary workspace; expose events, sessions, reports, and tags as validated editors.
-- Require an explicit click before any Git commit/push operation.
-- Treat the current month plus two previous months as the maintained active set; older months become read-only archives.
-- Shard archives by latest source month so every catalog item appears in exactly one file.
-- Do not add page-sized files yet; monthly shards already cap normal fetches near one megabyte and keep filtering practical.
-- Recompute the full-catalog hot top 100 only when local data is published; website visits read the resulting static snapshot and do no ranking work.
-- Do not freeze the hot list permanently, because newly collected memes must be able to enter it.
-- Call the three-month active view "近期收录"; reserve "全部梗" for a real full-library view.
-- Candidate review should show at most 20 high-signal representatives per run.
-- Near-duplicate filtering is a deterministic source rule, not an optional review-time cleanup.
+- Collection remains local-only; the public Vercel website cannot start a process on the user's computer.
+- Reuse `CollectionSettings` and `run_collection()` instead of adding a second collector implementation.
+- Allow only one collection job at a time and make Stop cooperative through asyncio task cancellation so the existing `finally` block flushes remaining data.
+- Require the existing local meme index before starting; do not make admin startup silently perform a network sync.
+- Show imported messages from SQLite while running; raw JSONL and user identifiers remain inaccessible to the browser UI.
 
 # Blockers
 
-- The v3.2.0 CLI sends no chatmsg when given a VIP/short ID; it needs the real rid.
-- None for the local-first MVP.
-- Legacy tag IDs need a tag-name mapping if the website should render human-readable category labels.
-- None for the current data-publishing path.
+- The full suite has one date-sensitive pre-existing failure: `test_collection_runner.py` uses fixed 2026-07-25 records with a 48-hour window, which no longer includes them on 2026-07-28. The production filter was not weakened for this admin change.
 
 # Next Step
 
-Use the regenerated 20-item snapshot for the next review; tune the lexical
-threshold only from concrete false-positive or false-negative examples.
+Use `python -m danmaku_meme_finder.cli admin` for the next real live collection; separately stabilize the stale date fixture before requiring a fully green suite.

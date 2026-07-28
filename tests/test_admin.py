@@ -1,10 +1,19 @@
+import asyncio
 import json
+import threading
+import time
 from pathlib import Path
 
 import pytest
 
 from danmaku_meme_finder import admin
-from danmaku_meme_finder.admin import AdminService, AdminSettings, DocumentUpdate, ReviewAction
+from danmaku_meme_finder.admin import (
+    AdminService,
+    AdminSettings,
+    CollectionStart,
+    DocumentUpdate,
+    ReviewAction,
+)
 from danmaku_meme_finder.exporter import write_json_atomic
 
 
@@ -153,3 +162,58 @@ def test_admin_ui_exposes_event_and_session_creation() -> None:
     assert 'id="new-session-button"' in html
     assert "async function createEvent()" in script
     assert "async function createSession()" in script
+
+
+def test_admin_collection_start_conflict_and_graceful_stop(monkeypatch, tmp_path: Path) -> None:
+    service = make_service(tmp_path)
+    started = threading.Event()
+    finalized = threading.Event()
+
+    async def fake_collection(settings, salt, root):  # type: ignore[no-untyped-def]
+        assert settings.duration_seconds == 180
+        assert root == tmp_path
+        started.set()
+        try:
+            await asyncio.Future()
+        finally:
+            finalized.set()
+
+    monkeypatch.setattr(admin, "run_collection", fake_collection)
+
+    result = service.start_collection(CollectionStart(durationSeconds=180))
+    assert result["collection"]["active"] is True
+    assert started.wait(timeout=2)
+    with pytest.raises(ValueError, match="已经在运行"):
+        service.start_collection(CollectionStart(durationSeconds=60))
+
+    stopping = service.stop_collection()["collection"]
+    assert stopping["phase"] == "stopping"
+    assert finalized.wait(timeout=2)
+    deadline = time.monotonic() + 2
+    while service.collection.status()["active"] and time.monotonic() < deadline:
+        time.sleep(0.01)
+    status = service.collection.status()
+    assert status["phase"] == "stopped"
+    assert status["active"] is False
+    assert status["candidateCount"] == 1
+    service.collection.close()
+
+
+def test_admin_collection_requires_existing_index(tmp_path: Path) -> None:
+    service = make_service(tmp_path)
+    (tmp_path / "data" / "existing_index.json").unlink()
+
+    with pytest.raises(ValueError, match="sync-existing"):
+        service.start_collection(CollectionStart(durationSeconds=60))
+
+
+def test_admin_ui_exposes_collection_controls() -> None:
+    static = Path(__file__).parents[1] / "src" / "danmaku_meme_finder" / "admin_static"
+    html = (static / "index.html").read_text(encoding="utf-8")
+    script = (static / "app.js").read_text(encoding="utf-8")
+
+    assert 'data-view="collection"' in html
+    assert 'id="start-collection-button"' in html
+    assert 'id="stop-collection-button"' in html
+    assert 'request("/api/collection/start"' in script
+    assert 'request("/api/collection/stop"' in script

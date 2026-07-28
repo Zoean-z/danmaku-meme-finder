@@ -37,7 +37,7 @@ nav { display: grid; gap: 5px; }
 
 main { min-width: 0; background: #f7f6f1; }
 .topbar { min-height: 118px; padding: 26px 42px 22px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: flex-end; background: var(--paper); }
-.topbar span, .content-toolbar span, .publish-panel > span { color: var(--accent); font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+.topbar span, .content-toolbar span, .publish-panel > span, .collection-status-line > div > span { color: var(--accent); font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
 .topbar h1 { margin: 6px 0 0; font-family: Georgia, "Noto Serif SC", serif; font-size: clamp(24px, 2.5vw, 38px); font-weight: 500; letter-spacing: -.03em; }
 .view { display: none; padding: 30px 42px 48px; animation: view-in .22s ease; }
 .view.active { display: block; }
@@ -49,6 +49,26 @@ main { min-width: 0; background: #f7f6f1; }
 .metric:last-child { border-right: 0; }
 .metric span { display: block; margin-bottom: 7px; color: var(--muted); font-size: 11px; }
 .metric strong { font: 500 24px Georgia, serif; }
+.collection-workspace { max-width: 980px; padding-top: 18px; }
+.collection-status-line { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 24px 0; border-block: 1px solid var(--line); }
+.collection-status-line h2 { margin: 5px 0 0; font: 500 30px Georgia, serif; }
+.collection-status-line > strong { font: 500 30px Consolas, monospace; }
+.collection-status-dot { width: 12px; height: 12px; border-radius: 50%; background: #a6aaa7; box-shadow: 0 0 0 6px rgb(166 170 167 / 12%); }
+.collection-status-dot.active, .collection-status-dot.running { background: #36a878; box-shadow: 0 0 0 6px rgb(54 168 120 / 14%); animation: collect-pulse 1.6s ease-in-out infinite; }
+.collection-status-dot.stopping { background: #d59a32; box-shadow: 0 0 0 6px rgb(213 154 50 / 14%); }
+.collection-status-dot.failed { background: var(--accent); box-shadow: 0 0 0 6px rgb(225 75 49 / 14%); }
+@keyframes collect-pulse { 50% { transform: scale(.78); opacity: .65; } }
+.collection-controls { display: grid; grid-template-columns: minmax(220px, 1fr) 130px auto auto; gap: 10px; align-items: end; padding: 30px 0; border-bottom: 1px solid var(--line); }
+.collection-controls label { color: var(--ink); font-size: 13px; font-weight: 800; }
+.collection-controls label small { display: block; margin-top: 6px; color: var(--muted); font-size: 11px; font-weight: 400; }
+.collection-controls input { height: 40px; padding: 8px 11px; border: 1px solid var(--line); border-radius: 3px; color: var(--ink); background: var(--paper); font: inherit; }
+.collection-results { display: grid; grid-template-columns: repeat(4, 1fr); margin: 30px 0 18px; }
+.collection-results div { min-width: 0; padding: 0 20px; border-right: 1px solid var(--line); }
+.collection-results div:first-child { padding-left: 0; }
+.collection-results div:last-child { border-right: 0; }
+.collection-results dt { margin-bottom: 8px; color: var(--muted); font-size: 11px; }
+.collection-results dd { margin: 0; overflow-wrap: anywhere; font-weight: 800; }
+.collection-message { max-width: 720px; color: var(--muted); font-size: 12px; line-height: 1.7; }
 .review-layout { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 48px; padding-top: 38px; }
 .candidate-workspace { min-width: 0; }
 .candidate-meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; }
@@ -114,8 +134,8 @@ textarea { flex: 1; width: 100%; min-height: 520px; resize: vertical; padding: 2
 #toast.error { background: #9c3929; }
 
 @media (max-width: 900px) {
-  .shell { grid-template-columns: 1fr; }
-  .sidebar { position: static; width: 100%; height: auto; padding: 14px 18px; flex-direction: row; align-items: center; }
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  .sidebar { position: static; width: 100%; min-width: 0; height: auto; padding: 14px 18px; flex-direction: row; align-items: center; }
   .brand { padding: 0; margin-right: auto; }
   .brand small, .sidebar-foot { display: none; }
   nav { display: flex; }
@@ -127,6 +147,10 @@ textarea { flex: 1; width: 100%; min-height: 520px; resize: vertical; padding: 2
   .review-layout { grid-template-columns: 1fr; gap: 28px; }
   .review-context { padding: 22px 0 0; border-left: 0; border-top: 1px solid var(--line); }
   .metric-strip { grid-template-columns: repeat(3, 1fr); }
+  .collection-controls { grid-template-columns: minmax(0, 1fr) 120px; }
+  .collection-controls button { width: 100%; }
+  .collection-results { grid-template-columns: repeat(2, 1fr); gap: 20px 0; }
+  .collection-results div:nth-child(2) { border-right: 0; }
   .metric:nth-child(n+4) { display: none; }
   .editor-layout { grid-template-columns: 1fr; }
   .document-list { display: flex; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line); }
@@ -137,13 +161,18 @@ textarea { flex: 1; width: 100%; min-height: 520px; resize: vertical; padding: 2
   .sidebar { align-items: flex-start; }
   .brand-mark { width: 36px; height: 36px; }
   .brand strong { display: none; }
-  nav { overflow-x: auto; }
+  nav { flex: 1; min-width: 0; overflow-x: auto; }
   .nav-item { padding: 10px; white-space: nowrap; }
   .topbar { min-height: 96px; align-items: center; }
   .topbar h1 { font-size: 24px; }
   .topbar .quiet-button { display: none; }
   .view { padding-block: 20px 40px; }
   .review-actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .collection-status-line { grid-template-columns: auto minmax(0, 1fr); }
+  .collection-status-line > strong { grid-column: 2; font-size: 22px; }
+  .collection-controls { grid-template-columns: 1fr; }
+  .collection-results { grid-template-columns: 1fr; }
+  .collection-results div, .collection-results div:nth-child(2) { padding: 10px 0; border-right: 0; border-bottom: 1px solid var(--line); }
   .review-actions .primary-button { grid-column: 1 / -1; grid-row: 1; margin: 0; }
   .publish-checks { grid-template-columns: 1fr; }
   .publish-checks div, .publish-checks div:first-child { padding: 16px 0; border-right: 0; border-bottom: 1px solid var(--line); }

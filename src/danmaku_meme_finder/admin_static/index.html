@@ -14,6 +14,7 @@
           <div><strong>6657 数据管理</strong><small>仅在本机运行</small></div>
         </div>
         <nav aria-label="管理导航">
+          <button class="nav-item" data-view="collection"><span>弹幕采集</span><em id="collection-badge">待机</em></button>
           <button class="nav-item active" data-view="review"><span>候选审核</span><em id="pending-badge">0</em></button>
           <button class="nav-item" data-view="content"><span>内容数据</span><em>JSON</em></button>
           <button class="nav-item" data-view="publish"><span>发布中心</span><em>Git</em></button>
@@ -29,6 +30,29 @@
           <div><span id="eyebrow">审核队列</span><h1 id="page-title">把值得保留的弹幕挑出来</h1></div>
           <button id="refresh-button" class="quiet-button">刷新数据</button>
         </header>
+
+        <section id="collection-view" class="view">
+          <div class="collection-workspace">
+            <div class="collection-status-line">
+              <span id="collection-status-dot" class="collection-status-dot"></span>
+              <div><span>本机采集器</span><h2 id="collection-status-title">当前未运行</h2></div>
+              <strong id="collection-elapsed">—</strong>
+            </div>
+            <div class="collection-controls">
+              <label for="collection-duration">采集时长（分钟）<small>留空表示持续运行，最长 12 小时</small></label>
+              <input id="collection-duration" type="number" min="1" max="720" value="30" inputmode="numeric" />
+              <button id="start-collection-button" class="primary-button">开始采集</button>
+              <button id="stop-collection-button" class="danger-button">停止并落库</button>
+            </div>
+            <dl class="collection-results">
+              <div><dt>房间</dt><dd>6657</dd></div>
+              <div><dt>场次编号</dt><dd id="collection-session">—</dd></div>
+              <div><dt>已导入 SQLite</dt><dd id="collection-imported">0</dd></div>
+              <div><dt>生成候选</dt><dd id="collection-candidates">—</dd></div>
+            </dl>
+            <p id="collection-message" class="collection-message">开始后会运行现有 Node 采集器，并每 5 秒批量导入 SQLite。停止时会安全写入剩余弹幕并生成最多 20 条候选。</p>
+          </div>
+        </section>
 
         <section id="review-view" class="view active">
           <div class="metric-strip" id="metrics"></div>

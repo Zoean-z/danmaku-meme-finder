@@ -56,6 +56,7 @@ python -m danmaku_meme_finder.cli admin
 
 它只监听 `http://127.0.0.1:8765`，默认自动打开浏览器。后台提供：
 
+- “弹幕采集”工作区：设置采集分钟数、开始或安全停止本机 Node 采集器，并查看场次编号、SQLite 导入数和最终候选数。
 - 候选逐条审核、完整标签点选、通过、不通过和键盘快捷键。
 - 集中编辑 `events.json`、`sessions.json`、`tags.json`、`memes.json` 和月报文件。
 - 使用“新建赛事”“新建直播场次”和“新建月报”快速补录结构化内容；正常采集仍会自动创建直播场次。
@@ -67,7 +68,7 @@ python -m danmaku_meme_finder.cli admin
 python -m danmaku_meme_finder.cli admin --no-open --port 8766
 ```
 
-管理后台不会读取或上传 `live.jsonl` 的用户标识，也不会通过网页公开监听。发布前需要本机存在最新的 `data/existing_index.json`；缺失时先执行 `sync-existing`，以免用不完整的旧接口数据重建目录。
+采集按钮只是调用与 CLI 相同的本地 `run_collection()` 流程：一次只能运行一场，停止时仍会完成剩余 JSONL 导入、SQLite 落库、候选生成和场次关闭。关闭管理后台时也会请求安全停止。管理后台不会把 `live.jsonl`、SQLite 或用户标识返回给浏览器，更不能从 Vercel 公网网站远程启动本机进程。开始采集和发布前都需要本机存在最新的 `data/existing_index.json`；缺失时先执行 `sync-existing`。
 
 ### 采集与命令行审核
 

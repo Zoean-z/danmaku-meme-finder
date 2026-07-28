@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import re
 import threading
 import webbrowser
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -25,6 +26,8 @@ from .catalog import (
     write_distributed_catalog,
 )
 from .curation import add_confirmed_meme, resolve_tags, tag_labels
+from .collection_runner import CollectionSettings, run_collection
+from .config import user_hash_salt
 from .database import DanmakuDatabase
 from .exporter import read_json, write_json_atomic
 from .publication import publish_files
@@ -52,6 +55,12 @@ class DocumentUpdate(BaseModel):
     payload: dict[str, Any]
 
 
+class CollectionStart(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    durationSeconds: int | None = Field(default=1800, ge=1, le=12 * 60 * 60)
+
+
 @dataclass(frozen=True)
 class AdminSettings:
     root: Path
@@ -61,12 +70,157 @@ class AdminSettings:
         return self.root / "data" / name
 
 
+class CollectionController:
+    """Run at most one existing collection workflow behind the local admin."""
+
+    def __init__(self, settings: AdminSettings) -> None:
+        self.settings = settings
+        self._lock = threading.RLock()
+        self._thread: threading.Thread | None = None
+        self._loop: asyncio.AbstractEventLoop | None = None
+        self._task: asyncio.Task[dict[str, Any]] | None = None
+        self._stop_requested = False
+        self._state: dict[str, Any] = {
+            "phase": "idle",
+            "active": False,
+            "startedAt": None,
+            "finishedAt": None,
+            "durationSeconds": None,
+            "sessionId": None,
+            "importedMessages": 0,
+            "candidateCount": None,
+            "error": None,
+        }
+
+    def start(self, request: CollectionStart) -> dict[str, Any]:
+        with self._lock:
+            if self._state["active"]:
+                raise ValueError("弹幕采集已经在运行")
+            if not self.settings.data("existing_index.json").is_file():
+                raise ValueError("缺少 data/existing_index.json，请先运行 sync-existing")
+            self._stop_requested = False
+            self._state = {
+                "phase": "running",
+                "active": True,
+                "startedAt": datetime.now().astimezone().isoformat(),
+                "finishedAt": None,
+                "durationSeconds": request.durationSeconds,
+                "sessionId": None,
+                "importedMessages": 0,
+                "candidateCount": None,
+                "error": None,
+            }
+            self._thread = threading.Thread(
+                target=self._thread_main,
+                args=(request.durationSeconds,),
+                name="danmaku-admin-collector",
+                daemon=True,
+            )
+            self._thread.start()
+            return self.status()
+
+    def stop(self) -> dict[str, Any]:
+        with self._lock:
+            if not self._state["active"]:
+                raise ValueError("当前没有正在运行的弹幕采集")
+            self._state["phase"] = "stopping"
+            self._stop_requested = True
+            if self._loop is not None and self._task is not None:
+                self._loop.call_soon_threadsafe(self._task.cancel)
+            return self.status()
+
+    def status(self) -> dict[str, Any]:
+        with self._lock:
+            self._refresh_metrics_locked()
+            return dict(self._state)
+
+    def close(self) -> None:
+        with self._lock:
+            active = bool(self._state["active"])
+        if active:
+            self.stop()
+        thread = self._thread
+        if thread is not None and thread.is_alive():
+            thread.join(timeout=10)
+
+    def _thread_main(self, duration_seconds: int | None) -> None:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        settings = CollectionSettings(
+            room_id=self.settings.room_id,
+            database_path=self.settings.data("danmaku.db"),
+            input_path=self.settings.data("live.jsonl"),
+            checkpoint_path=self.settings.data("live.import.checkpoint.json"),
+            existing_index_path=self.settings.data("existing_index.json"),
+            memes_path=self.settings.data("memes.json"),
+            output_path=self.settings.data("candidates.json"),
+            sessions_path=self.settings.data("sessions.json"),
+            review_state_path=self.settings.data("review_state.json"),
+            duration_seconds=duration_seconds,
+        )
+        task = loop.create_task(run_collection(settings, user_hash_salt(), self.settings.root))
+        with self._lock:
+            self._loop = loop
+            self._task = task
+            if self._stop_requested:
+                task.cancel()
+        try:
+            result = loop.run_until_complete(task)
+            with self._lock:
+                self._state["phase"] = "completed"
+                self._state["sessionId"] = result["session"].get("id")
+                self._state["importedMessages"] = result["import"].get("imported", 0)
+                self._state["candidateCount"] = len(result["candidates"].get("candidates", []))
+        except asyncio.CancelledError:
+            with self._lock:
+                self._state["phase"] = "stopped"
+        except Exception as exc:  # pragma: no cover - boundary is exercised through state
+            LOGGER.exception("Admin collection failed")
+            with self._lock:
+                self._state["phase"] = "failed"
+                self._state["error"] = str(exc)
+        finally:
+            with self._lock:
+                self._state["active"] = False
+                self._state["finishedAt"] = datetime.now().astimezone().isoformat()
+                self._refresh_metrics_locked()
+                self._task = None
+                self._loop = None
+            loop.run_until_complete(loop.shutdown_asyncgens())
+            loop.close()
+
+    def _refresh_metrics_locked(self) -> None:
+        session_id = self._state.get("sessionId")
+        sessions = read_json(self.settings.data("sessions.json"), {"sessions": []}).get("sessions", [])
+        started_at = str(self._state.get("startedAt") or "")
+        if started_at and not session_id and isinstance(sessions, list):
+            matching = [
+                item for item in sessions
+                if isinstance(item, dict) and str(item.get("observedStartedAt") or "") >= started_at
+            ]
+            if matching:
+                session_id = str(matching[-1].get("id") or "") or None
+                self._state["sessionId"] = session_id
+        database_path = self.settings.data("danmaku.db")
+        if session_id and database_path.is_file():
+            try:
+                with DanmakuDatabase(database_path) as database:
+                    self._state["importedMessages"] = database.session_message_count(session_id)
+            except OSError:
+                LOGGER.warning("Could not read collection progress from SQLite", exc_info=True)
+        if started_at and not self._state["active"] and self._state.get("candidateCount") is None:
+            candidates = read_json(self.settings.data("candidates.json"), {"candidates": []}).get("candidates", [])
+            if isinstance(candidates, list):
+                self._state["candidateCount"] = len(candidates)
+
+
 class AdminService:
     """Own file mutations so HTTP and tests share the same safety rules."""
 
     def __init__(self, settings: AdminSettings) -> None:
         self.settings = settings
         self._lock = threading.RLock()
+        self.collection = CollectionController(settings)
 
     def state(self) -> dict[str, Any]:
         with self._lock:
@@ -97,7 +251,14 @@ class AdminService:
                     {"key": key, "label": self._document_label(key), "payload": payload}
                     for key, payload in documents.items()
                 ],
+                "collection": self.collection.status(),
             }
+
+    def start_collection(self, request: CollectionStart) -> dict[str, Any]:
+        return {"collection": self.collection.start(request)}
+
+    def stop_collection(self) -> dict[str, Any]:
+        return {"collection": self.collection.stop()}
 
     def review(self, action: ReviewAction) -> dict[str, Any]:
         with self._lock:
@@ -339,6 +500,9 @@ class AdminRequestHandler(BaseHTTPRequestHandler):
         if path == "/api/state":
             self._send_json(HTTPStatus.OK, self.server.service.state())
             return
+        if path == "/api/collection":
+            self._send_json(HTTPStatus.OK, {"collection": self.server.service.collection.status()})
+            return
         assets = {"/": "index.html", "/app.css": "app.css", "/app.js": "app.js"}
         name = assets.get(path)
         if name is None:
@@ -370,6 +534,10 @@ class AdminRequestHandler(BaseHTTPRequestHandler):
                 result = self.server.service.save_document(DocumentUpdate.model_validate(payload))
             elif path == "/api/publish":
                 result = self.server.service.publish()
+            elif path == "/api/collection/start":
+                result = self.server.service.start_collection(CollectionStart.model_validate(payload))
+            elif path == "/api/collection/stop":
+                result = self.server.service.stop_collection()
             else:
                 self.send_error(HTTPStatus.NOT_FOUND)
                 return
@@ -435,4 +603,5 @@ def run_admin(root: Path, port: int, open_browser: bool = True) -> None:
     try:
         server.serve_forever()
     finally:
+        service.collection.close()
         server.server_close()

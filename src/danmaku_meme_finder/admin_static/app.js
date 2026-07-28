@@ -3,6 +3,7 @@ const app = {
   candidateIndex: 0,
   selectedTags: new Set(),
   documentKey: null,
+  collectionTimer: null,
 };
 
 const $ = (selector) => document.querySelector(selector);
@@ -28,13 +29,107 @@ async function loadState() {
     toast(error.message, true);
   } finally {
     setBusy(false);
+    renderCollection();
   }
 }
 
 function render() {
   renderMetrics();
+  renderCollection();
   renderCandidate();
   renderDocuments();
+}
+
+function renderCollection() {
+  const state = app.state?.collection || { phase: "idle", active: false };
+  const labels = {
+    idle: "当前未运行",
+    running: "正在采集弹幕",
+    stopping: "正在停止并落库",
+    stopped: "已手动停止",
+    completed: "采集已完成",
+    failed: "采集失败",
+  };
+  $("#collection-status-title").textContent = labels[state.phase] || state.phase;
+  $("#collection-status-dot").className = `collection-status-dot ${state.active ? "active" : state.phase}`;
+  $("#collection-badge").textContent = state.active ? "运行中" : state.phase === "failed" ? "失败" : "待机";
+  $("#collection-session").textContent = state.sessionId || "—";
+  $("#collection-imported").textContent = Number(state.importedMessages || 0).toLocaleString("zh-CN");
+  $("#collection-candidates").textContent = state.candidateCount == null ? "—" : Number(state.candidateCount).toLocaleString("zh-CN");
+  $("#collection-elapsed").textContent = collectionElapsed(state);
+  $("#collection-message").textContent = state.error || (state.active
+    ? "采集器正在本机运行；页面会自动刷新导入数量。停止后才会生成最终候选。"
+    : "开始后会运行现有 Node 采集器，并每 5 秒批量导入 SQLite。停止时会安全写入剩余弹幕并生成最多 20 条候选。");
+  $("#start-collection-button").disabled = Boolean(state.active);
+  $("#stop-collection-button").disabled = !state.active || state.phase === "stopping";
+  scheduleCollectionPoll(Boolean(state.active));
+}
+
+function collectionElapsed(state) {
+  if (!state.startedAt) return "—";
+  const end = state.active ? Date.now() : Date.parse(state.finishedAt || state.startedAt);
+  const seconds = Math.max(0, Math.floor((end - Date.parse(state.startedAt)) / 1000));
+  const minutes = Math.floor(seconds / 60);
+  return `${String(minutes).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
+}
+
+function scheduleCollectionPoll(active) {
+  if (!active) {
+    clearTimeout(app.collectionTimer);
+    app.collectionTimer = null;
+    return;
+  }
+  if (app.collectionTimer) return;
+  app.collectionTimer = setTimeout(async () => {
+    app.collectionTimer = null;
+    try {
+      const result = await request("/api/collection");
+      app.state.collection = result.collection;
+      renderCollection();
+      if (!result.collection.active) await loadState();
+    } catch (error) {
+      toast(error.message, true);
+    }
+  }, 2000);
+}
+
+async function startCollection() {
+  const rawDuration = $("#collection-duration").value.trim();
+  const minutes = rawDuration ? Number(rawDuration) : null;
+  if (minutes != null && (!Number.isInteger(minutes) || minutes < 1 || minutes > 720)) {
+    toast("采集时长必须是 1 到 720 分钟的整数", true);
+    return;
+  }
+  setBusy(true);
+  try {
+    const result = await request("/api/collection/start", {
+      method: "POST",
+      body: JSON.stringify({ durationSeconds: minutes == null ? null : minutes * 60 }),
+    });
+    app.state.collection = result.collection;
+    renderCollection();
+    toast("弹幕采集已启动");
+  } catch (error) {
+    toast(error.message, true);
+  } finally {
+    setBusy(false);
+    renderCollection();
+  }
+}
+
+async function stopCollection() {
+  setBusy(true);
+  try {
+    const result = await request("/api/collection/stop", { method: "POST", body: "{}" });
+    app.state.collection = result.collection;
+    renderCollection();
+    toast("正在停止，剩余弹幕会继续落库");
+  } catch (error) {
+    toast(error.message, true);
+  } finally {
+    setBusy(false);
+    renderCollection();
+  }
 }
 
 function renderMetrics() {
@@ -314,6 +409,7 @@ function switchView(view) {
   $$(".nav-item").forEach((button) => button.classList.toggle("active", button.dataset.view === view));
   $$(".view").forEach((section) => section.classList.toggle("active", section.id === `${view}-view`));
   const copy = {
+    collection: ["本机采集", "开始一次新的弹幕采集"],
     review: ["审核队列", "把值得保留的弹幕挑出来"],
     content: ["内容数据", "维护网站真正读取的文件"],
     publish: ["发布中心", "检查并更新公开数据"],
@@ -349,6 +445,8 @@ function escapeHtml(value) { return String(value).replace(/[&<>'"]/g, (char) => 
 
 $$(`.nav-item`).forEach((button) => button.addEventListener("click", () => switchView(button.dataset.view)));
 $("#refresh-button").addEventListener("click", loadState);
+$("#start-collection-button").addEventListener("click", startCollection);
+$("#stop-collection-button").addEventListener("click", stopCollection);
 $("#approve-button").addEventListener("click", () => review("approve"));
 $("#reject-button").addEventListener("click", () => review("reject"));
 $("#skip-button").addEventListener("click", skipCandidate);
