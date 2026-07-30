@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-07-27T15:24:14.719544+08:00",
+  "updatedAt": "2026-07-30T21:54:44.665012+08:00",
   "sessions": [
     {
       "id": "6657-20260724-172527",
@@ -44,6 +44,28 @@
         "00",
         "16",
         "02"
+      ]
+    },
+    {
+      "id": "6657-20260730-210259",
+      "date": "2026-07-30",
+      "roomId": 6657,
+      "rid": 6979222,
+      "title": "小众宝藏结晶直播间 6657",
+      "category": "CS2",
+      "coverUrl": "https://rpic.douyucdn.cn/asrpic/260730/6979222_src_2057.avif/dy4",
+      "sourceUrl": "https://www.douyu.com/6657",
+      "observedStartedAt": "2026-07-30T21:02:59.123790+08:00",
+      "observedEndedAt": "2026-07-30T21:43:38.944829+08:00",
+      "metadataFetchedAt": "2026-07-30T21:02:59.123828+08:00",
+      "summary": "",
+      "memeCount": 23,
+      "barrageCount": 38480,
+      "messageCount": 38480,
+      "tagCodes": [
+        "00",
+        "01",
+        "22"
       ]
     }
   ]
