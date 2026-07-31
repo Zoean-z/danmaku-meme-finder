@@ -35,7 +35,6 @@ from .review_state import candidate_key, reject_candidate, review_queue
 from .sessions import refresh_session_provenance
 
 LOGGER = logging.getLogger(__name__)
-REPORT_KEY = re.compile(r"^report:(\d{4}-\d{2})$")
 DATE_VALUE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 MAX_REQUEST_BYTES = 8 * 1024 * 1024
 
@@ -244,7 +243,6 @@ class AdminService:
                     "rejected": self._collection_size(review_state, "rejected"),
                     "events": self._collection_size(documents["events"], "events"),
                     "sessions": self._collection_size(documents["sessions"], "sessions"),
-                    "reports": len([key for key in documents if key.startswith("report:")]),
                 },
                 "tags": tag_labels(documents["tags"]),
                 "documents": [
@@ -303,8 +301,6 @@ class AdminService:
             path = self._document_path(update.key)
             self._validate_document(update.key, update.payload)
             write_json_atomic(path, update.payload)
-            if update.key.startswith("report:"):
-                self._upsert_report_index(update.payload)
             return {"saved": update.key, "state": self.state()}
 
     def publish(self) -> dict[str, Any]:
@@ -330,7 +326,7 @@ class AdminService:
             write_json_atomic(sessions_path, sessions)
             previous = load_distributed_catalog(catalog_path)
             catalog = build_catalog(existing, memes, self.settings.room_id, previous)
-            manifest = write_distributed_catalog(catalog, catalog_path, trends_path)
+            manifest = write_distributed_catalog(catalog, catalog_path, trends_path, sessions)
             if legacy_catalog_path.is_file():
                 legacy_catalog_path.unlink()
 
@@ -341,8 +337,6 @@ class AdminService:
                 self.settings.data("events.json"),
                 sessions_path,
                 self.settings.data("tags.json"),
-                self.settings.data("monthly-reports/index.json"),
-                *sorted((self.settings.data("monthly-reports")).glob("????-??.json")),
             ]
             message = publish_files(self.settings.root, public_files, "Update managed site content")
             return {
@@ -360,14 +354,7 @@ class AdminService:
             "memes": read_json(
                 self.settings.data("memes.json"), {"updatedAt": None, "roomId": self.settings.room_id, "memes": []}
             ),
-            "report-index": read_json(
-                self.settings.data("monthly-reports/index.json"), {"schemaVersion": 1, "reports": []}
-            ),
         }
-        report_dir = self.settings.data("monthly-reports")
-        if report_dir.is_dir():
-            for path in sorted(report_dir.glob("????-??.json"), reverse=True):
-                documents[f"report:{path.stem}"] = read_json(path, {})
         return documents
 
     def _document_path(self, key: str) -> Path:
@@ -376,13 +363,9 @@ class AdminService:
             "sessions": self.settings.data("sessions.json"),
             "tags": self.settings.data("tags.json"),
             "memes": self.settings.data("memes.json"),
-            "report-index": self.settings.data("monthly-reports/index.json"),
         }
         if key in fixed:
             return fixed[key]
-        match = REPORT_KEY.fullmatch(key)
-        if match:
-            return self.settings.data(f"monthly-reports/{match.group(1)}.json")
         raise ValueError(f"unknown managed document: {key}")
 
     @staticmethod
@@ -392,7 +375,6 @@ class AdminService:
             "sessions": ("sessions", list),
             "tags": ("tags", dict),
             "memes": ("memes", list),
-            "report-index": ("reports", list),
         }
         if key in expected:
             field, kind = expected[key]
@@ -420,16 +402,7 @@ class AdminService:
                     except ValueError as exc:
                         raise ValueError("session date must be a valid calendar date") from exc
             return
-        match = REPORT_KEY.fullmatch(key)
-        if not match:
-            raise ValueError(f"unknown managed document: {key}")
-        if payload.get("month") != match.group(1):
-            raise ValueError("report month must match its document key")
-        for field in ("id", "title", "publishedAt", "summary"):
-            if not isinstance(payload.get(field), str):
-                raise ValueError(f"report field must be a string: {field}")
-        if not isinstance(payload.get("sections"), list):
-            raise ValueError("report sections must be a list")
+        raise ValueError(f"unknown managed document: {key}")
 
     @staticmethod
     def _validate_records(records: list[Any], label: str, required: tuple[str, ...]) -> None:
@@ -445,33 +418,6 @@ class AdminService:
                 raise ValueError(f"duplicate {label} id: {identifier}")
             identifiers.add(identifier)
 
-    def _upsert_report_index(self, report: dict[str, Any]) -> None:
-        path = self.settings.data("monthly-reports/index.json")
-        payload = read_json(path, {"schemaVersion": 1, "reports": []})
-        reports = payload.setdefault("reports", [])
-        if not isinstance(reports, list):
-            raise ValueError("report index reports must be a list")
-        month = str(report["month"])
-        entry = {
-            "id": report["id"],
-            "month": month,
-            "title": report["title"],
-            "publishedAt": report["publishedAt"],
-            "coverUrl": report.get("coverUrl", ""),
-            "file": f"monthly-reports/{month}.json",
-        }
-        replaced = False
-        for index, current in enumerate(reports):
-            if isinstance(current, dict) and current.get("month") == month:
-                reports[index] = entry
-                replaced = True
-                break
-        if not replaced:
-            reports.append(entry)
-        reports.sort(key=lambda item: str(item.get("month", "")) if isinstance(item, dict) else "", reverse=True)
-        payload["schemaVersion"] = 1
-        write_json_atomic(path, payload)
-
     @staticmethod
     def _collection_size(payload: dict[str, Any], field: str) -> int:
         value = payload.get(field)
@@ -484,9 +430,8 @@ class AdminService:
             "sessions": "直播场次",
             "tags": "标签",
             "memes": "正式梗库",
-            "report-index": "月报索引",
         }
-        return labels.get(key, key.removeprefix("report:") + " 月报")
+        return labels.get(key, key)
 
 
 class AdminRequestHandler(BaseHTTPRequestHandler):

@@ -1,55 +1,83 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-07-26",
+  "updatedAt": "2026-07-31",
   "events": [
     {
-      "id": "iem-cologne-2025",
-      "title": "IEM Cologne 2025",
-      "startDate": "2025-07-23",
-      "endDate": "2025-08-03",
-      "coverUrl": "/covers/events/iem-cologne-2025.png"
+      "id": "iem-krakow-2026",
+      "title": "IEM Kraków 2026",
+      "startDate": "2026-01-28",
+      "endDate": "2026-02-08",
+      "coverUrl": "/covers/events/blast-bounty-2026-season-2.webp"
     },
     {
-      "id": "esl-pro-league-s22",
-      "title": "ESL Pro League Season 22",
-      "startDate": "2025-09-27",
-      "endDate": "2025-10-12",
-      "coverUrl": "/covers/events/esl-pro-league-s22.png"
+      "id": "pgl-cluj-napoca-2026",
+      "title": "PGL Cluj-Napoca 2026",
+      "startDate": "2026-02-14",
+      "endDate": "2026-02-22",
+      "coverUrl": "/covers/events/blast-bounty-2026-season-2.webp"
     },
     {
-      "id": "cac-2025",
-      "title": "CS Asia Championships 2025",
-      "startDate": "2025-10-14",
-      "endDate": "2025-10-20",
-      "coverUrl": "/covers/events/cac-2025.png"
+      "id": "esl-pro-league-s23",
+      "title": "ESL Pro League Season 23",
+      "startDate": "2026-03-03",
+      "endDate": "2026-03-15",
+      "coverUrl": "/covers/events/blast-bounty-2026-season-2.webp"
     },
     {
-      "id": "iem-chengdu-2025",
-      "title": "IEM Chengdu 2025",
-      "startDate": "2025-11-03",
-      "endDate": "2025-11-09",
-      "coverUrl": "/covers/events/iem-chengdu-2025.png"
+      "id": "blast-open-rotterdam-2026",
+      "title": "BLAST Premier Open Rotterdam 2026",
+      "startDate": "2026-03-18",
+      "endDate": "2026-03-29",
+      "coverUrl": "/covers/events/blast-bounty-2026-season-2.webp"
     },
     {
-      "id": "blast-rivals-s2-2025",
-      "title": "BLAST Rivals Season 2",
-      "startDate": "2025-11-12",
-      "endDate": "2025-11-17",
-      "coverUrl": "/covers/events/blast-rivals-s2-2025.png"
+      "id": "pgl-bucharest-2026",
+      "title": "PGL Bucharest 2026",
+      "startDate": "2026-04-04",
+      "endDate": "2026-04-11",
+      "coverUrl": "/covers/events/blast-bounty-2026-season-2.webp"
     },
     {
-      "id": "starladder-budapest-major-2025",
-      "title": "StarLadder Budapest Major 2025",
-      "startDate": "2025-11-24",
-      "endDate": "2025-12-15",
-      "coverUrl": "/covers/events/starladder-budapest-major-2025.png"
+      "id": "iem-rio-2026",
+      "title": "IEM Rio 2026",
+      "startDate": "2026-04-13",
+      "endDate": "2026-04-19",
+      "coverUrl": "/covers/events/blast-bounty-2026-season-2.webp"
+    },
+    {
+      "id": "blast-rivals-fort-worth-2026",
+      "title": "BLAST Premier Rivals Fort Worth 2026",
+      "startDate": "2026-04-29",
+      "endDate": "2026-05-03",
+      "coverUrl": "/covers/events/blast-bounty-2026-season-2.webp"
+    },
+    {
+      "id": "pgl-astana-2026",
+      "title": "PGL Astana 2026",
+      "startDate": "2026-05-09",
+      "endDate": "2026-05-17",
+      "coverUrl": "/covers/events/blast-bounty-2026-season-2.webp"
+    },
+    {
+      "id": "iem-atlanta-2026",
+      "title": "IEM Atlanta 2026",
+      "startDate": "2026-05-11",
+      "endDate": "2026-05-17",
+      "coverUrl": "/covers/events/blast-bounty-2026-season-2.webp"
+    },
+    {
+      "id": "iem-cologne-major-2026",
+      "title": "IEM Cologne Major 2026",
+      "startDate": "2026-06-02",
+      "endDate": "2026-06-21",
+      "coverUrl": "/covers/events/blast-bounty-2026-season-2.webp"
     },
     {
       "id": "blast-bounty-2026-season-2",
       "title": "BLAST Bounty 2026 Season 2",
-      "startDate": "2026-07-20",
+      "startDate": "2026-07-21",
       "endDate": "2026-08-02",
-      "coverUrl": "/covers/events/blast-bounty-2026-season-2.png",
+      "coverUrl": "/covers/events/blast-bounty-2026-season-2.webp",
       "teams": [
         "100 Thieves",
         "Aurora",

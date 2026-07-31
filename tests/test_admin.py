@@ -41,7 +41,6 @@ def make_service(root: Path) -> AdminService:
     write_json_atomic(data / "events.json", {"schemaVersion": 1, "events": []})
     write_json_atomic(data / "sessions.json", {"schemaVersion": 1, "sessions": []})
     write_json_atomic(data / "tags.json", {"schemaVersion": 1, "tags": {"06": {"label": "群魔乱舞"}}})
-    write_json_atomic(data / "monthly-reports" / "index.json", {"schemaVersion": 1, "reports": []})
     return AdminService(AdminSettings(root))
 
 
@@ -70,44 +69,6 @@ def test_admin_rejection_stays_local(tmp_path: Path) -> None:
     state = json.loads((tmp_path / "data" / "review_state.json").read_text(encoding="utf-8"))
     assert "新的直播间梗" in state["rejected"]
     assert json.loads((tmp_path / "data" / "memes.json").read_text(encoding="utf-8"))["memes"] == []
-
-
-def test_admin_report_save_updates_index(tmp_path: Path) -> None:
-    service = make_service(tmp_path)
-    report = {
-        "schemaVersion": 1,
-        "id": "monthly-2026-08",
-        "month": "2026-08",
-        "title": "2026年8月总结",
-        "publishedAt": "2026-08-31",
-        "coverUrl": "/covers/reports/2026-08.png",
-        "summary": "测试月报",
-        "sections": [],
-    }
-
-    result = service.save_document(DocumentUpdate(key="report:2026-08", payload=report))
-
-    assert result["saved"] == "report:2026-08"
-    index = json.loads((tmp_path / "data" / "monthly-reports" / "index.json").read_text(encoding="utf-8"))
-    assert index["reports"][0]["file"] == "monthly-reports/2026-08.json"
-
-
-def test_admin_rejects_report_with_mismatched_month(tmp_path: Path) -> None:
-    service = make_service(tmp_path)
-    with pytest.raises(ValueError, match="month"):
-        service.save_document(
-            DocumentUpdate(
-                key="report:2026-08",
-                payload={
-                    "id": "monthly-2026-07",
-                    "month": "2026-07",
-                    "title": "wrong",
-                    "publishedAt": "2026-07-31",
-                    "summary": "",
-                    "sections": [],
-                },
-            )
-        )
 
 
 def test_admin_validates_new_events_and_sessions(tmp_path: Path) -> None:

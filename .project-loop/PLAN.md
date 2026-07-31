@@ -1,28 +1,27 @@
 # Current Goal
 
-Add safe local collection controls to the existing localhost admin without creating a public collector service.
+Correct the public archive metadata so the website only presents measured collection counts, exposes self-captured provenance in the full history index, and carries a current six-month major-event calendar.
 
 # Active Checklist
 
-- [x] Add one in-process collection controller around the existing `run_collection()` workflow.
-- [x] Expose localhost-only start, stop, and status endpoints.
-- [x] Add a compact collection workspace with duration, status, imported count, and candidate result.
-- [x] Keep graceful Node shutdown, final SQLite import, candidate generation, and session persistence unchanged.
-- [x] Cover start conflicts, stop behavior, status, and UI controls without a real Douyu connection.
-- [x] Update README and complete targeted Python, JavaScript, HTTP, and browser verification.
+- [x] Build `trends/daily.json` only from real `sessions.json` barrage totals.
+- [x] Add source kinds to the compact search index so `/history` can show `自采`.
+- [x] Replace stale event metadata with the latest six months of major CS2 events through BLAST Bounty 2026 Season 2.
+- [x] Regenerate public catalog/trend files without touching raw local data or the pending candidate file.
+- [x] Remove empty monthly-report data and the obsolete admin creation flow.
+- [x] Add regression tests and run the focused/full Python suites.
 
 # Decisions
 
-- Collection remains local-only; the public Vercel website cannot start a process on the user's computer.
-- Reuse `CollectionSettings` and `run_collection()` instead of adding a second collector implementation.
-- Allow only one collection job at a time and make Stop cooperative through asyncio task cancellation so the existing `finally` block flushes remaining data.
-- Require the existing local meme index before starting; do not make admin startup silently perform a network sync.
-- Show imported messages from SQLite while running; raw JSONL and user identifiers remain inaccessible to the browser UI.
+- Legacy API `cnt` remains copy popularity and must never be relabeled as a collected barrage count.
+- Daily trend points aggregate `sessions[].barrageCount` and `sessions[].messageCount`; dates without a local session have no point.
+- Compact history records carry only a small `sourceKinds` list, not full source metadata.
+- Event dates are editorial metadata; event counters are still computed only from locally measured sessions.
 
 # Blockers
 
-- The full suite has one date-sensitive pre-existing failure: `test_collection_runner.py` uses fixed 2026-07-25 records with a 48-hour window, which no longer includes them on 2026-07-28. The production filter was not weakened for this admin change.
+- None currently.
 
 # Next Step
 
-Use `python -m danmaku_meme_finder.cli admin` for the next real live collection; separately stabilize the stale date fixture before requiring a fully green suite.
+Commit/publish the verified data and website changes when requested.

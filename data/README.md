@@ -14,8 +14,6 @@ Tracked in GitHub:
 - `sessions.json`: public live-session snapshots with presentation fields, counts, and collector observation metadata.
 - `tags.json`: the public code-to-label tag catalog used by local review and the website.
 - `events.json`: manually maintained tournament date ranges and website cover paths.
-- `monthly-reports/index.json`: ordered list of published monthly report documents.
-- `monthly-reports/YYYY-MM.json`: manually maintained monthly article content and summary metrics.
 
 Local only and ignored by Git:
 

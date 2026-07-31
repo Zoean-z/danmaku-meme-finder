@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -297,6 +296,11 @@ def build_search_index(catalog: dict[str, Any]) -> dict[str, Any]:
             "count": _item_heat(item),
             "latestAt": _item_latest_at(item),
             "month": _item_month(item),
+            "sourceKinds": sorted({
+                str(source.get("kind"))
+                for source in item.get("sources", [])
+                if isinstance(source, dict) and source.get("kind")
+            }),
         }
         for item in _ranked_items(catalog)
         if item.get("id") and item.get("text")
@@ -392,55 +396,37 @@ def split_catalog(catalog: dict[str, Any], active_month_count: int = ACTIVE_MONT
     return {"manifest": manifest, "active": active, "archives": archive_documents}
 
 
-def build_daily_trends(catalog: dict[str, Any]) -> dict[str, Any]:
-    """Precompute historical totals so charts do not need old item shards."""
-    raw_items = catalog.get("items", [])
-    items = [item for item in raw_items if isinstance(item, dict)] if isinstance(raw_items, list) else []
-    points: dict[str, dict[str, Any]] = {}
-    for item in items:
-        occurrences: Counter[str] = Counter()
-        sources = item.get("sources", [])
-        if isinstance(sources, list):
-            for source in sources:
-                if not isinstance(source, dict):
-                    continue
-                session_occurrences = source.get("collectionOccurrences", [])
-                if isinstance(session_occurrences, list) and session_occurrences:
-                    for occurrence in session_occurrences:
-                        if not isinstance(occurrence, dict):
-                            continue
-                        date = occurrence.get("date")
-                        if isinstance(date, str) and len(date) >= 10:
-                            occurrences[date[:10]] += int(occurrence.get("count", 1) or 1)
-                    continue
-                dates = [
-                    value[:10]
-                    for field in DATE_FIELDS
-                    if isinstance((value := source.get(field)), str) and len(value) >= 10
-                ]
-                if dates:
-                    occurrences[max(dates)] += int(source.get("count", 1) or 1)
-        tags = _tags(item.get("tags"))
-        identifier = str(item.get("id", item.get("key", "")))
-        for date, count in occurrences.items():
-            point = points.setdefault(
-                date,
-                {"barrageCount": 0, "memeIds": set(), "tagCounts": Counter()},
-            )
-            point["barrageCount"] += count
-            point["memeIds"].add(identifier)
-            point["tagCounts"].update(tags)
+def build_daily_trends(
+    sessions: dict[str, Any], generated_at: str | None = None
+) -> dict[str, Any]:
+    """Aggregate measured collector volume without reinterpreting legacy copy counts."""
+    raw_sessions = sessions.get("sessions", [])
+    values = raw_sessions if isinstance(raw_sessions, list) else []
+    points: dict[str, dict[str, int]] = {}
+    for session in values:
+        if not isinstance(session, dict):
+            continue
+        raw_date = session.get("date") or session.get("observedStartedAt")
+        if not isinstance(raw_date, str) or len(raw_date) < 10:
+            continue
+        raw_count = session.get("barrageCount")
+        if raw_count is None:
+            raw_count = session.get("messageCount")
+        if raw_count is None:
+            continue
+        try:
+            barrage_count = max(0, int(raw_count))
+        except (TypeError, ValueError):
+            continue
+        point = points.setdefault(raw_date[:10], {"barrageCount": 0, "sessionCount": 0})
+        point["barrageCount"] += barrage_count
+        point["sessionCount"] += 1
 
     return {
-        "schemaVersion": 1,
-        "generatedAt": catalog.get("generatedAt") or iso_now().isoformat(),
+        "schemaVersion": 2,
+        "generatedAt": generated_at or sessions.get("updatedAt") or iso_now().isoformat(),
         "points": [
-            {
-                "date": date,
-                "memeCount": len(point["memeIds"]),
-                "barrageCount": point["barrageCount"],
-                "tagCounts": dict(sorted(point["tagCounts"].items())),
-            }
+            {"date": date, **point}
             for date, point in sorted(points.items())
         ],
     }
@@ -462,7 +448,7 @@ def load_distributed_catalog(directory: Path) -> dict[str, Any]:
 
 
 def write_distributed_catalog(
-    catalog: dict[str, Any], directory: Path, trends_path: Path
+    catalog: dict[str, Any], directory: Path, trends_path: Path, sessions: dict[str, Any]
 ) -> dict[str, Any]:
     """Write all shards first and the manifest last, then remove stale shards."""
     split = split_catalog(catalog)
@@ -481,6 +467,9 @@ def write_distributed_catalog(
         for path in archive_dir.glob("*.json"):
             if path.resolve() not in expected:
                 path.unlink()
-    write_json_atomic(trends_path, build_daily_trends(catalog))
+    write_json_atomic(
+        trends_path,
+        build_daily_trends(sessions, str(catalog.get("generatedAt") or iso_now().isoformat())),
+    )
     write_json_atomic(directory / "manifest.json", split["manifest"])
     return split["manifest"]

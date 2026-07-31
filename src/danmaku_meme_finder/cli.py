@@ -90,6 +90,7 @@ def create_parser() -> argparse.ArgumentParser:
     catalog.add_argument("--memes", type=path_argument, default=Path("data/memes.json"))
     catalog.add_argument("--output", type=path_argument, default=DEFAULT_CATALOG, help="Catalog output directory")
     catalog.add_argument("--trends", type=path_argument, default=DEFAULT_TRENDS)
+    catalog.add_argument("--sessions", type=path_argument, default=DEFAULT_SESSIONS)
     catalog.add_argument("--legacy-catalog", type=path_argument, default=DEFAULT_LEGACY_CATALOG)
 
     review = subparsers.add_parser("review-candidates", help="Interactively confirm candidates and enter tag IDs")
@@ -215,13 +216,14 @@ def _run_import_jsonl(args: argparse.Namespace) -> None:
 def _run_catalog(args: argparse.Namespace) -> None:
     existing_index = read_json(args.existing_index, {"items": {}, "total": 0})
     memes = read_json(args.memes, {"memes": []})
+    sessions = read_json(args.sessions, {"schemaVersion": 1, "sessions": []})
     previous_catalog = (
         load_distributed_catalog(args.output)
         if args.output.is_dir()
         else read_json(args.legacy_catalog, {"items": []})
     )
     payload = build_catalog(existing_index, memes, args.room_id, previous_catalog)
-    manifest = write_distributed_catalog(payload, args.output, args.trends)
+    manifest = write_distributed_catalog(payload, args.output, args.trends, sessions)
     if args.legacy_catalog.is_file():
         args.legacy_catalog.unlink()
     print(
@@ -306,7 +308,7 @@ def _run_review_candidates(args: argparse.Namespace) -> None:
         write_json_atomic(args.memes, memes)
         write_json_atomic(args.sessions, sessions)
         payload = build_catalog(existing_index, memes, args.room_id, catalog)
-        write_distributed_catalog(payload, args.catalog, args.trends)
+        write_distributed_catalog(payload, args.catalog, args.trends, sessions)
         if args.legacy_catalog.is_file():
             args.legacy_catalog.unlink()
         if not args.no_publish:

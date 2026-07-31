@@ -1,5 +1,15 @@
 # Status
 
+## 2026-07-31 - Public trend and archive correction
+
+- `data/trends/daily.json` schema v2 now contains only measured collector volume from `sessions.json`; legacy API `cnt` copy popularity is no longer treated as a barrage count.
+- The three measured dates total 52,811 collected messages (3,694 + 10,637 + 38,480), exactly matching the session records.
+- `catalog/search-index.json` now includes compact `sourceKinds`; 68 of 21,671 current records are positively identified as local self-captures.
+- `events.json` contains 11 major events from IEM Kraków 2026 through BLAST Bounty 2026 Season 2.
+- Empty monthly-report documents and their obsolete admin creation flow were removed from the public data set.
+- Catalog generation now requires session metadata for trend output; CLI review and localhost admin publishing pass it through.
+- Verification: 45 Python tests pass after removing two obsolete monthly-report tests; package compilation, JavaScript syntax, and `git diff --check` pass.
+
 The existing API index is synced locally and the SQLite/candidate workflow is
 retained. Python no longer owns a Douyu connection layer. An earlier short probe
 of `douyudm` reached its server but received no `chatmsg`, even while room 6657

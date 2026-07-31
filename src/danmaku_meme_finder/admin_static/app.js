@@ -139,7 +139,6 @@ function renderMetrics() {
     ["正式梗", counts.approved || 0],
     ["本地不通过", counts.rejected || 0],
     ["直播场次", counts.sessions || 0],
-    ["月报", counts.reports || 0],
   ];
   $("#metrics").innerHTML = values.map(([label, value]) => `<div class="metric"><span>${label}</span><strong>${Number(value).toLocaleString("zh-CN")}</strong></div>`).join("");
   $("#pending-badge").textContent = counts.pending || 0;
@@ -343,50 +342,6 @@ async function createSession() {
   await saveCreatedRecord("sessions", document, "直播场次已创建；采集产生的场次仍会自动写入");
 }
 
-async function createReport() {
-  const month = window.prompt("输入月份（YYYY-MM）", new Date().toISOString().slice(0, 7));
-  if (!month) return;
-  if (!/^\d{4}-\d{2}$/.test(month)) {
-    toast("月份格式应为 YYYY-MM", true);
-    return;
-  }
-  const year = month.slice(0, 4);
-  const monthNumber = Number(month.slice(5));
-  const payload = {
-    schemaVersion: 1,
-    id: `monthly-${month}`,
-    month,
-    title: `${year}年${monthNumber}月总结`,
-    publishedAt: `${month}-01`,
-    startDate: `${month}-01`,
-    endDate: `${month}-01`,
-    coverUrl: `/covers/reports/${month}.png`,
-    summary: "",
-    sessionCount: 0,
-    memeCount: 0,
-    barrageCount: 0,
-    eventTitles: [],
-    topTagCodes: [],
-    sections: [{ heading: "本月概览", paragraphs: [""] }],
-  };
-  setBusy(true);
-  try {
-    const result = await request("/api/documents", {
-      method: "POST",
-      body: JSON.stringify({ key: `report:${month}`, payload }),
-    });
-    app.state = result.state;
-    app.documentKey = `report:${month}`;
-    render();
-    switchView("content");
-    toast("月报草稿和索引已创建");
-  } catch (error) {
-    toast(error.message, true);
-  } finally {
-    setBusy(false);
-  }
-}
-
 async function publish() {
   if (!window.confirm("将重建活跃目录、月度归档和趋势摘要，并推送到 GitHub。继续吗？")) return;
   setBusy(true);
@@ -453,7 +408,6 @@ $("#skip-button").addEventListener("click", skipCandidate);
 $("#save-document-button").addEventListener("click", saveDocument);
 $("#new-event-button").addEventListener("click", createEvent);
 $("#new-session-button").addEventListener("click", createSession);
-$("#new-report-button").addEventListener("click", createReport);
 $("#publish-button").addEventListener("click", publish);
 window.addEventListener("keydown", (event) => {
   if (["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName)) return;

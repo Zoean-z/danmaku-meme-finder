@@ -114,13 +114,13 @@ def test_full_catalog_hot_and_search_outputs_include_archives() -> None:
                 "id": "00002",
                 "text": "Recent",
                 "tags": ["06"],
-                "sources": [{"submittedAt": "2026-07-01T00:00:00", "count": 2}],
+                "sources": [{"kind": "local", "submittedAt": "2026-07-01T00:00:00", "count": 2}],
             },
             {
                 "id": "00001",
                 "text": "Historic leader",
                 "tags": ["24"],
-                "sources": [{"submittedAt": "2024-01-01T00:00:00", "count": 99}],
+                "sources": [{"kind": "legacy_api", "submittedAt": "2024-01-01T00:00:00", "count": 99}],
             },
         ],
     }
@@ -137,7 +137,9 @@ def test_full_catalog_hot_and_search_outputs_include_archives() -> None:
         "count": 99,
         "latestAt": "2024-01-01T00:00:00",
         "month": "2024-01",
+        "sourceKinds": ["legacy_api"],
     }
+    assert search["items"][1]["sourceKinds"] == ["local"]
 
 
 def test_distributed_catalog_round_trip_and_daily_trends(tmp_path: Path) -> None:
@@ -160,17 +162,25 @@ def test_distributed_catalog_round_trip_and_daily_trends(tmp_path: Path) -> None
     directory = tmp_path / "data" / "catalog"
     trends_path = tmp_path / "data" / "trends" / "daily.json"
 
-    manifest = write_distributed_catalog(catalog, directory, trends_path)
+    sessions = {
+        "updatedAt": "2026-07-26T12:00:00+08:00",
+        "sessions": [
+            {"date": "2026-07-24", "barrageCount": 3694},
+            {"date": "2026-07-24", "messageCount": 6},
+            {"date": "2026-07-25", "title": "missing measured count"},
+        ],
+    }
+    manifest = write_distributed_catalog(catalog, directory, trends_path, sessions)
     loaded = load_distributed_catalog(directory)
-    trends = build_daily_trends(catalog)
+    trends = build_daily_trends(sessions, catalog["generatedAt"])
 
     assert manifest["total"] == 1
     assert manifest["hot"] == {"file": "catalog/hot.json", "count": 1}
     assert manifest["search"] == {"file": "catalog/search-index.json", "count": 1}
     assert loaded["items"][0]["id"] == "00007"
+    assert trends["schemaVersion"] == 2
     assert trends["points"] == [
-        {"date": "2026-04-15", "memeCount": 1, "barrageCount": 75, "tagCounts": {"06": 1, "24": 1}},
-        {"date": "2026-07-24", "memeCount": 1, "barrageCount": 1, "tagCounts": {"06": 1, "24": 1}},
+        {"date": "2026-07-24", "barrageCount": 3700, "sessionCount": 2},
     ]
     assert trends_path.is_file()
     assert (directory / "hot.json").is_file()
@@ -188,11 +198,11 @@ def test_unchanged_archive_keeps_its_original_generated_time(tmp_path: Path) -> 
             {"id": "00002", "text": "New", "sources": [{"submittedAt": "2026-07-01T00:00:00"}]},
         ],
     }
-    write_distributed_catalog(catalog, directory, trends_path)
+    write_distributed_catalog(catalog, directory, trends_path, {"sessions": []})
     archive_path = directory / "archive" / "2025-01.json"
     original = archive_path.read_text(encoding="utf-8")
 
     catalog["generatedAt"] = "2026-07-02T00:00:00+08:00"
-    write_distributed_catalog(catalog, directory, trends_path)
+    write_distributed_catalog(catalog, directory, trends_path, {"sessions": []})
 
     assert archive_path.read_text(encoding="utf-8") == original
