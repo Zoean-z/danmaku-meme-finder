@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-07-31T12:53:19.097453+08:00",
+  "generatedAt": "2026-08-01T00:12:42.659741+08:00",
   "points": [
     {
       "date": "2026-07-24",
@@ -15,6 +15,11 @@
     {
       "date": "2026-07-30",
       "barrageCount": 38480,
+      "sessionCount": 1
+    },
+    {
+      "date": "2026-07-31",
+      "barrageCount": 69927,
       "sessionCount": 1
     }
   ]
