@@ -71,3 +71,42 @@ def test_refresh_session_provenance_backfills_memes_and_counts(tmp_path) -> None
     assert sessions["sessions"][0]["memeCount"] == 1
     assert sessions["sessions"][0]["barrageCount"] == 1
     assert sessions["sessions"][0]["tagCodes"] == ["06"]
+
+
+def test_refresh_session_provenance_assigns_recurring_meme_to_first_session_only() -> None:
+    sessions = {
+        "sessions": [
+            {"id": "session-a", "date": "2026-07-30"},
+            {"id": "session-b", "date": "2026-07-31"},
+        ]
+    }
+    memes = {
+        "memes": [{
+            "id": "22073",
+            "text": "孩孩𓀐𓂸尼尼",
+            "tags": ["07", "22"],
+            "collectionOccurrences": [
+                {
+                    "sessionId": "session-a",
+                    "date": "2026-07-30",
+                    "count": 1,
+                    "firstSeenAt": "2026-07-30T21:25:15+08:00",
+                },
+                {
+                    "sessionId": "session-b",
+                    "date": "2026-07-31",
+                    "count": 2,
+                    "firstSeenAt": "2026-07-31T21:10:09+08:00",
+                },
+            ],
+        }]
+    }
+
+    updated = refresh_session_provenance(sessions, memes, None, 6657)
+
+    assert updated == 0
+    assert sessions["sessions"][0]["memeCount"] == 1
+    assert sessions["sessions"][0]["tagCodes"] == ["07", "22"]
+    assert sessions["sessions"][1]["memeCount"] == 0
+    assert sessions["sessions"][1]["tagCodes"] == []
+    assert len(memes["memes"][0]["collectionOccurrences"]) == 2

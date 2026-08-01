@@ -1,22 +1,22 @@
 # Current Goal
 
-Prevent reviewed meme families from returning as candidates, and remove source-derived pseudo-categories from the review and public website.
+Keep collection-session archives unique and make every category selector fully visible without scrolling.
 
 # Active Checklist
 
-- [x] Diagnose repeated raw messages versus repeated review candidates.
-- [x] Split exact rejection from permanent similar-family blocking.
-- [x] Add the permanent-block action to browser and CLI review flows.
-- [x] Remove candidate-source labels from the admin review UI.
-- [x] Stop the website adapter from generating source pseudo-tags.
-- [x] Publish both repositories and verify the deployed admin/site behavior.
+- [x] Trace duplicate session rows to later occurrences being treated as new collection membership.
+- [x] Keep all occurrence evidence but assign each accepted meme to its earliest collection session.
+- [x] Recalculate session counts and category summaries without repeated meme IDs.
+- [x] Preserve aggregate heat in the full catalog and use first-session heat in session views.
+- [x] Remove the height cap and scroll behavior from all shared category selectors.
+- [ ] Publish data and code, deploy Vercel only, and verify the production routes.
 
 # Decisions
 
-- Ordinary rejection remains exact so reviewers do not accidentally suppress a broad family.
-- The explicit permanent-block action stores `excludeSimilar: true` in ignored local review state.
-- Similar-family matching additionally handles numeric variants and template phrases with a stable prefix or suffix.
-- `official`, `high_frequency`, and `long_text` remain internal provenance values, never user-facing tags.
+- Repeated occurrences remain attached to a meme for evidence and total heat.
+- A meme belongs to exactly one archive session: its earliest exact `collectionOccurrence`.
+- Session heat uses that canonical occurrence count; unfiltered catalog heat uses the sum of all occurrences.
+- Category controls wrap to as many lines as needed and never create an internal scrollbar.
 
 # Blockers
 
@@ -24,4 +24,4 @@ Prevent reviewed meme families from returning as candidates, and remove source-d
 
 # Next Step
 
-Use the new permanent-family action during future reviews when a template should never return.
+Deploy and verify the corrected Vercel production site without updating Sites.

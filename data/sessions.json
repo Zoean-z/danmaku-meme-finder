@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-08-01T00:12:42.363745+08:00",
+  "updatedAt": "2026-08-01T16:17:46.892096+08:00",
   "sessions": [
     {
       "id": "6657-20260724-172527",
@@ -30,7 +30,7 @@
       "title": "小众宝藏结晶直播间 6657",
       "coverUrl": "/covers/sessions/2026-07-25.png",
       "summary": "30 分钟直播弹幕采集，用于候选筛选和审核流程验证。",
-      "memeCount": 54,
+      "memeCount": 49,
       "barrageCount": 10637,
       "roomId": 6657,
       "rid": 6979222,
@@ -59,13 +59,13 @@
       "observedEndedAt": "2026-07-30T21:43:38.944829+08:00",
       "metadataFetchedAt": "2026-07-30T21:02:59.123828+08:00",
       "summary": "",
-      "memeCount": 24,
+      "memeCount": 15,
       "barrageCount": 38480,
       "messageCount": 38480,
       "tagCodes": [
-        "00",
         "01",
-        "22"
+        "22",
+        "00"
       ]
     },
     {
@@ -81,13 +81,13 @@
       "observedEndedAt": "2026-07-31T23:06:02.213918+08:00",
       "metadataFetchedAt": "2026-07-31T21:04:37.964202+08:00",
       "summary": "",
-      "memeCount": 22,
+      "memeCount": 9,
       "barrageCount": 69927,
       "messageCount": 69927,
       "tagCodes": [
         "00",
-        "16",
-        "05"
+        "06",
+        "09"
       ]
     }
   ]

@@ -217,6 +217,8 @@ def _run_catalog(args: argparse.Namespace) -> None:
     existing_index = read_json(args.existing_index, {"items": {}, "total": 0})
     memes = read_json(args.memes, {"memes": []})
     sessions = read_json(args.sessions, {"schemaVersion": 1, "sessions": []})
+    refresh_session_provenance(sessions, memes, None, args.room_id)
+    write_json_atomic(args.sessions, sessions)
     previous_catalog = (
         load_distributed_catalog(args.output)
         if args.output.is_dir()

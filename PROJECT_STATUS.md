@@ -277,3 +277,11 @@ version 11 and to the Vercel production alias `6657up.zoean.xyz`; both productio
 JavaScript, and `api/data/tags.json` return HTTP 200, and neither built bundle contains the
 three removed pseudo-category labels. The localhost admin was restarted on port 8765 and
 passed desktop DOM, 390px overflow, and console-error checks.
+
+The session-archive duplication shown for meme `#22073` was not a duplicate catalog row.
+Its later raw occurrences had been counted as membership in the July 30 and July 31 archive
+sessions, which also replaced its displayed heat with the per-session counts 1 and 2.
+Session summaries now assign every accepted meme only to its earliest exact collection
+session while retaining all occurrence evidence. Rebuilding the public data reduced the
+July 30 session from 24 to 15 unique memes and July 31 from 22 to 9; all four session counts
+now total exactly the 78 accepted memes, with no cross-session duplication.

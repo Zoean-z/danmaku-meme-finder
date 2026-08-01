@@ -156,14 +156,28 @@ def refresh_session_provenance(
         occurrences = meme.get("collectionOccurrences", [])
         if not isinstance(occurrences, list):
             continue
-        for occurrence in occurrences:
-            if not isinstance(occurrence, dict) or not isinstance(occurrence.get("sessionId"), str):
-                continue
-            session_identifier = occurrence["sessionId"]
-            meme_ids_by_session.setdefault(session_identifier, set()).add(identifier)
-            counts = tag_counts_by_session.setdefault(session_identifier, {})
-            for tag in tags:
-                counts[tag] = counts.get(tag, 0) + 1
+        exact_occurrences = [
+            occurrence
+            for occurrence in occurrences
+            if isinstance(occurrence, dict) and isinstance(occurrence.get("sessionId"), str)
+        ]
+        if not exact_occurrences:
+            continue
+        # A meme can recur in many later broadcasts. Session archives describe where
+        # it first entered this collection, while the full occurrence list remains as
+        # evidence and supplies the all-time heat count.
+        occurrence = min(
+            exact_occurrences,
+            key=lambda item: (
+                str(item.get("firstSeenAt") or item.get("date") or ""),
+                str(item["sessionId"]),
+            ),
+        )
+        session_identifier = str(occurrence["sessionId"])
+        meme_ids_by_session.setdefault(session_identifier, set()).add(identifier)
+        counts = tag_counts_by_session.setdefault(session_identifier, {})
+        for tag in tags:
+            counts[tag] = counts.get(tag, 0) + 1
 
     for session in sessions:
         if not isinstance(session, dict) or not isinstance(session.get("id"), str):
