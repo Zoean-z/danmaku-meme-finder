@@ -285,3 +285,9 @@ Session summaries now assign every accepted meme only to its earliest exact coll
 session while retaining all occurrence evidence. Rebuilding the public data reduced the
 July 30 session from 24 to 15 unique memes and July 31 from 22 to 9; all four session counts
 now total exactly the 78 accepted memes, with no cross-session duplication.
+
+The corrected data is pushed and the companion frontend is deployed only to Vercel, as
+requested. Production verification shows 15 rows for July 30 and 9 for July 31, with
+`#22073` absent from both. Its earliest July 25 session contains exactly one row with heat
+58. The production category controls have no fixed height or internal overflow; the shared
+selectors wrap all tags, and the 390px page has no horizontal overflow.

@@ -9,7 +9,7 @@ Keep collection-session archives unique and make every category selector fully v
 - [x] Recalculate session counts and category summaries without repeated meme IDs.
 - [x] Preserve aggregate heat in the full catalog and use first-session heat in session views.
 - [x] Remove the height cap and scroll behavior from all shared category selectors.
-- [ ] Publish data and code, deploy Vercel only, and verify the production routes.
+- [x] Publish data and code, deploy Vercel only, and verify the production routes.
 
 # Decisions
 
@@ -24,4 +24,4 @@ Keep collection-session archives unique and make every category selector fully v
 
 # Next Step
 
-Deploy and verify the corrected Vercel production site without updating Sites.
+Keep using first-session membership when future collections refresh existing meme occurrences.
