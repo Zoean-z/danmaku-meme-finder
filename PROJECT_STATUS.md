@@ -271,3 +271,9 @@ has separate exact-reject and permanent-family-block actions; the latter persist
 candidate builds. Candidate source is no longer shown as a review category. The companion
 website adapter also no longer turns `official`, `high_frequency`, or `long_text` provenance
 into tags. All 54 Python tests pass and the website production build succeeds.
+
+The review/cleanup changes are pushed to GitHub. The companion site is deployed as Sites
+version 11 and to the Vercel production alias `6657up.zoean.xyz`; both production HTML,
+JavaScript, and `api/data/tags.json` return HTTP 200, and neither built bundle contains the
+three removed pseudo-category labels. The localhost admin was restarted on port 8765 and
+passed desktop DOM, 390px overflow, and console-error checks.

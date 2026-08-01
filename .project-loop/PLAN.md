@@ -9,7 +9,7 @@ Prevent reviewed meme families from returning as candidates, and remove source-d
 - [x] Add the permanent-block action to browser and CLI review flows.
 - [x] Remove candidate-source labels from the admin review UI.
 - [x] Stop the website adapter from generating source pseudo-tags.
-- [ ] Publish both repositories and verify the deployed admin/site behavior.
+- [x] Publish both repositories and verify the deployed admin/site behavior.
 
 # Decisions
 
@@ -24,4 +24,4 @@ Prevent reviewed meme families from returning as candidates, and remove source-d
 
 # Next Step
 
-Commit and deploy the tested changes, then verify the localhost admin and production site.
+Use the new permanent-family action during future reviews when a template should never return.
