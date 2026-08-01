@@ -57,7 +57,7 @@ python -m danmaku_meme_finder.cli admin
 它只监听 `http://127.0.0.1:8765`，默认自动打开浏览器。后台提供：
 
 - “弹幕采集”工作区：设置采集分钟数、开始或安全停止本机 Node 采集器，并查看场次编号、SQLite 导入数和最终候选数。
-- 候选逐条审核、完整标签点选、通过、不通过和键盘快捷键。
+- 候选逐条审核、完整标签点选、通过、仅拒绝当前文本、永久屏蔽该梗及相似梗和键盘快捷键。
 - 集中编辑 `events.json`、`sessions.json`、`tags.json` 和 `memes.json`。
 - 使用“新建赛事”和“新建直播场次”快速补录结构化内容；正常采集仍会自动创建直播场次。
 - 显式“发布到 GitHub”按钮；点击确认后才会重建活跃目录、月度归档和趋势摘要，再提交并推送公开数据。
@@ -69,6 +69,8 @@ python -m danmaku_meme_finder.cli admin --no-open --port 8766
 ```
 
 采集按钮只是调用与 CLI 相同的本地 `run_collection()` 流程：一次只能运行一场，停止时仍会完成剩余 JSONL 导入、SQLite 落库、候选生成和场次关闭。关闭管理后台时也会请求安全停止。管理后台不会把 `live.jsonl`、SQLite 或用户标识返回给浏览器，更不能从 Vercel 公网网站远程启动本机进程。开始采集和发布前都需要本机存在最新的 `data/existing_index.json`；缺失时先执行 `sync-existing`。
+
+管理端发布现在也是本地原始数据的安全收尾点：只有当前候选全部通过或拒绝、采集已经停止、JSONL 已完整导入后，才允许发布。GitHub 推送成功后，系统按候选携带的 `collectionOccurrences[].sessionId` 清理对应场次的 SQLite 行与 JSONL 记录，并重写 checkpoint；其他场次、未审核数据和审核拒绝记录不会被删除。清理中断时会用临时备份恢复原 JSONL。
 
 ### 采集与命令行审核
 
@@ -107,7 +109,7 @@ python -m danmaku_meme_finder.cli build-catalog
 python -m danmaku_meme_finder.cli review-candidates
 ```
 
-一条命令完成采集和审核：运行后持续采集，按 `Ctrl+C`（或使用 `--duration`）安全落库、生成最多 20 条候选并立刻进入审核。候选会默认合并明显的重复、提及用户前缀和轻微改写，并排除与正式梗或历史拒绝项高度相似的内容。每条候选都会显示完整分类列表；输入分类编号或名称即可收录，输入 `x` 或 `n` 表示不通过。拒绝结果会写入本地忽略的 `data/review_state.json`，后续审核不会重复显示。
+一条命令完成采集和审核：运行后持续采集，按 `Ctrl+C`（或使用 `--duration`）安全落库、生成最多 20 条候选并立刻进入审核。候选会默认合并明显的重复、提及用户前缀和轻微改写，并排除与正式梗或显式屏蔽项高度相似的内容。每条候选都会显示完整标签列表；输入标签编号或名称即可收录，输入 `x` 或 `n` 只拒绝当前文本，输入 `b` 会永久屏蔽该梗及相似表达。拒绝结果会写入本地忽略的 `data/review_state.json`，后续审核不会重复显示。
 
 ```bash
 python -m danmaku_meme_finder.cli collect-and-review --refresh-existing

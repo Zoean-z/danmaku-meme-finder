@@ -58,13 +58,14 @@
           <div class="metric-strip" id="metrics"></div>
           <div class="review-layout">
             <section class="candidate-workspace">
-              <div class="candidate-meta"><span id="candidate-progress">0 / 0</span><span id="candidate-source">等待载入</span></div>
+              <div class="candidate-meta"><span id="candidate-progress">0 / 0</span><span id="candidate-source">候选</span></div>
               <blockquote id="candidate-text">正在读取候选数据……</blockquote>
               <div class="candidate-facts" id="candidate-facts"></div>
               <div class="tag-heading"><strong>选择标签</strong><span>支持多选；每次都显示完整列表</span></div>
               <div class="tag-list" id="tag-list"></div>
               <div class="review-actions">
                 <button id="reject-button" class="danger-button">不通过 <kbd>X</kbd></button>
+                <button id="reject-similar-button" class="danger-button">以后不收录该梗和相似梗 <kbd>B</kbd></button>
                 <button id="skip-button" class="quiet-button">稍后再看 <kbd>S</kbd></button>
                 <button id="approve-button" class="primary-button">通过并保存 <kbd>Enter</kbd></button>
               </div>
@@ -72,7 +73,7 @@
             <aside class="review-context">
               <span>审核提示</span>
               <h2>只做判断，不改原文</h2>
-              <p>通过后写入正式梗库，不通过只记录在本地审核状态。目录会在发布时一次性重建。</p>
+              <p>通过后写入梗库；“不通过”只排除当前文本；“以后不收录”会持续拦截该梗及相似表达。目录会在发布时一次性重建。</p>
               <dl><div><dt>原始候选</dt><dd id="context-total">0</dd></div><div><dt>待审核</dt><dd id="context-pending">0</dd></div><div><dt>已确认</dt><dd id="context-approved">0</dd></div></dl>
             </aside>
           </div>
@@ -100,7 +101,7 @@
           <div class="publish-panel">
             <span>显式发布</span>
             <h2>确认后才会更新 GitHub</h2>
-            <p>发布会用本地已有梗索引重建活跃目录、月度归档和趋势摘要，只提交正式梗库与公开内容，不包含 SQLite、JSONL 或审核拒绝记录。</p>
+            <p>发布会重建公开目录并只提交正式梗库与公开内容。候选全部审核且 GitHub 发布成功后，本轮场次对应的 SQLite 与 JSONL 原始弹幕会在本机清理；未审核、未落库或正在采集的数据不会删除。</p>
             <div class="publish-checks"><div><strong>本地审核</strong><small>随时保存，不触发 Git</small></div><div><strong>目录重建</strong><small>发布时统一执行</small></div><div><strong>远端更新</strong><small>需要点击下面按钮确认</small></div></div>
             <button id="publish-button" class="primary-button publish-button">重建目录并发布到 GitHub</button>
             <p id="publish-result" class="publish-result"></p>

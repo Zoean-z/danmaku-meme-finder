@@ -39,7 +39,9 @@ def review_queue(
     return [candidate for candidate in candidates if candidate_key(candidate) not in excluded]
 
 
-def reject_candidate(state: dict[str, Any], candidate: dict[str, Any]) -> None:
+def reject_candidate(
+    state: dict[str, Any], candidate: dict[str, Any], *, exclude_similar: bool = False
+) -> None:
     key = candidate_key(candidate)
     if not key:
         raise ValueError("candidate has no normalized text")
@@ -49,6 +51,7 @@ def reject_candidate(state: dict[str, Any], candidate: dict[str, Any]) -> None:
     rejected[key] = {
         "text": candidate.get("text"),
         "rejectedAt": iso_now().isoformat(),
+        "excludeSimilar": exclude_similar,
     }
     state["schemaVersion"] = 1
     state["updatedAt"] = iso_now().isoformat()

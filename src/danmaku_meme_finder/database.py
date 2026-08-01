@@ -98,6 +98,18 @@ class DanmakuDatabase:
             self.conn.execute("SELECT COUNT(*) FROM raw_danmaku WHERE session_id = ?", (session_id,)).fetchone()[0]
         )
 
+    def delete_sessions(self, session_ids: set[str]) -> int:
+        """Delete raw rows for explicit, already-published collection sessions."""
+        normalized = sorted({value.strip() for value in session_ids if value.strip()})
+        if not normalized:
+            return 0
+        placeholders = ",".join("?" for _ in normalized)
+        with self.conn:
+            cursor = self.conn.execute(
+                f"DELETE FROM raw_danmaku WHERE session_id IN ({placeholders})", normalized
+            )
+        return int(cursor.rowcount)
+
     def session_occurrences(self, room_id: int, start: datetime | None = None) -> list[sqlite3.Row]:
         """Return exact per-text, per-session observations for curation provenance."""
         self.conn.row_factory = sqlite3.Row

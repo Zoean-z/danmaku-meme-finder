@@ -27,6 +27,7 @@ from .catalog import (
 )
 from .curation import add_confirmed_meme, resolve_tags, tag_labels
 from .collection_runner import CollectionSettings, run_collection
+from .cleanup import cleanup_reviewed_sessions, reviewed_session_ids
 from .config import user_hash_salt
 from .database import DanmakuDatabase
 from .exporter import read_json, write_json_atomic
@@ -43,7 +44,7 @@ class ReviewAction(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     key: str = Field(min_length=1)
-    decision: Literal["approve", "reject"]
+    decision: Literal["approve", "reject", "reject_similar"]
     tags: list[str] = Field(default_factory=list)
 
 
@@ -274,10 +275,14 @@ class AdminService:
             if candidate not in review_queue([candidate], memes, review_state):
                 raise ValueError("candidate was already reviewed")
 
-            if action.decision == "reject":
-                reject_candidate(review_state, candidate)
+            if action.decision in {"reject", "reject_similar"}:
+                reject_candidate(
+                    review_state,
+                    candidate,
+                    exclude_similar=action.decision == "reject_similar",
+                )
                 write_json_atomic(review_state_path, review_state)
-                return {"decision": "reject", "created": False, "state": self.state()}
+                return {"decision": action.decision, "created": False, "state": self.state()}
 
             labels = tag_labels(read_json(self.settings.data("tags.json"), {"tags": {}}))
             resolved = resolve_tags(",".join(action.tags), labels)
@@ -305,6 +310,9 @@ class AdminService:
 
     def publish(self) -> dict[str, Any]:
         with self._lock:
+            collection_state = self.collection.status()
+            if collection_state["active"]:
+                raise ValueError("采集仍在运行，停止并完成落库后才能发布")
             existing_path = self.settings.data("existing_index.json")
             if not existing_path.is_file():
                 raise ValueError("缺少 data/existing_index.json，请先运行 sync-existing 再发布")
@@ -315,6 +323,16 @@ class AdminService:
             trends_path = self.settings.data("trends/daily.json")
             existing = read_json(existing_path, {"items": {}, "total": 0})
             memes = read_json(memes_path, {"roomId": self.settings.room_id, "memes": []})
+            candidate_payload = read_json(self.settings.data("candidates.json"), {"candidates": []})
+            raw_candidates = candidate_payload.get("candidates", [])
+            candidates = [item for item in raw_candidates if isinstance(item, dict)] if isinstance(raw_candidates, list) else []
+            review_state = read_json(
+                self.settings.data("review_state.json"), {"schemaVersion": 1, "rejected": {}}
+            )
+            pending = review_queue(candidates, memes, review_state)
+            if pending:
+                raise ValueError(f"还有 {len(pending)} 条候选未审核，全部处理后才能发布和清理原始弹幕")
+            cleanup_sessions = reviewed_session_ids(candidate_payload)
             sessions = read_json(sessions_path, {"schemaVersion": 1, "sessions": []})
             database_path = self.settings.data("danmaku.db")
             if database_path.is_file():
@@ -339,10 +357,17 @@ class AdminService:
                 self.settings.data("tags.json"),
             ]
             message = publish_files(self.settings.root, public_files, "Update managed site content")
+            cleanup = cleanup_reviewed_sessions(
+                database_path,
+                self.settings.data("live.jsonl"),
+                self.settings.data("live.import.checkpoint.json"),
+                cleanup_sessions,
+            )
             return {
                 "published": message is not None,
                 "message": message or "没有需要发布的公开数据变更",
                 "catalogItems": manifest["total"],
+                "cleanup": cleanup,
                 "state": self.state(),
             }
 

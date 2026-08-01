@@ -152,13 +152,14 @@ function renderCandidate() {
   const candidate = queue[app.candidateIndex];
   const hasCandidate = Boolean(candidate);
   $("#candidate-progress").textContent = hasCandidate ? `${app.candidateIndex + 1} / ${queue.length}` : "队列已清空";
-  $("#candidate-source").textContent = hasCandidate ? sourceLabel(candidate.source) : "完成";
+  $("#candidate-source").textContent = hasCandidate ? "候选" : "完成";
   $("#candidate-text").textContent = hasCandidate ? candidate.text : "当前没有尚未审核的候选。";
   $("#candidate-facts").innerHTML = hasCandidate
     ? `<span><strong>${candidate.count || 0}</strong>次出现</span><span><strong>${candidate.uniqueUsers || 0}</strong>位独立用户</span><span>最近 ${formatDate(candidate.lastSeenAt)}</span>`
     : "";
   $("#approve-button").disabled = !hasCandidate;
   $("#reject-button").disabled = !hasCandidate;
+  $("#reject-similar-button").disabled = !hasCandidate;
   $("#skip-button").disabled = queue.length < 2;
   const tags = app.state?.tags || {};
   $("#tag-list").innerHTML = Object.entries(tags).sort(([a], [b]) => a.localeCompare(b)).map(([code, label]) =>
@@ -343,15 +344,17 @@ async function createSession() {
 }
 
 async function publish() {
-  if (!window.confirm("将重建活跃目录、月度归档和趋势摘要，并推送到 GitHub。继续吗？")) return;
+  if (!window.confirm("将重建公开目录并推送到 GitHub。发布成功后，会清理本轮已审核场次的本地 JSONL 和 SQLite 原始弹幕；未审核或正在采集的数据不会删除。继续吗？")) return;
   setBusy(true);
   $("#publish-result").textContent = "正在重建目录并推送……";
   try {
     const result = await request("/api/publish", { method: "POST", body: "{}" });
     app.state = result.state;
     render();
-    $("#publish-result").textContent = `${result.message}；目录共 ${Number(result.catalogItems).toLocaleString("zh-CN")} 条。`;
-    toast(result.published ? "GitHub 发布完成" : "公开数据没有变化");
+    const cleanup = result.cleanup || {};
+    const removed = Number(cleanup.databaseMessagesRemoved || 0).toLocaleString("zh-CN");
+    $("#publish-result").textContent = `${result.message}；目录共 ${Number(result.catalogItems).toLocaleString("zh-CN")} 条；已清理 ${removed} 条本地原始弹幕。`;
+    toast(result.published ? "GitHub 发布与本地清理完成" : "公开数据未变化；本地清理完成");
   } catch (error) {
     $("#publish-result").textContent = error.message;
     toast(error.message, true);
@@ -392,9 +395,6 @@ function toast(message, error = false) {
   toastTimer = setTimeout(() => element.classList.remove("visible"), 2600);
 }
 
-function sourceLabel(source) {
-  return source === "high_frequency" ? "高频候选" : source === "long_text" ? "长文本候选" : source || "候选";
-}
 function formatDate(value) { return typeof value === "string" ? value.slice(0, 16).replace("T", " ") : "未知"; }
 function escapeHtml(value) { return String(value).replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char]); }
 
@@ -404,6 +404,7 @@ $("#start-collection-button").addEventListener("click", startCollection);
 $("#stop-collection-button").addEventListener("click", stopCollection);
 $("#approve-button").addEventListener("click", () => review("approve"));
 $("#reject-button").addEventListener("click", () => review("reject"));
+$("#reject-similar-button").addEventListener("click", () => review("reject_similar"));
 $("#skip-button").addEventListener("click", skipCandidate);
 $("#save-document-button").addEventListener("click", saveDocument);
 $("#new-event-button").addEventListener("click", createEvent);
@@ -414,6 +415,7 @@ window.addEventListener("keydown", (event) => {
   if (!$("#review-view").classList.contains("active")) return;
   if (event.key === "Enter") review("approve");
   if (event.key.toLowerCase() === "x") review("reject");
+  if (event.key.toLowerCase() === "b") review("reject_similar");
   if (event.key.toLowerCase() === "s") skipCandidate();
 });
 

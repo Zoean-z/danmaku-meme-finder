@@ -30,6 +30,7 @@ def make_service(root: Path) -> AdminService:
                     "count": 8,
                     "uniqueUsers": 5,
                     "source": "high_frequency",
+                    "collectionOccurrences": [{"sessionId": "session-a", "count": 8}],
                 }
             ],
         },
@@ -69,6 +70,18 @@ def test_admin_rejection_stays_local(tmp_path: Path) -> None:
     state = json.loads((tmp_path / "data" / "review_state.json").read_text(encoding="utf-8"))
     assert "新的直播间梗" in state["rejected"]
     assert json.loads((tmp_path / "data" / "memes.json").read_text(encoding="utf-8"))["memes"] == []
+
+
+def test_admin_can_reject_candidate_and_similar_memes(tmp_path: Path) -> None:
+    service = make_service(tmp_path)
+
+    result = service.review(
+        ReviewAction(key="新的直播间梗", decision="reject_similar")
+    )
+
+    assert result["decision"] == "reject_similar"
+    state = json.loads((tmp_path / "data" / "review_state.json").read_text(encoding="utf-8"))
+    assert state["rejected"]["新的直播间梗"]["excludeSimilar"] is True
 
 
 def test_admin_validates_new_events_and_sessions(tmp_path: Path) -> None:
@@ -112,6 +125,14 @@ def test_admin_publish_rebuilds_catalog_and_uses_explicit_files(monkeypatch, tmp
     assert tmp_path / "data" / "catalog" in published["files"]
     assert tmp_path / "data" / "trends" / "daily.json" in published["files"]
     assert published["message"] == "Update managed site content"
+    assert result["cleanup"]["sessionIds"] == ["session-a"]
+
+
+def test_admin_publish_requires_completed_review(tmp_path: Path) -> None:
+    service = make_service(tmp_path)
+
+    with pytest.raises(ValueError, match="1 条候选未审核"):
+        service.publish()
 
 
 def test_admin_ui_exposes_event_and_session_creation() -> None:
@@ -123,6 +144,18 @@ def test_admin_ui_exposes_event_and_session_creation() -> None:
     assert 'id="new-session-button"' in html
     assert "async function createEvent()" in script
     assert "async function createSession()" in script
+
+
+def test_admin_ui_exposes_similar_block_without_source_categories() -> None:
+    static = Path(__file__).parents[1] / "src" / "danmaku_meme_finder" / "admin_static"
+    html = (static / "index.html").read_text(encoding="utf-8")
+    script = (static / "app.js").read_text(encoding="utf-8")
+
+    assert 'id="reject-similar-button"' in html
+    assert 'review("reject_similar")' in script
+    for bad_label in ("高频候选", "长文本候选", "正式收录"):
+        assert bad_label not in html
+        assert bad_label not in script
 
 
 def test_admin_collection_start_conflict_and_graceful_stop(monkeypatch, tmp_path: Path) -> None:

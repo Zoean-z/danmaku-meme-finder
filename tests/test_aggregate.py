@@ -185,7 +185,9 @@ def test_candidate_filters_variants_of_previously_rejected_text(tmp_path: Path) 
     review_state_path = tmp_path / "review-state.json"
     write_json_atomic(existing_path, {"items": {}})
     write_json_atomic(review_state_path, {
-        "rejected": {"机器你在哪里家里进白字了": {"text": "机器你在哪里家里进白字了"}}
+        "rejected": {"机器你在哪里家里进白字了": {
+            "text": "机器你在哪里家里进白字了", "excludeSimilar": True
+        }}
     })
     with DanmakuDatabase(database_path) as database:
         database.insert_many([
@@ -205,6 +207,52 @@ def test_candidate_filters_variants_of_previously_rejected_text(tmp_path: Path) 
 
     assert payload["candidates"] == []
     assert payload["reviewedSimilarFilteredCount"] == 1
+
+
+def test_plain_rejection_only_filters_exact_text(tmp_path: Path) -> None:
+    database_path = tmp_path / "danmaku.db"
+    existing_path = tmp_path / "existing.json"
+    review_state_path = tmp_path / "review-state.json"
+    write_json_atomic(existing_path, {"items": {}})
+    write_json_atomic(review_state_path, {
+        "rejected": {"我爱你玩机器": {"text": "我爱你玩机器", "excludeSimilar": False}}
+    })
+    with DanmakuDatabase(database_path) as database:
+        database.insert_many([
+            message("我爱你刘帅宇", 3, "a"),
+            message("我爱你刘帅宇", 2, "b"),
+            message("我爱你刘帅宇", 1, "c"),
+        ])
+        payload = build_candidates(
+            database, 6657, 24, 3, 20, existing_path, review_state_path=review_state_path
+        )
+
+    assert [candidate["text"] for candidate in payload["candidates"]] == ["我爱你刘帅宇"]
+
+
+def test_similar_family_block_filters_template_and_numeric_variants(tmp_path: Path) -> None:
+    database_path = tmp_path / "danmaku.db"
+    existing_path = tmp_path / "existing.json"
+    review_state_path = tmp_path / "review-state.json"
+    write_json_atomic(existing_path, {"items": {}})
+    write_json_atomic(review_state_path, {
+        "rejected": {
+            "我爱你玩机器": {"text": "我爱你玩机器", "excludeSimilar": True},
+            "草白看24局2024": {"text": "草，白看24局！（20／24）", "excludeSimilar": True},
+        }
+    })
+    with DanmakuDatabase(database_path) as database:
+        database.insert_many([
+            message("我爱你刘帅宇", 4, "a"), message("我爱你刘帅宇", 3, "b"),
+            message("我爱你刘帅宇", 2, "c"), message("草！白看24局！", 4, "d"),
+            message("草！白看24局！", 3, "e"), message("草！白看24局！", 2, "f"),
+        ])
+        payload = build_candidates(
+            database, 6657, 24, 3, 20, existing_path, review_state_path=review_state_path
+        )
+
+    assert payload["candidates"] == []
+    assert payload["reviewedSimilarFilteredCount"] == 2
 
 
 def test_candidate_filters_variants_of_existing_catalog_text(tmp_path: Path) -> None:

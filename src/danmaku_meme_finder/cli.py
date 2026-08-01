@@ -263,18 +263,22 @@ def _run_review_candidates(args: argparse.Namespace) -> None:
             f"source={candidate.get('source', 'unknown')}"
         )
         print(format_tag_catalog(labels))
-        print("Enter tag codes or labels; x/n rejects locally; Enter skips; q ends.")
+        print("Enter tags; x/n rejects this text; b blocks similar memes; Enter skips; q ends.")
         answer = input("输入标签编号（如 06,24）；回车跳过；q 结束：").strip()
         if answer == "?":
             print(format_tag_catalog(labels))
             answer = input("Tag code or label (for example 06,HLTV; Enter skips): ").strip()
         if answer.lower() == "q":
             break
-        if answer.lower() in {"x", "n"}:
-            reject_candidate(review_state, candidate)
+        if answer.lower() in {"x", "n", "b"}:
+            block_similar = answer.lower() == "b"
+            reject_candidate(review_state, candidate, exclude_similar=block_similar)
             write_json_atomic(args.review_state, review_state)
             rejected += 1
-            print("Rejected locally; it will not appear in the next review queue.")
+            if block_similar:
+                print("Blocked locally; this meme and similar variants will not be collected again.")
+            else:
+                print("Rejected locally; this exact text will not appear again.")
             continue
         tags = parse_tags(answer)
         if not tags:

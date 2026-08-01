@@ -253,3 +253,21 @@ JavaScript syntax checks pass, the localhost HTTP UI loads real state, and the
 390px layout has no horizontal overflow. The full 47-test suite currently has
 one unrelated time-sensitive failure because a legacy fixture fixes messages at
 2026-07-25 while querying only the latest 48 hours on 2026-07-28.
+
+The localhost review/publish flow now owns raw-data retirement. Publishing is
+blocked until the current candidate queue is empty, collection is idle, and the
+JSONL checkpoint equals the file size. After the public Git push succeeds, the
+admin derives explicit session IDs from candidate provenance, removes only those
+rows from SQLite and JSONL, rewrites the checkpoint, and restores the original
+JSONL from a temporary backup if cleanup fails. The UI warns about this boundary
+before confirmation and reports the cleanup count. Cleanup/admin focused tests,
+Python compilation, JavaScript syntax, diff checks, and all 49 Python tests pass.
+
+Repeated candidates were traced to two separate behaviors: repeated messages across
+collection sessions are valid raw evidence, while historical rejection previously used
+one ambiguous near-match rule that missed numeric and template substitutions. Review now
+has separate exact-reject and permanent-family-block actions; the latter persists
+`excludeSimilar: true` and filters numeric or stable-prefix/suffix variants in later
+candidate builds. Candidate source is no longer shown as a review category. The companion
+website adapter also no longer turns `official`, `high_frequency`, or `long_text` provenance
+into tags. All 54 Python tests pass and the website production build succeeds.

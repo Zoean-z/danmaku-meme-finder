@@ -35,12 +35,20 @@ def _local_meme_keys(memes_path: Path | None) -> set[str]:
     }
 
 
-def _rejected_keys(review_state_path: Path | None) -> set[str]:
+def _rejected_keys(review_state_path: Path | None) -> tuple[set[str], set[str]]:
     if review_state_path is None:
-        return set()
+        return set(), set()
     payload = read_json(review_state_path, {"rejected": {}})
     rejected = payload.get("rejected", {}) if isinstance(payload, dict) else {}
-    return set(rejected) if isinstance(rejected, dict) else set()
+    if not isinstance(rejected, dict):
+        return set(), set()
+    exact = set(rejected)
+    similar = {
+        key
+        for key, decision in rejected.items()
+        if isinstance(decision, dict) and decision.get("excludeSimilar") is True
+    }
+    return exact, similar
 
 
 def _comparison_text(text: str) -> str:
@@ -51,23 +59,33 @@ def _comparison_text(text: str) -> str:
     return compact
 
 
-def _reference_buckets(keys: set[str]) -> dict[str, set[str]]:
+def _reference_buckets(keys: set[str], width: int = 4) -> dict[str, set[str]]:
     buckets: dict[str, set[str]] = {}
     for key in keys:
         compact = _comparison_text(key)
         if len(compact) < 6:
             continue
-        for token in (f"p:{compact[:4]}", f"s:{compact[-4:]}"):
+        for token in (f"p:{compact[:width]}", f"s:{compact[-width:]}"):
             buckets.setdefault(token, set()).add(key)
     return buckets
 
 
-def _near_reference(text: str, buckets: dict[str, set[str]], threshold: float) -> bool:
+def _near_reference(
+    text: str,
+    buckets: dict[str, set[str]],
+    threshold: float,
+    *,
+    width: int = 4,
+    matcher: Any = None,
+) -> bool:
     compact = _comparison_text(text)
     if len(compact) < 6:
         return False
-    references = buckets.get(f"p:{compact[:4]}", set()) | buckets.get(f"s:{compact[-4:]}", set())
-    return any(_near_duplicate(text, reference, threshold) for reference in references)
+    references = buckets.get(f"p:{compact[:width]}", set()) | buckets.get(
+        f"s:{compact[-width:]}", set()
+    )
+    compare = matcher or _near_duplicate
+    return any(compare(text, reference, threshold) for reference in references)
 
 
 def _is_activity_text(text: str) -> bool:
@@ -96,6 +114,39 @@ def _near_duplicate(left: str, right: str, threshold: float) -> bool:
     ):
         return True
     return SequenceMatcher(None, left_compact, right_compact, autojunk=False).ratio() >= threshold
+
+
+def _blocked_variant(left: str, right: str, threshold: float) -> bool:
+    """Match an explicitly blocked meme family more broadly than batch deduplication."""
+    if _near_duplicate(left, right, threshold):
+        return True
+    left_compact = _comparison_text(left)
+    right_compact = _comparison_text(right)
+    left_without_numbers = "".join(char for char in left_compact if not char.isdigit())
+    right_without_numbers = "".join(char for char in right_compact if not char.isdigit())
+    if min(len(left_without_numbers), len(right_without_numbers)) >= 5 and (
+        left_without_numbers == right_without_numbers
+        or SequenceMatcher(
+            None, left_without_numbers, right_without_numbers, autojunk=False
+        ).ratio() >= 0.82
+    ):
+        return True
+    shorter = min(len(left_compact), len(right_compact))
+    if shorter < 6:
+        return False
+    common_prefix = 0
+    for left_char, right_char in zip(left_compact, right_compact):
+        if left_char != right_char:
+            break
+        common_prefix += 1
+    common_suffix = 0
+    for left_char, right_char in zip(reversed(left_compact), reversed(right_compact)):
+        if left_char != right_char:
+            break
+        common_suffix += 1
+    return max(common_prefix, common_suffix) >= 3 and (
+        common_prefix + common_suffix
+    ) / shorter >= 0.5
 
 
 def _last_seen_timestamp(item: dict[str, Any]) -> float:
@@ -178,9 +229,10 @@ def build_candidates(
     existing = index.get("items", {})
     existing_keys = set(existing) if isinstance(existing, dict) else set()
     local_meme_keys = _local_meme_keys(memes_path)
-    reviewed_keys = local_meme_keys | _rejected_keys(review_state_path)
+    rejected_keys, blocked_similar_keys = _rejected_keys(review_state_path)
     existing_buckets = _reference_buckets(existing_keys)
-    reviewed_buckets = _reference_buckets(reviewed_keys)
+    local_meme_buckets = _reference_buckets(local_meme_keys)
+    blocked_similar_buckets = _reference_buckets(blocked_similar_keys, width=3)
     existing_filtered = 0
     existing_similar_filtered = 0
     local_meme_filtered = 0
@@ -204,8 +256,18 @@ def build_candidates(
         if normalized in local_meme_keys:
             local_meme_filtered += 1
             continue
-        if similarity_threshold is not None and _near_reference(
-            normalized, reviewed_buckets, similarity_threshold
+        if normalized in rejected_keys:
+            reviewed_similar_filtered += 1
+            continue
+        if similarity_threshold is not None and (
+            _near_reference(normalized, local_meme_buckets, similarity_threshold)
+            or _near_reference(
+                normalized,
+                blocked_similar_buckets,
+                similarity_threshold,
+                width=3,
+                matcher=_blocked_variant,
+            )
         ):
             reviewed_similar_filtered += 1
             continue
